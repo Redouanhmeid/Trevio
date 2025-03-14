@@ -1,90 +1,188 @@
 // import sequelize & schemas
 const Sequelize = require('sequelize');
 const db = require('../config/database');
-const PropertyManagerModel = require('./PropertyManagerModel');
-const PropertyManagerVerificationModel = require('./PropertyManagerVerificationModel');
+
+// Import models
+const UserModel = require('./UserModel');
+const UserVerificationModel = require('./UserVerificationModel');
+const UserPropertyModel = require('./UserPropertyModel');
 const PropertyModel = require('./PropertyModel');
-const NearbyPlaceModel = require('./NearbyPlaceModel');
-const AmenityModel = require('./AmenityModel');
-const PasswordResetModel = require('./PasswordResetModel');
+const ReservationModel = require('./ReservationModel');
 const ReservationContractModel = require('./ReservationContractModel');
 const PropertyRevenueModel = require('./PropertyRevenueModel');
 const PropertyTaskModel = require('./PropertyTaskModel');
 const NotificationModel = require('./NotificationModel');
+const EquipmentModel = require('./EquipmentModel');
+const NearbyPlaceModel = require('./NearbyPlaceModel');
+const PasswordResetModel = require('./PasswordResetModel');
+const ManagerInvitationModel = require('./ManagerInvitationModel');
 
 // create models
-const PropertyManager = PropertyManagerModel(db, Sequelize);
-const PropertyManagerVerification = PropertyManagerVerificationModel(
- db,
- Sequelize
-);
+const User = UserModel(db, Sequelize);
+const UserVerification = UserVerificationModel(db, Sequelize);
+const UserProperty = UserPropertyModel(db, Sequelize);
 const Property = PropertyModel(db, Sequelize);
-const NearbyPlace = NearbyPlaceModel(db, Sequelize);
-const Amenity = AmenityModel(db, Sequelize);
-const PasswordReset = PasswordResetModel(db, Sequelize);
+const Reservation = ReservationModel(db, Sequelize);
 const ReservationContract = ReservationContractModel(db, Sequelize);
 const PropertyRevenue = PropertyRevenueModel(db, Sequelize);
 const PropertyTask = PropertyTaskModel(db, Sequelize);
 const Notification = NotificationModel(db, Sequelize);
+const Equipment = EquipmentModel(db, Sequelize);
+const NearbyPlace = NearbyPlaceModel(db, Sequelize);
+const PasswordReset = PasswordResetModel(db, Sequelize);
+const ManagerInvitation = ManagerInvitationModel(db, Sequelize);
 
-// define relationships
-// Property & PropertyManager (one -> many)
-PropertyManager.hasMany(Property, {
- foreignKey: 'propertyManagerId',
- as: 'properties',
+// Define relationships
+// User - Property relationship (ownership)
+User.hasMany(Property, {
+ foreignKey: 'clientId',
+ as: 'ownedProperties',
  onDelete: 'CASCADE',
 });
-Property.belongsTo(PropertyManager, {
- foreignKey: 'propertyManagerId',
- as: 'propertyManager',
+
+Property.belongsTo(User, {
+ foreignKey: 'clientId',
+ as: 'owner',
 });
-// PropertyManager & Amenity (one -> many)
-Property.hasMany(Amenity, {
- foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
- allowNull: false, // Make the foreign key required
- onDelete: 'CASCADE', // Delete associated amenities when a property is deleted
+// User (Client) - User (Concierge) relationship through UserProperty
+User.belongsToMany(Property, {
+ through: UserProperty,
+ foreignKey: 'clientId',
+ as: 'assignedProperties',
 });
-Amenity.belongsTo(Property, {
- foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+User.belongsToMany(Property, {
+ through: UserProperty,
+ foreignKey: 'conciergeId',
+ as: 'managedProperties',
+});
+Property.belongsToMany(User, {
+ through: UserProperty,
+ foreignKey: 'propertyId',
+ as: 'managers',
 });
 
-// PropertyManager & ReservationContract (one -> many)
-Property.hasMany(ReservationContract, {
- foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
- allowNull: false, // Make the foreign key required
- onDelete: 'CASCADE', // Delete associated amenities when a property is deleted
+// UserProperty associations
+UserProperty.belongsTo(User, {
+ foreignKey: 'clientId',
+ as: 'client',
 });
+UserProperty.belongsTo(User, {
+ foreignKey: 'conciergeId',
+ as: 'manager',
+});
+UserProperty.belongsTo(Property, {
+ foreignKey: 'propertyId',
+ as: 'property',
+});
+
+// Property & Equipment relationship
+Property.hasMany(Equipment, {
+ foreignKey: 'propertyId',
+ onDelete: 'CASCADE',
+});
+
+Equipment.belongsTo(Property, {
+ foreignKey: 'propertyId',
+});
+
+// Reservation relationships
+Property.hasMany(Reservation, {
+ foreignKey: 'propertyId',
+ onDelete: 'CASCADE',
+});
+
+Reservation.belongsTo(Property, {
+ foreignKey: 'propertyId',
+});
+
+User.hasMany(Reservation, {
+ foreignKey: 'createdByUserId',
+ as: 'createdReservations',
+});
+
+Reservation.belongsTo(User, {
+ foreignKey: 'createdByUserId',
+ as: 'creator',
+});
+
+// ReservationContract relationships
 ReservationContract.belongsTo(Property, {
- foreignKey: 'propertyId', // Specify the name of the foreign key in the Amenity model
+ foreignKey: 'propertyId',
+ as: 'property',
 });
+Property.hasMany(ReservationContract, {
+ foreignKey: 'propertyId',
+ as: 'contracts',
+});
+Reservation.hasOne(ReservationContract, {
+ foreignKey: 'reservationId',
+ as: 'contract',
+ onDelete: 'CASCADE',
+});
+ReservationContract.belongsTo(Reservation, {
+ foreignKey: 'reservationId',
+ as: 'reservation',
+});
+
+// PropertyRevenue relationships
 Property.hasMany(PropertyRevenue, {
  foreignKey: 'propertyId',
- as: 'revenues',
  onDelete: 'CASCADE',
 });
+
 PropertyRevenue.belongsTo(Property, {
  foreignKey: 'propertyId',
  as: 'property',
 });
+
+Reservation.hasMany(PropertyRevenue, {
+ foreignKey: 'reservationId',
+ onDelete: 'CASCADE',
+});
+
+PropertyRevenue.belongsTo(Reservation, {
+ foreignKey: 'reservationId',
+});
+
+// PropertyTask relationships
 Property.hasMany(PropertyTask, {
  foreignKey: 'propertyId',
  as: 'tasks',
  onDelete: 'CASCADE',
 });
+
 PropertyTask.belongsTo(Property, {
  foreignKey: 'propertyId',
  as: 'property',
 });
 
-PropertyManager.hasMany(Notification, {
- foreignKey: 'propertyManagerId',
+User.hasMany(PropertyTask, {
+ foreignKey: 'createdBy',
+ as: 'createdTasks',
+});
+User.hasMany(PropertyTask, {
+ foreignKey: 'assignedTo',
+ as: 'assignedTasks',
+});
+PropertyTask.belongsTo(User, {
+ foreignKey: 'createdBy',
+ as: 'creator',
+});
+PropertyTask.belongsTo(User, {
+ foreignKey: 'assignedTo',
+ as: 'assignee',
+});
+
+// Notification relationships
+User.hasMany(Notification, {
+ foreignKey: 'userId',
  as: 'notifications',
  onDelete: 'CASCADE',
 });
 
-Notification.belongsTo(PropertyManager, {
- foreignKey: 'propertyManagerId',
- as: 'propertyManager',
+Notification.belongsTo(User, {
+ foreignKey: 'userId',
+ as: 'user',
 });
 
 Property.hasMany(Notification, {
@@ -98,20 +196,55 @@ Notification.belongsTo(Property, {
  as: 'property',
 });
 
+// User verification relationship
+User.hasOne(UserVerification, {
+ foreignKey: 'email',
+ sourceKey: 'email',
+ as: 'verification',
+});
+
+UserVerification.belongsTo(User, {
+ foreignKey: 'email',
+ targetKey: 'email',
+ as: 'user',
+});
+
+// Password reset relationship
+User.hasMany(PasswordReset, {
+ foreignKey: 'email',
+ sourceKey: 'email',
+ as: 'passwordResets',
+});
+
+PasswordReset.belongsTo(User, {
+ foreignKey: 'email',
+ targetKey: 'email',
+ as: 'user',
+});
+
+// ManagerInvitation User relationship
+ManagerInvitation.belongsTo(User, {
+ foreignKey: 'clientId',
+ as: 'client',
+});
+
 // generate tables in DB
 db.sync({ alter: false }).then(() => {
  console.log('Tables Altered and Synced!');
 });
 
 module.exports = {
- PropertyManager,
- PropertyManagerVerification,
+ User,
+ UserVerification,
+ UserProperty,
  Property,
- NearbyPlace,
- Amenity,
- PasswordReset,
+ Reservation,
  ReservationContract,
  PropertyRevenue,
  PropertyTask,
  Notification,
+ Equipment,
+ NearbyPlace,
+ PasswordReset,
+ ManagerInvitation,
 };

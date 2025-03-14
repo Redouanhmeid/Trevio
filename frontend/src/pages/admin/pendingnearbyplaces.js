@@ -188,7 +188,7 @@ const PendingNearbyPlaces = () => {
    render: (rating) => <span>{rating} / 5</span>,
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),

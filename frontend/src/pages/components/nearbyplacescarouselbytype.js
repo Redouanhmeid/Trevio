@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
  Carousel,
  Card,
+ Flex,
  Spin,
  Image,
  Button,
@@ -117,6 +118,8 @@ const Place = React.memo(({ place }) => {
  const screens = useBreakpoint();
  return (
   <Card
+   hoverable={false}
+   bordered={false}
    className="custom-card"
    cover={
     <div className="nearbyplacescarousel" hoverable="false">
@@ -130,7 +133,7 @@ const Place = React.memo(({ place }) => {
        width: '100%',
        height: '100%',
        objectFit: 'cover',
-       borderRadius: 'inherit',
+       borderRadius: 16,
       }}
      />
     </div>
@@ -140,32 +143,35 @@ const Place = React.memo(({ place }) => {
     margin: '0 8px',
     height: screens.xs ? '220px' : 'auto',
     position: 'relative',
+    textAlign: 'center',
    }}
   >
    <Card.Meta
     title={
-     <Text
-      style={{
-       fontSize: '16px',
-       display: '-webkit-box',
-       WebkitLineClamp: 2, // Limit to two lines
-       WebkitBoxOrient: 'vertical',
-       overflow: 'hidden',
-       textOverflow: 'ellipsis',
-       whiteSpace: 'normal', // Allow text to wrap
-      }}
+     <Flex
+      gap="middle"
+      justify="center"
+      align="center"
+      vertical
+      style={{ height: '54px' }}
      >
-      {place.name}
-     </Text>
+      <Text
+       style={{
+        fontSize: '16px',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'normal',
+       }}
+      >
+       {place.name}
+      </Text>
+     </Flex>
     }
     description={
-     <div
-      style={{
-       display: 'flex',
-       justifyContent: 'space-between',
-       alignItems: 'center',
-      }}
-     >
+     <Flex gap="middle" justify="center" align="center" vertical>
       <div>
        <Rate
         allowHalf
@@ -179,9 +185,9 @@ const Place = React.memo(({ place }) => {
        href={place.url}
        target="_blank"
        type="link"
-       icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
+       icon={<i className="fa-lg fa-regular fa-map-location-dot fa-xl"></i>}
       />
-     </div>
+     </Flex>
     }
    />
   </Card>

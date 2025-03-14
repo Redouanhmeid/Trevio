@@ -35,7 +35,7 @@ const useUpdateProperty = (propertyId) => {
   await handleUpdate('/basic-info', data);
  };
 
- const updatePropertyAmenities = async (data) => {
+ const updatePropertyEquipements = async (data) => {
   await handleUpdate('/equipements', data);
  };
 
@@ -65,7 +65,7 @@ const useUpdateProperty = (propertyId) => {
   success,
   property,
   updatePropertyBasicInfo,
-  updatePropertyAmenities,
+  updatePropertyEquipements,
   updatePropertyCapacity,
   updatePropertyRules,
   updatePropertyCheckIn,

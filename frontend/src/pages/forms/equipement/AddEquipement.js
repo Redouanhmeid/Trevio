@@ -19,7 +19,7 @@ import Foot from '../../../components/common/footer';
 import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
-import useAmenity from '../../../hooks/useAmenity';
+import useEquipement from '../../../hooks/useEquipement';
 import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
@@ -33,13 +33,13 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const AddAmenity = () => {
+const AddEquipement = () => {
  const location = useLocation();
- const { amenity, id } = location.state;
+ const { equipement, id } = location.state;
  const { t } = useTranslation();
  const navigate = useNavigate();
- const { uploadAmenity } = useUploadPhotos();
- const { loading, error, postAmenity } = useAmenity();
+ const { uploadEquipement } = useUploadPhotos();
+ const { loading, error, postEquipement } = useEquipement();
 
  const [form] = Form.useForm();
  const [name, setName] = useState('');
@@ -49,42 +49,42 @@ const AddAmenity = () => {
  const [previewImage, setPreviewImage] = useState('');
  const [fileList, setFileList] = useState([]);
 
- const amenityTitles = {
-  shower: t('amenity.shower'),
-  jacuzzi: t('amenity.jacuzzi'),
-  bathtub: t('amenity.bathtub'),
-  washingMachine: t('amenity.washingMachine'),
-  dryerheat: t('amenity.dryerheat'),
-  vacuum: t('amenity.vacuum'),
-  vault: t('amenity.vault'),
-  babybed: t('amenity.babybed'),
-  television: t('amenity.television'),
-  speaker: t('amenity.speaker'),
-  gameconsole: t('amenity.gameconsole'),
-  oven: t('amenity.oven'),
-  microwave: t('amenity.microwave'),
-  coffeemaker: t('amenity.coffeemaker'),
-  fridge: t('amenity.fridge'),
-  fireburner: t('amenity.fireburner'),
-  heating: t('amenity.heating'),
-  airConditioning: t('amenity.airConditioning'),
-  fireplace: t('amenity.fireplace'),
-  ceilingfan: t('amenity.ceilingfan'),
-  tablefan: t('amenity.tablefan'),
-  fingerprint: t('amenity.fingerprint'),
-  lockbox: t('amenity.lockbox'),
-  parkingaccess: t('amenity.parkingaccess'),
-  wifi: t('amenity.wifi'),
-  dedicatedworkspace: t('amenity.dedicatedworkspace'),
-  freeParking: t('amenity.freeParking'),
-  paidParking: t('amenity.paidParking'),
-  pool: t('amenity.pool'),
-  garbageCan: t('amenity.garbageCan'),
+ const equipementTitles = {
+  shower: t('equipement.shower'),
+  jacuzzi: t('equipement.jacuzzi'),
+  bathtub: t('equipement.bathtub'),
+  washingMachine: t('equipement.washingMachine'),
+  dryerheat: t('equipement.dryerheat'),
+  vacuum: t('equipement.vacuum'),
+  vault: t('equipement.vault'),
+  babybed: t('equipement.babybed'),
+  television: t('equipement.television'),
+  speaker: t('equipement.speaker'),
+  gameconsole: t('equipement.gameconsole'),
+  oven: t('equipement.oven'),
+  microwave: t('equipement.microwave'),
+  coffeemaker: t('equipement.coffeemaker'),
+  fridge: t('equipement.fridge'),
+  fireburner: t('equipement.fireburner'),
+  heating: t('equipement.heating'),
+  airConditioning: t('equipement.airConditioning'),
+  fireplace: t('equipement.fireplace'),
+  ceilingfan: t('equipement.ceilingfan'),
+  tablefan: t('equipement.tablefan'),
+  fingerprint: t('equipement.fingerprint'),
+  lockbox: t('equipement.lockbox'),
+  parkingaccess: t('equipement.parkingaccess'),
+  wifi: t('equipement.wifi'),
+  dedicatedworkspace: t('equipement.dedicatedworkspace'),
+  freeParking: t('equipement.freeParking'),
+  paidParking: t('equipement.paidParking'),
+  pool: t('equipement.pool'),
+  garbageCan: t('equipement.garbageCan'),
  };
 
  useEffect(() => {
-  setName(amenityTitles[amenity] || '');
- }, [amenity]);
+  setName(equipementTitles[equipement] || '');
+ }, [equipement]);
 
  const goBack = () => {
   navigate(-1); // This will navigate back to the previous page
@@ -124,15 +124,15 @@ const AddAmenity = () => {
   </button>
  );
  const onFinish = async (values) => {
-  values.name = amenity;
+  values.name = equipement;
   values.propertyId = id;
   values.media = videoUrl;
   if (mediaType === t('common.photo') && fileList.length > 0) {
-   const photoUrl = await uploadAmenity(fileList);
+   const photoUrl = await uploadEquipement(fileList);
    values.media = photoUrl;
   }
   try {
-   await postAmenity(values);
+   await postEquipement(values);
    if (!error) {
     setTimeout(() => {
      // Navigate to the dashboard
@@ -158,10 +158,10 @@ const AddAmenity = () => {
     <Row gutter={[16, 16]}>
      <Col xs={24}>
       <Title level={2}>
-       {t('amenity.addCard')} {name}
+       {t('equipement.addCard')} {name}
       </Title>
       <Form
-       name="amenity_form"
+       name="equipement_form"
        initialValues={{ remember: true }}
        onFinish={onFinish}
        layout="vertical"
@@ -183,7 +183,7 @@ const AddAmenity = () => {
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label={t('amenity.mediaUrl')} name="media">
+          <Form.Item label={t('equipement.mediaUrl')} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -220,9 +220,9 @@ const AddAmenity = () => {
            label={
             <>
              <Text>
-              {t('amenity.videoUrlLabel')}
+              {t('equipement.videoUrlLabel')}
               <br />
-              <Text type="secondary">{t('amenity.videoUrlHint')}</Text>
+              <Text type="secondary">{t('equipement.videoUrlHint')}</Text>
              </Text>
             </>
            }
@@ -248,15 +248,15 @@ const AddAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item label={t('amenity.guestMessage')} name="description">
+         <Form.Item label={t('equipement.guestMessage')} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
-        {amenity === 'wifi' && (
+        {equipement === 'wifi' && (
          <Col xs={24} md={12}>
           <Row gutter={[16, 32]}>
            <Col xs={24} md={12}>
-            <Form.Item label={t('amenity.wifiName')} name="wifiName">
+            <Form.Item label={t('equipement.wifiName')} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -298,4 +298,4 @@ const AddAmenity = () => {
  );
 };
 
-export default AddAmenity;
+export default AddEquipement;

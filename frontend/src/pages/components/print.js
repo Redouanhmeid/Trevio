@@ -74,7 +74,7 @@ const getProxiedImageUrl = (url) => {
  )}`;
 };
 
-const Print = ({ property, amenities }) => {
+const Print = ({ property, equipements }) => {
  const [isLoaded, setIsLoaded] = useState(false);
  const { userData, getUserDataById } = useUserData();
  const [staticMapUrl, setStaticMapUrl] = useState('');
@@ -96,10 +96,10 @@ const Print = ({ property, amenities }) => {
  }, [property.latitude, property.longitude]);
 
  useEffect(() => {
-  if (property.propertyManagerId) {
-   getUserDataById(property.propertyManagerId);
+  if (property.userId) {
+   getUserDataById(property.userId);
   }
- }, [property.propertyManagerId]);
+ }, [property.userId]);
 
  useEffect(() => {
   if (property.latitude && property.longitude) {
@@ -193,11 +193,11 @@ const Print = ({ property, amenities }) => {
       setIsLoaded={setIsLoaded}
       staticMapUrl={staticMapUrl}
      />
-     <GettingHere property={property} amenities={amenities} />
+     <GettingHere property={property} equipements={equipements} />
      <CheckIn property={property} />
-     <AccessWifi property={property} amenities={amenities} />
+     <AccessWifi property={property} equipements={equipements} />
      <CheckOut property={property} />
-     <HouseManual property={property} amenities={amenities} />
+     <HouseManual property={property} equipements={equipements} />
      <RestaurantsCafes nearbyPlaces={data} />
      <Activities nearbyPlaces={data} />
      <Attractions nearbyPlaces={data} />
@@ -217,10 +217,10 @@ export default Print;
 const Welcome = React.memo(({ property, setIsLoaded, staticMapUrl }) => {
  const { userData, getUserDataById } = useUserData();
  useEffect(() => {
-  if (property.propertyManagerId) {
-   getUserDataById(property.propertyManagerId);
+  if (property.userId) {
+   getUserDataById(property.userId);
   }
- }, [property.propertyManagerId]);
+ }, [property.userId]);
 
  return (
   <Col xs={{ span: 20, offset: 2 }}>
@@ -299,10 +299,10 @@ const Welcome = React.memo(({ property, setIsLoaded, staticMapUrl }) => {
  );
 });
 
-const GettingHere = React.memo(({ property, amenities }) => {
- const parkingAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'freeParking'),
-  [amenities]
+const GettingHere = React.memo(({ property, equipements }) => {
+ const parkingEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'freeParking'),
+  [equipements]
  );
  return (
   <Col xs={24} md={{ span: 20, offset: 2 }}>
@@ -316,17 +316,20 @@ const GettingHere = React.memo(({ property, amenities }) => {
      <Title level={4}>Adresse</Title>
      <Paragraph>{property.description}</Paragraph>
      <Title level={4}>Parking</Title>
-     {parkingAmenity && (
+     {parkingEquipement && (
       <Row gutter={[16, 16]}>
        <Col xs={8}>
-        {ReactPlayer.canPlay(parkingAmenity.media) ? (
-         <Image src={getVideoThumbnail(parkingAmenity.media)} preview={false} />
+        {ReactPlayer.canPlay(parkingEquipement.media) ? (
+         <Image
+          src={getVideoThumbnail(parkingEquipement.media)}
+          preview={false}
+         />
         ) : (
-         <Image src={parkingAmenity.media} preview={false} />
+         <Image src={parkingEquipement.media} preview={false} />
         )}
        </Col>
        <Col xs={16}>
-        <Paragraph>{parkingAmenity.description}</Paragraph>
+        <Paragraph>{parkingEquipement.description}</Paragraph>
        </Col>
       </Row>
      )}
@@ -390,16 +393,16 @@ const CheckIn = React.memo(({ property }) => {
  );
 });
 
-const AccessWifi = React.memo(({ property, amenities }) => {
- const wifiAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'wifi'),
-  [amenities]
+const AccessWifi = React.memo(({ property, equipements }) => {
+ const wifiEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'wifi'),
+  [equipements]
  );
  return (
   <Col xs={24} md={{ span: 20, offset: 2 }}>
    <Row gutter={[16, 16]}>
     <Col xs={24}>
-     {wifiAmenity && (
+     {wifiEquipement && (
       <div>
        <Divider>
         <Title level={2}>
@@ -408,23 +411,26 @@ const AccessWifi = React.memo(({ property, amenities }) => {
        </Divider>
        <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>
-         {ReactPlayer.canPlay(wifiAmenity.media) ? (
-          <Image src={getVideoThumbnail(wifiAmenity.media)} preview={false} />
+         {ReactPlayer.canPlay(wifiEquipement.media) ? (
+          <Image
+           src={getVideoThumbnail(wifiEquipement.media)}
+           preview={false}
+          />
          ) : (
-          <Image src={wifiAmenity.media} preview={false} />
+          <Image src={wifiEquipement.media} preview={false} />
          )}
         </Col>
         <Col xs={24} md={16}>
          <br />
          <Paragraph>
           <Text strong>Nom Wi-Fi: </Text>
-          {wifiAmenity.wifiName}
+          {wifiEquipement.wifiName}
          </Paragraph>
          <Paragraph>
           <Text strong>Mot de passe Wi-Fi: </Text>
-          <Text copyable>{wifiAmenity.wifiPassword}</Text>
+          <Text copyable>{wifiEquipement.wifiPassword}</Text>
          </Paragraph>
-         <Paragraph>{wifiAmenity.description}</Paragraph>
+         <Paragraph>{wifiEquipement.description}</Paragraph>
         </Col>
        </Row>
       </div>
@@ -493,31 +499,32 @@ const CheckOut = React.memo(({ property }) => {
  );
 });
 
-const HouseManual = React.memo(({ property, amenities }) => {
+const HouseManual = React.memo(({ property, equipements }) => {
  const rows = 4;
- const wifiAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'wifi'),
-  [amenities]
+ const wifiEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'wifi'),
+  [equipements]
  );
- const tvAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'television'),
-  [amenities]
+ const tvEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'television'),
+  [equipements]
  );
- const kitchenAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'kitchen'),
-  [amenities]
+ const kitchenEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'kitchen'),
+  [equipements]
  );
- const airConditioningAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'airConditioning'),
-  [amenities]
+ const airConditioningEquipement = useMemo(
+  () =>
+   equipements?.find((equipement) => equipement.name === 'airConditioning'),
+  [equipements]
  );
- const washingMachineAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'washingMachine'),
-  [amenities]
+ const washingMachineEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'washingMachine'),
+  [equipements]
  );
- const poolAmenity = useMemo(
-  () => amenities?.find((amenity) => amenity.name === 'pool'),
-  [amenities]
+ const poolEquipement = useMemo(
+  () => equipements?.find((equipement) => equipement.name === 'pool'),
+  [equipements]
  );
  const additionalRules = getAdditionalRules(property?.houseRules);
  return (
@@ -530,7 +537,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
       </Title>
      </Divider>
      <Row gutter={[16, 16]}>
-      {wifiAmenity && (
+      {wifiEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-wifi"></i>
@@ -542,15 +549,15 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(wifiAmenity.media) ? (
+          ReactPlayer.canPlay(wifiEquipement.media) ? (
            <Image
-            src={getVideoThumbnail(wifiAmenity.media)}
+            src={getVideoThumbnail(wifiEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={wifiAmenity.media} preview={false} />
+           <Image src={wifiEquipement.media} preview={false} />
           )
          }
         >
@@ -559,21 +566,21 @@ const HouseManual = React.memo(({ property, amenities }) => {
            <>
             <Paragraph>
              <Text strong>Nom Wi-Fi: </Text>
-             {wifiAmenity.wifiName}
+             {wifiEquipement.wifiName}
             </Paragraph>
             <Paragraph>
              <Text strong>Mot de passe Wi-Fi: </Text>
-             <Text copyable>{wifiAmenity.wifiPassword}</Text>
+             <Text copyable>{wifiEquipement.wifiPassword}</Text>
             </Paragraph>
            </>
           }
-          description={wifiAmenity.description}
+          description={wifiEquipement.description}
          />
         </Card>
        </Col>
       )}
 
-      {tvAmenity && (
+      {tvEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-tv"></i>
@@ -585,24 +592,24 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(tvAmenity.media) ? (
+          ReactPlayer.canPlay(tvEquipement.media) ? (
            <Image
-            src={getProxiedImageUrl(tvAmenity.media)}
+            src={getProxiedImageUrl(tvEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={tvAmenity.media} preview={false} />
+           <Image src={tvEquipement.media} preview={false} />
           )
          }
         >
-         <Meta title="Télévision" description={tvAmenity.description} />
+         <Meta title="Télévision" description={tvEquipement.description} />
         </Card>
        </Col>
       )}
 
-      {kitchenAmenity && (
+      {kitchenEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-microwave"></i>
@@ -614,15 +621,15 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(kitchenAmenity.media) ? (
+          ReactPlayer.canPlay(kitchenEquipement.media) ? (
            <Image
-            src={getVideoThumbnail(kitchenAmenity.media)}
+            src={getVideoThumbnail(kitchenEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={kitchenAmenity.media} preview={false} />
+           <Image src={kitchenEquipement.media} preview={false} />
           )
          }
         >
@@ -636,7 +643,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
              symbol: 'lire plus',
             }}
            >
-            {kitchenAmenity.description}
+            {kitchenEquipement.description}
            </Paragraph>
           }
          />
@@ -644,7 +651,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
        </Col>
       )}
 
-      {airConditioningAmenity && (
+      {airConditioningEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-snowflake"></i>
@@ -656,15 +663,15 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(airConditioningAmenity.media) ? (
+          ReactPlayer.canPlay(airConditioningEquipement.media) ? (
            <Image
-            src={getVideoThumbnail(airConditioningAmenity.media)}
+            src={getVideoThumbnail(airConditioningEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={airConditioningAmenity.media} preview={false} />
+           <Image src={airConditioningEquipement.media} preview={false} />
           )
          }
         >
@@ -678,7 +685,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
              symbol: 'lire plus',
             }}
            >
-            {airConditioningAmenity.description}
+            {airConditioningEquipement.description}
            </Paragraph>
           }
          />
@@ -686,7 +693,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
        </Col>
       )}
 
-      {washingMachineAmenity && (
+      {washingMachineEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-washing-machine"></i>
@@ -698,15 +705,15 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(washingMachineAmenity.media) ? (
+          ReactPlayer.canPlay(washingMachineEquipement.media) ? (
            <Image
-            src={getVideoThumbnail(washingMachineAmenity.media)}
+            src={getVideoThumbnail(washingMachineEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={washingMachineAmenity.media} preview={false} />
+           <Image src={washingMachineEquipement.media} preview={false} />
           )
          }
         >
@@ -720,7 +727,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
              symbol: 'lire plus',
             }}
            >
-            {washingMachineAmenity.description}
+            {washingMachineEquipement.description}
            </Paragraph>
           }
          />
@@ -728,7 +735,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
        </Col>
       )}
 
-      {poolAmenity && (
+      {poolEquipement && (
        <Col xs={8}>
         <Divider>
          <i className="fa-light fa-water-ladder"></i>
@@ -740,15 +747,15 @@ const HouseManual = React.memo(({ property, amenities }) => {
           width: '100%',
          }}
          cover={
-          ReactPlayer.canPlay(poolAmenity.media) ? (
+          ReactPlayer.canPlay(poolEquipement.media) ? (
            <Image
-            src={getVideoThumbnail(poolAmenity.media)}
+            src={getVideoThumbnail(poolEquipement.media)}
             width={'100%'}
             height={300}
             preview={false}
            />
           ) : (
-           <Image src={poolAmenity.media} preview={false} />
+           <Image src={poolEquipement.media} preview={false} />
           )
          }
         >
@@ -762,7 +769,7 @@ const HouseManual = React.memo(({ property, amenities }) => {
              symbol: 'lire plus',
             }}
            >
-            {poolAmenity.description}
+            {poolEquipement.description}
            </Paragraph>
           }
          />

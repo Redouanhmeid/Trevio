@@ -13,7 +13,7 @@ export const useSignup = () => {
   setIsLoading(true);
   setError(null);
 
-  const response = await fetch('/api/v1/propertymanagers', {
+  const response = await fetch('/api/v1/users', {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify({ email, password, firstname, lastname, phone }),
@@ -56,7 +56,7 @@ export const useSignup = () => {
    };
 
    // Send user data to your backend
-   const response = await fetch('/api/v1/propertymanagers', {
+   const response = await fetch('/api/v1/users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),

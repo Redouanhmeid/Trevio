@@ -5,7 +5,7 @@ export const filterProperties = (
  range,
  roomValue,
  paxValue,
- checkedbasicAmenities
+ checkedbasicEquipements
 ) => {
  if (!Array.isArray(properties)) return [];
 
@@ -44,10 +44,10 @@ export const filterProperties = (
   );
  }
 
- if (checkedbasicAmenities.length > 0) {
+ if (checkedbasicEquipements.length > 0) {
   filtered = filtered.filter((property) =>
-   checkedbasicAmenities.every((amenity) =>
-    property.basicAmenities.includes(amenity)
+   checkedbasicEquipements.every((equipement) =>
+    property.basicEquipements.includes(equipement)
    )
   );
  }

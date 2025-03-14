@@ -5,10 +5,18 @@ module.exports = (db, type) => {
    primaryKey: true,
    autoIncrement: true,
   },
+  clientId: {
+   type: type.INTEGER,
+   allowNull: false,
+   references: {
+    model: 'users',
+    key: 'id',
+   },
+  },
   hashId: {
    type: type.STRING(32),
    unique: true,
-   allowNull: false,
+   allowNull: true,
   },
   name: {
    type: type.STRING(50),
@@ -30,7 +38,7 @@ module.exports = (db, type) => {
    type: type.STRING,
    allowNull: true,
   },
-  basicAmenities: {
+  basicEquipements: {
    type: type.JSON,
    allowNull: true,
   },
@@ -112,14 +120,18 @@ module.exports = (db, type) => {
   },
   status: {
    type: type.STRING(15),
-   enum: ['pending', 'enable', 'disable'],
-   default: 'pending',
+   defaultValue: 'pending',
+   validate: {
+    isIn: [['pending', 'enable', 'disable']],
+   },
   },
  });
 
- property.beforeCreate(async (property) => {
-  const { nanoid } = require('nanoid');
-  property.hashId = nanoid();
+ property.beforeValidate(async (property) => {
+  if (!property.hashId) {
+   const { nanoid } = require('nanoid');
+   property.hashId = nanoid();
+  }
  });
 
  property.createProperty = async (propertyData) => {

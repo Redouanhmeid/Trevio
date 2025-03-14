@@ -120,10 +120,10 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
 
  const inputStyle = {
   width: '100%',
-  padding: '0.5rem',
-  borderTopLeftRadius: '12px',
-  borderTopRightRadius: '12px',
-  border: touched && !placeName ? '1px solid #ff4d4f' : '1px solid #ddc7a8',
+  padding: '0.8rem',
+  borderRadius: '8px',
+  marginBottom: '20px',
+  border: touched && !placeName ? '1px solid #ff4d4f' : '1px solid #d9d9d9',
  };
 
  if (!isLoaded) {
@@ -140,7 +140,6 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      display: 'inline-block',
      width: '100%',
      height: '400px',
-     borderRadius: '12px',
      overflow: 'hidden',
     }}
    >
@@ -162,7 +161,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      <input
       ref={inputRef}
       placeholder="Indiquer une place *"
-      style={inputStyle}
+      className="autocomplete"
       onFocus={() => setTouched(true)}
      />
     </Autocomplete>

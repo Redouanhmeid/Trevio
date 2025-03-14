@@ -9,10 +9,27 @@ const useProperty = () => {
  const [loading, setLoading] = useState(false);
  const [success, setSuccess] = useState(false);
  const [error, setError] = useState(null);
+ const [numericId, setNumericId] = useState(null);
 
  const { createPropertyVerificationNotification } = useNotification();
 
  const apiBase = '/api/v1/properties';
+
+ const getIdFromHash = async (hashId) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.get(`${apiBase}/hash/${hashId}`);
+   setNumericId(response.data.id);
+   return response.data.id;
+  } catch (err) {
+   console.error('Error fetching numeric ID:', err);
+   setError(err.message || 'Failed to fetch property ID');
+   return null;
+  } finally {
+   setLoading(false);
+  }
+ };
 
  // Fetch all properties
  const fetchAllProperties = async () => {
@@ -40,12 +57,33 @@ const useProperty = () => {
   }
  };
 
- // Fetch properties by manager id
- const fetchPropertiesbypm = async (propertyManagerId) => {
+ const fetchAvailablePropertiesForAssignment = async (clientId) => {
+  setLoading(true);
+  setError(null);
+
+  try {
+   const response = await axios.get(`${apiBase}/available/${clientId}`);
+
+   if (response.status === 200) {
+    return response.data;
+   } else {
+    throw new Error('Failed to fetch available properties');
+   }
+  } catch (error) {
+   console.error('Error in fetchAvailablePropertiesForAssignment:', error);
+   setError(error.message || 'Failed to fetch available properties');
+   return [];
+  } finally {
+   setLoading(false);
+  }
+ };
+
+ // Fetch properties by user id
+ const fetchPropertiesbyClient = async (userId) => {
   setLoading(true);
   setError(null);
   try {
-   const response = await axios.get(`${apiBase}/bypm/${propertyManagerId}`);
+   const response = await axios.get(`${apiBase}/byclient/${userId}`);
    setProperties(response.data);
   } catch (error) {
    console.error('Error fetching properties:', error);
@@ -69,7 +107,7 @@ const useProperty = () => {
  }, [apiBase]);
 
  // Verify a property
- const verifyProperty = async (propertyManagerId, id, propertyName) => {
+ const verifyProperty = async (userId, id, propertyName) => {
   setLoading(true);
   setError(null);
   try {
@@ -78,11 +116,7 @@ const useProperty = () => {
    setPendingProperties((prev) => prev.filter((prop) => prop.id !== id));
    // Send notification
    if (response.data) {
-    await createPropertyVerificationNotification(
-     propertyManagerId,
-     id,
-     propertyName
-    );
+    await createPropertyVerificationNotification(userId, id, propertyName);
    }
 
    return response.data;
@@ -132,7 +166,7 @@ const useProperty = () => {
     await Promise.all(
      properties.map((property) =>
       createPropertyVerificationNotification(
-       property.propertyManagerId,
+       property.userId,
        property.id,
        property.name
       )
@@ -168,20 +202,6 @@ const useProperty = () => {
   fetchPendingProperties();
  }, [fetchPendingProperties]);
 
- const getPropertyManagerTasks = async (managerId) => {
-  setLoading(true);
-  try {
-   let url = `${apiBase}/propertytask/manager/${managerId}/tasks`;
-   const response = await axios.get(url);
-   return response.data;
-  } catch (error) {
-   setError(error);
-   return null;
-  } finally {
-   setLoading(false);
-  }
- };
-
  return {
   properties,
   property,
@@ -189,15 +209,16 @@ const useProperty = () => {
   loading,
   success,
   error,
+  getIdFromHash,
   fetchAllProperties,
   fetchProperty,
-  fetchPropertiesbypm,
+  fetchAvailablePropertiesForAssignment,
+  fetchPropertiesbyClient,
   fetchPendingProperties,
   verifyProperty,
   bulkVerifyProperties,
   toggleEnableProperty,
   deleteProperty,
-  getPropertyManagerTasks,
  };
 };
 

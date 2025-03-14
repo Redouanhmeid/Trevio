@@ -26,7 +26,6 @@ import { useTranslation } from '../context/TranslationContext';
 import './../App.css';
 import PropertyList from './components/PropertyList';
 
-const libraries = ['places', 'geometry'];
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
@@ -34,6 +33,7 @@ const Home = () => {
  const { t } = useTranslation();
  const isLoaded = useGoogleMapsLoader();
  const [searchCity, setSearchCity] = useState('');
+ const [selectedCity, setSelectedCity] = useState('');
  const autocomplete = useRef(null);
  const [viewMode, setViewMode] = useState('list');
  const [openFilter, setOpenFilter] = useState(false);
@@ -41,8 +41,8 @@ const Home = () => {
  const [roomValue, setRoomValue] = useState(0);
  const [paxValue, setPaxValue] = useState(0);
  const [checkedTypes, setCheckedTypes] = useState([]);
- const [showAllbasicAmenities, setShowAllBasicAmenities] = useState(false);
- const [checkedbasicAmenities, setCheckedbasicAmenities] = useState([]);
+ const [showAllbasicEquipements, setShowAllBasicEquipements] = useState(false);
+ const [checkedbasicEquipements, setCheckedbasicEquipements] = useState([]);
 
  const [mapCenter, setMapCenter] = useState(null); // Track map center
 
@@ -63,14 +63,14 @@ const Home = () => {
    icon: <i className="checkboxicon fa-light fa-house-user"></i>,
   },
  ];
- const basicAmenities = [
-  { value: 'kitchen', label: t('amenity.categories.kitchen') },
-  { value: 'freeParking', label: t('amenity.freeParking') },
-  { value: 'wifi', label: t('amenity.wifi') },
-  { value: 'airConditioning', label: t('amenity.airConditioning') },
-  { value: 'television', label: t('amenity.television') },
-  { value: 'washingMachine', label: t('amenity.washingMachine') },
-  { value: 'pool', label: t('amenity.pool') },
+ const basicEquipements = [
+  { value: 'kitchen', label: t('equipement.categories.kitchen') },
+  { value: 'freeParking', label: t('equipement.freeParking') },
+  { value: 'wifi', label: t('equipement.wifi') },
+  { value: 'airConditioning', label: t('equipement.airConditioning') },
+  { value: 'television', label: t('equipement.television') },
+  { value: 'washingMachine', label: t('equipement.washingMachine') },
+  { value: 'pool', label: t('equipement.pool') },
  ];
 
  useEffect(() => {
@@ -88,6 +88,7 @@ const Home = () => {
 
  const handleCityChange = (city) => {
   setSearchCity(city || '');
+  setSelectedCity(city);
  };
  const handlePlaceSelect = () => {
   if (autocomplete.current !== null) {
@@ -108,7 +109,7 @@ const Home = () => {
   setRoomValue(0);
   setPaxValue(0);
   setCheckedTypes([]);
-  setCheckedbasicAmenities([]);
+  setCheckedbasicEquipements([]);
  };
  const onSliderChange = (newRange) => {
   setRange(newRange);
@@ -129,19 +130,19 @@ const Home = () => {
   setCheckedTypes(checkedValues);
  };
 
- const visiblebasicAmenitie = showAllbasicAmenities
-  ? basicAmenities
-  : basicAmenities.slice(0, 6);
+ const visiblebasicAmenitie = showAllbasicEquipements
+  ? basicEquipements
+  : basicEquipements.slice(0, 6);
 
- const toggleShowAllbasicAmenities = () => {
-  setShowAllBasicAmenities(!showAllbasicAmenities);
+ const toggleShowAllbasicEquipements = () => {
+  setShowAllBasicEquipements(!showAllbasicEquipements);
  };
- const handleCheckboxChangebasicAmenities = (e, value) => {
+ const handleCheckboxChangebasicEquipements = (e, value) => {
   if (e.target.checked) {
-   setCheckedbasicAmenities([...checkedbasicAmenities, value]);
+   setCheckedbasicEquipements([...checkedbasicEquipements, value]);
   } else {
-   setCheckedbasicAmenities(
-    checkedbasicAmenities.filter((item) => item !== value)
+   setCheckedbasicEquipements(
+    checkedbasicEquipements.filter((item) => item !== value)
    );
   }
  };
@@ -159,31 +160,34 @@ const Home = () => {
     <Head />
     <Content className="container">
      <Row gutter={[16, 16]}>
-      <Col xs={searchCity.trim() ? 20 : 24} md={searchCity.trim() ? 23 : 24}>
-       <APIProvider>
-        <Autocomplete
-         onLoad={(auto) => {
-          autocomplete.current = auto;
-         }}
-         onPlaceChanged={handlePlaceSelect}
-         options={{
-          componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
-         }}
-        >
-         <Input
-          placeholder={t('home.searchPlaceholder')}
-          style={{ width: '100%', padding: '0.5rem' }}
-         />
-        </Autocomplete>
-       </APIProvider>
+      <Col xs={searchCity.trim() ? 16 : 24} md={searchCity.trim() ? 22 : 24}>
+       <div className="search-container">
+        <i className="fa-light fa-magnifying-glass fa-xl search-icon"></i>
+        <APIProvider>
+         <Autocomplete
+          onLoad={(auto) => {
+           autocomplete.current = auto;
+          }}
+          onPlaceChanged={handlePlaceSelect}
+          options={{
+           componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
+          }}
+         >
+          <Input placeholder={t('home.searchPlaceholder')} />
+         </Autocomplete>
+        </APIProvider>
+       </div>
       </Col>
       {searchCity.trim() && (
-       <Col xs={4} md={1}>
+       <Col xs={8} md={2}>
         <Button
          size="large"
-         icon={<i className="fa-light fa-bars-filter"></i>}
+         icon={<i className="fa-light fa-filter"></i>}
          onClick={showFilter}
-        />
+         block
+        >
+         {t('home.filters.title')}
+        </Button>
        </Col>
       )}
       <Col xs={24} sm={24}>
@@ -191,63 +195,84 @@ const Home = () => {
         <Button
          size="large"
          onClick={() => handleCityChange('Casablanca, Morocco')}
+         type={selectedCity === 'Casablanca, Morocco' ? 'primary' : 'default'}
         >
          Casablanca
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Rabat, Morocco')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Rabat, Morocco')}
+         type={selectedCity === 'Rabat, Morocco' ? 'primary' : 'default'}
+        >
          Rabat
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Marrakesh, Morocco')}
+         type={selectedCity === 'Marrakesh, Morocco' ? 'primary' : 'default'}
         >
          Marrakesh
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Agadir, Morocco')}
+         type={selectedCity === 'Agadir, Morocco' ? 'primary' : 'default'}
         >
          Agadir
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Tangier, Morocco')}
+         type={selectedCity === 'Tangier, Morocco' ? 'primary' : 'default'}
         >
          Tangier
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Fes, Morocco')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Fes, Morocco')}
+         type={selectedCity === 'Fes, Morocco' ? 'primary' : 'default'}
+        >
          Fes
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Bouznika, Morocco')}
+         type={selectedCity === 'Bouznika, Morocco' ? 'primary' : 'default'}
         >
          Bouznika
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Kénitra, Morocco')}
+         type={selectedCity === 'Kénitra, Morocco' ? 'primary' : 'default'}
         >
          Kénitra
         </Button>
-        <Button size="large" onClick={() => handleCityChange('Oujda, Morocco')}>
+        <Button
+         size="large"
+         onClick={() => handleCityChange('Oujda, Morocco')}
+         type={selectedCity === 'Oujda, Morocco' ? 'primary' : 'default'}
+        >
          Oujda
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Tetouan, Morocco')}
+         type={selectedCity === 'Tetouan, Morocco' ? 'primary' : 'default'}
         >
          Tetouan
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Al Hoceima, Morocco')}
+         type={selectedCity === 'Al Hoceima, Morocco' ? 'primary' : 'default'}
         >
          Al Hoceima
         </Button>
         <Button
          size="large"
          onClick={() => handleCityChange('Ouarzazate, Morocco')}
+         type={selectedCity === 'Ouarzazate, Morocco' ? 'primary' : 'default'}
         >
          Ouarzazate
         </Button>
@@ -263,7 +288,7 @@ const Home = () => {
           range={range}
           roomValue={roomValue}
           paxValue={paxValue}
-          checkedbasicAmenities={checkedbasicAmenities}
+          checkedbasicEquipements={checkedbasicEquipements}
          />
         </APIProvider>
        ) : (
@@ -274,7 +299,7 @@ const Home = () => {
          range={range}
          roomValue={roomValue}
          paxValue={paxValue}
-         checkedbasicAmenities={checkedbasicAmenities}
+         checkedbasicEquipements={checkedbasicEquipements}
         />
        )}
       </Col>
@@ -285,12 +310,12 @@ const Home = () => {
        <Switch
         checkedChildren={
          <>
-          {t('home.showMap')} <i className="fa-light fa-map-location-dot"></i>
+          <i className="fa-light fa-map-location-dot" /> {t('home.showMap')}
          </>
         }
         unCheckedChildren={
          <>
-          {t('home.showList')} <i className="fa-light fa-grid-2"></i>
+          <i className="fa-light fa-grid-2" /> {t('home.showList')}
          </>
         }
         checked={viewMode === 'list'}
@@ -473,14 +498,14 @@ const Home = () => {
      </Col>
 
      <Col xs={24}>
-      <Title level={4}>{t('home.filters.basicAmenities')}</Title>
+      <Title level={4}>{t('home.filters.basicEquipements')}</Title>
       <Row gutter={[16, 16]}>
        {visiblebasicAmenitie.map((item, index) => (
         <Col xs={12} md={8} key={index}>
          <Checkbox
           value={item.value}
-          checked={checkedbasicAmenities.includes(item.value)}
-          onChange={(e) => handleCheckboxChangebasicAmenities(e, item.value)}
+          checked={checkedbasicEquipements.includes(item.value)}
+          onChange={(e) => handleCheckboxChangebasicEquipements(e, item.value)}
          >
           {item.label}
          </Checkbox>
@@ -488,10 +513,10 @@ const Home = () => {
        ))}
       </Row>
       <Button
-       onClick={toggleShowAllbasicAmenities}
+       onClick={toggleShowAllbasicEquipements}
        style={{ marginTop: '20px' }}
       >
-       {showAllbasicAmenities
+       {showAllbasicEquipements
         ? t('home.filters.showLess')
         : t('home.filters.showMore')}
       </Button>

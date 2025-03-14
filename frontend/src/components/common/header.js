@@ -4,7 +4,10 @@ import { useLogout } from '../../hooks/useLogout';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useTranslation } from '../../context/TranslationContext';
 import {
+ Spin,
  Drawer,
+ Typography,
+ Divider,
  Layout,
  Avatar,
  Col,
@@ -16,14 +19,15 @@ import {
  Space,
  message,
 } from 'antd';
-import Logo from '../../assets/logo.png';
+import Logo from '../../assets/Trevio-10.png';
+import MobileLogo from '../../assets/MobileLogo.png';
 import { Helmet } from 'react-helmet';
 import { useUserData } from '../../hooks/useUserData';
 import { LanguageSelector } from '../../utils/LanguageSelector';
 import NotificationBell from './NotificationBell';
 
-/* const { Search } = Input; */
 const { Header } = Layout;
+const { Text } = Typography;
 
 function getItem(label, key, icon, children, type) {
  return {
@@ -40,9 +44,17 @@ const Head = ({ onUserData = () => {} }) => {
  const { logout } = useLogout();
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
- const { userData = {}, getUserData } = useUserData();
+ const { userData = {}, getUserData, isLoading } = useUserData();
  const { t, currentLanguage, setLanguage } = useTranslation();
  const navigate = useNavigate();
+
+ const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
+
+ useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth <= 576);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+ }, []);
 
  const handleLogOut = () => {
   logout();
@@ -62,39 +74,69 @@ const Head = ({ onUserData = () => {} }) => {
  };
 
  const menuItems = [
-  userData.role === 'admin' &&
+  // Account - shown to all users
+  getItem(
+   <Link to="/account">
+    <Text strong>{t('header.account')}</Text>
+   </Link>,
+   '0',
+   <i className="PrimaryColor HeaderIcon fa-light fa-user" />
+  ),
+  // Admin Panel - only shown to admins
+  userData?.role === 'admin' &&
    getItem(
-    <Link to="/adminpanel">{t('header.adminPanel')}</Link>,
-    '0',
-    <i className="fa-light fa-folder-gear"></i>
+    <Link to="/adminpanel">
+     <Text strong>{t('header.adminPanel')}</Text>
+    </Link>,
+    '1',
+    <i className="PrimaryColor HeaderIcon fa-light fa-gear"></i>
    ),
-  getItem(
-   <Link to="/dashboard">{t('header.dashboard')}</Link>,
-   '1',
-   <i className="fa-light fa-grid-2-plus"></i>
-  ),
-  getItem(
-   <Link to="/revtaskdashboard">{t('header.Revandtasks')}</Link>,
-   '2',
-   <i className="fa-light fa-chart-line"></i>
-  ),
-  getItem(
-   <Link to="/account">{t('header.account')}</Link>,
-   '3',
-   <i className="fa-light fa-user-pen"></i>
-  ),
-  getItem(
-   <span onClick={() => handleReferFriend(t)}>{t('header.referral')}</span>,
-   '4',
-   <i className="fa-light fa-users-medical"></i>
-  ),
+  // Dashboard - different routes for managers and clients
+  userData?.role === 'manager'
+   ? getItem(
+      <Link to="/manager/dashboard">
+       <Text strong>{t('header.dashboard')}</Text>
+      </Link>,
+      '2',
+      <i className="PrimaryColor HeaderIcon fa-light fa-bolt"></i>
+     )
+   : getItem(
+      <Link to="/dashboard">
+       <Text strong>{t('header.dashboard')}</Text>
+      </Link>,
+      '2',
+      <i className="PrimaryColor HeaderIcon fa-light fa-bolt"></i>
+     ),
   {
    type: 'divider',
   },
+
   getItem(
-   <Link onClick={handleLogOut}>{t('header.logout')}</Link>,
+   <Link to="/revtaskdashboard">
+    <Text strong>{t('header.Revandtasks')}</Text>
+   </Link>,
+   '3',
+   <i className="PrimaryColor HeaderIcon fa-light fa-chart-line"></i>
+  ),
+  // Referral - only shown to clients
+  userData?.role !== 'manager' &&
+   getItem(
+    <span onClick={() => handleReferFriend(t)}>
+     <Text strong>{t('header.referral')}</Text>
+    </span>,
+    '4',
+    <i className="PrimaryColor HeaderIcon fa-light fa-user-plus"></i>
+   ),
+  {
+   type: 'divider',
+  },
+  // Logout - shown to all users
+  getItem(
+   <Link onClick={handleLogOut}>
+    <Text strong>{t('header.logout')}</Text>
+   </Link>,
    '5',
-   <i className="fa-light fa-right-from-bracket"></i>
+   <i className="PrimaryColor HeaderIcon fa-light fa-right-from-bracket"></i>
   ),
  ].filter(Boolean);
 
@@ -140,41 +182,75 @@ const Head = ({ onUserData = () => {} }) => {
    </Helmet>
    <Header className="headerStyle">
     <Row>
-     <Col xs={6} sm={5} md={3}>
-      <Link to={'/'}>
-       <Image className="logoStyle" src={Logo} preview={false} />
+     <Col
+      xs={{ span: 12, order: 2 }}
+      sm={{ span: 6, order: 1 }}
+      md={{ span: 3, order: 1 }}
+     >
+      <Link to={'/'} className="logo-container">
+       <Image
+        className="logoStyle"
+        src={isMobile ? MobileLogo : Logo}
+        preview={false}
+       />
       </Link>
      </Col>
 
-     {Object.keys(userData).length > 0 && (
+     {userData && Object.keys(userData).length > 0 ? (
       <>
        <Col
-        xs={{ span: 8, offset: 3 }}
-        sm={{ span: 7, offset: 8 }}
-        md={{ span: 3, offset: 16 }}
+        xs={{ span: 6, order: 3 }}
+        sm={{ span: 8, offset: 4, order: 2 }}
+        md={{ span: 2, offset: 16, order: 2 }}
+       >
+        <Space size={[8, 16]} className="header-actions" wrap size="large">
+         <LanguageSelector />
+         <NotificationBell userId={userData.id} />
+        </Space>
+       </Col>
+
+       <Col
+        xs={{ span: 6, order: 1 }}
+        sm={{ span: 6, order: 3 }}
+        md={{ span: 3, order: 3 }}
+       >
+        <div className="avatar-container">
+         <Spin spinning={isLoading}>
+          <Button
+           type="text"
+           icon={
+            <i
+             className="fa-light fa-bars fa-lg"
+             style={{ color: '#6D5FFA' }}
+            />
+           }
+           className="HeaderAvatar"
+           size="large"
+           onClick={showDrawer}
+          >
+           <Avatar
+            size={{ xs: 40, sm: 44, md: 44, lg: 44, xl: 44, xxl: 44 }}
+            src={userData.avatar}
+           />
+          </Button>
+         </Spin>
+        </div>
+       </Col>
+      </>
+     ) : (
+      <>
+       <Col
+        xs={{ span: 2, order: 3 }}
+        sm={{ span: 8, offset: 4, order: 2 }}
+        md={{ span: 2, offset: 16, order: 2 }}
        >
         <LanguageSelector />
        </Col>
-       <Col xs={3} sm={2} md={1}>
-        <NotificationBell userId={userData.id} />
-       </Col>
-
-       <Col xs={4} sm={2} md={1}>
-        <Avatar
-         onClick={showDrawer}
-         size={{ xs: 46, sm: 50, md: 50, lg: 50, xl: 56, xxl: 56 }}
-         src={userData.avatar}
-         style={{ cursor: 'pointer' }}
-        />
-       </Col>
-      </>
-     )}
-     {Object.keys(userData).length === 0 && (
-      <>
-       <Col xs={8} sm={{ span: 7, offset: 5 }} md={{ span: 4, offset: 13 }}>
-        <LanguageSelector />
-       </Col>
-       <Col xs={8} sm={6} md={3}>
+       <Col
+        xs={{ span: 8, order: 1 }}
+        sm={{ span: 6, order: 3 }}
+        md={{ span: 3, order: 3 }}
+       >
         <Space>
          <Button
           onClick={handleLogin}
@@ -188,10 +264,11 @@ const Head = ({ onUserData = () => {} }) => {
       </>
      )}
     </Row>
-    <Drawer title={t('header.profile')} onClose={onClose} open={open}>
+
+    <Drawer title={null} onClose={onClose} open={open}>
      <List
       dataSource={[{ id: 1, name: 'Redouan' }]}
-      bordered
+      bordered={false}
       renderItem={(item) => (
        <List.Item key={item.id}>
         <List.Item.Meta
@@ -207,7 +284,7 @@ const Head = ({ onUserData = () => {} }) => {
        </List.Item>
       )}
      />
-     <br />
+     <Divider />
      <Menu
       onClick={onClick}
       mode="vertical"

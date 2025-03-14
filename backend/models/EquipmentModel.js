@@ -1,5 +1,5 @@
 module.exports = (db, type) => {
- let amenity = db.define('amenity', {
+ let equipment = db.define('equipment', {
   id: {
    type: type.INTEGER,
    primaryKey: true,
@@ -27,9 +27,9 @@ module.exports = (db, type) => {
   },
  });
 
- amenity.createAmenity = async (amenityData) => {
-  return await amenity.create(amenityData);
+ equipment.createEquipment = async (equipmentData) => {
+  return await equipment.create(equipmentData);
  };
 
- return amenity;
+ return equipment;
 };

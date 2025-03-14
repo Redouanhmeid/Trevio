@@ -133,7 +133,7 @@ const DraggableUploadListItem = ({ originNode, file }) => {
  );
 };
 
-const Step4Photos = ({ next, prev, values }) => {
+const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
  const {
   updatePropertyPhotos,
@@ -294,7 +294,8 @@ const Step4Photos = ({ next, prev, values }) => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-form">
+     <ProgressSteps />
      <Form name="step4" layout="vertical" onFinish={handleSubmit} size="large">
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
@@ -374,8 +375,8 @@ const Step4Photos = ({ next, prev, values }) => {
        )}
       </Row>
 
-      <Row justify="end">
-       <Col xs={8} md={1}>
+      <Row justify="center">
+       <Col xs={8} md={2}>
         <Form.Item>
          <Button
           htmlType="submit"
@@ -385,7 +386,7 @@ const Step4Photos = ({ next, prev, values }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={16} md={3}>
+       <Col xs={16} md={6}>
         <Form.Item>
          <Button
           type="primary"

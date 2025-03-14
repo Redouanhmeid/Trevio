@@ -16,12 +16,12 @@ const useCreateProperty = () => {
     latitude: firstStepData.latitude,
     longitude: firstStepData.longitude,
     placeName: firstStepData.placeName,
-    propertyManagerId: firstStepData.propertyManagerId,
+    userId: firstStepData.userId,
     // Optional fields from step 1
     airbnbUrl: firstStepData.airbnbUrl,
     bookingUrl: firstStepData.bookingUrl,
     // Default values for required fields in the model
-    basicAmenities: [],
+    basicEquipements: [],
     price: null,
     capacity: null,
     rooms: null,

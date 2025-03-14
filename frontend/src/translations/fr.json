@@ -2,6 +2,7 @@
     "header": {
         "adminPanel": "Panneau d'administration",
         "dashboard": "Tableau de bord",
+        "mydashbord": "Mon Tableau de bord",
         "Revandtasks": "Revenus et tâches",
         "account": "Mon compte",
         "referral": "Référez un ami",
@@ -12,12 +13,17 @@
     },
     "property": {
         "title": "Propriétés",
+        "address": "Adresse",
+        "status": "Statut",
         "pending": "Propriétés en attente",
+        "noProperties": "aucune propriété n'existe",
+        "managed": "Propriétés gérées",
+        "owned": "Vos propriétés",
         "basic": {
             "title": "Enregistrez les informations de votre propriété",
-            "name": "Nom",
+            "name": "Nom complet",
             "description": "Description",
-            "type": "Type de propriété",
+            "type": "Type",
             "location": "Emplacement",
             "capacity": "Max Personnes",
             "rooms": "Chambres",
@@ -29,14 +35,14 @@
             "bookingUrl": "Booking URL",
             "selectLocation": "Sélectionnez un emplacement sur la carte",
             "Capacity": "Capacité Personne",
-            "priceNight": "Dh / Nuit"
+            "priceNight": "Par Nuit"
         },
         "checkOutTitle": "Départ",
         "checkOutDepartureTime": "À quelle heure voulez-vous demander aux invités de quitter les lieux ?",
         "checkOut": {
             "policyTitle": "Sélectionnez les déclarations qui décrivent le mieux votre politique de départ tardif :"
         },
-        "amenities": {
+        "equipements": {
             "title": "Indiquez aux voyageurs quels sont les équipements de votre logement:"
         },
         "edit": {
@@ -62,11 +68,12 @@
         "actions": {
             "actions": "Actions",
             "guidebook": "Accéder au guidebook digital",
-            "guestForm": "Formulaire de réservation pour les invités",
+            "guestForm": "Formulaire de réservation",
             "contracts": "Gérer les contrats de réservation",
             "enable": "Activer la propriété",
             "disable": "Désactiver la propriété",
             "delete": "Supprimer la propriété",
+            "remove": "Retirer",
             "viewCard": "Voir la carte",
             "addCard": "Ajouter une carte",
             "editCard": "Modifier la carte",
@@ -81,7 +88,19 @@
         "noPropertiesSelected": "Aucune propriété sélectionnée pour vérification.",
         "bulkVerifySuccess": " propriétés vérifiées!",
         "verifySelected": "Vérifier les propriétés sélectionnées",
-        "view": "Voir"
+        "view": "Voir",
+        "tag": {
+            "airconditioned": "Climatisé",
+            "smartlock": "Smartlock"
+        },
+        "showAllPhotos": "Afficher toutes les photos",
+        "book": "Réservez",
+        "learnMore": "En savoir plus",
+        "propertyStatus": {
+            "active": "Actif",
+            "inactive": "Inactif",
+            "pending": "En attente"
+        }
     },
     "type": {
         "house": "Maison",
@@ -104,6 +123,7 @@
         "addPhotos": "Ajouter des Photos",
         "lastName": "Veuillez fournir votre Nom.",
         "firstName": "Veuillez fournir votre Prénom.",
+        "phone": "Veuillez fournir votre numéro de téléphone.",
         "email": "Veuillez fournir une adresse Email valide.",
         "createPassword": "Veuillez créer un mot de passe.",
         "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
@@ -182,7 +202,7 @@
     "rules": {
         "title": "Règles de la maison",
         "noNoise": "Pas de bruit après 23h",
-        "noFood": "Pas de nourriture ni de boissons dans les chambres à coucher",
+        "noFoodDrinks": "Pas de nourriture ni de boissons dans les chambres à coucher",
         "noParties": "Pas de fêtes ni d'événements",
         "noSmoking": "Défense de fumer",
         "noPets": "Pas d'animaux de compagnie",
@@ -202,7 +222,7 @@
         "deleteError": "Erreur lors de la suppression: ",
         "reviewAndApprove": "Examiner et approuver"
     },
-    "amenity": {
+    "equipement": {
         "editTitle": "Modifier le manuel de la maison",
         "addCard": "Ajouter une carte pour",
         "mediaUrl": "Media URL",
@@ -248,7 +268,7 @@
         "heating": "Chauffage",
         "airConditioning": "Climatisation",
         "fireplace": "Cheminée",
-        "ceilingfan": "Ventilateur de plafond",
+        "ceilingfan": "Ventilateur de pla",
         "tablefan": "Ventilateur de table",
         "fingerprint": "Serrure biometrique à empreinte digitale",
         "lockbox": "Boite à serrure",
@@ -258,7 +278,24 @@
         "freeParking": "Parking gratuit",
         "paidParking": "Stationnement payant",
         "pool": "Piscine",
-        "garbageCan": "Benne à ordures"
+        "garbageCan": "Benne à ordures",
+        "soap": "Savon",
+        "hotwater": "Eau chaude",
+        "basicequipement": "Équipement de base",
+        "blankets": "Couvertures",
+        "bathroom": "Salle de bain",
+        "bedroomLinen": "Chambre et linge",
+        "entertainment": "Divertissement",
+        "kitchen": "Cuisine",
+        "kitchenDiningRoom": "Cuisine et salle à manger",
+        "heatingCooling": "Chauffage et climatisation",
+        "homeSecurity": "Sécurité à la maison",
+        "internetOffice": "Internet et bureau",
+        "parkingFacilities": "Parking et installations",
+        "mattresspillow": "Oreiller de matelas",
+        "cameras": "Caméras",
+        "kitchenset": "Ensemble de cuisine",
+        "coffeepot": "Cafetière"
     },
     "account": {
         "manage": "Gérer mon compte",
@@ -275,6 +312,7 @@
         "updateError": "Erreur lors de la mise à jour des détails!"
     },
     "common": {
+        "back": "Retour",
         "upload": "Charger",
         "save": "Save",
         "phone": "Téléphone",
@@ -289,7 +327,14 @@
         "search": "Chercher",
         "reset": "Réinitialiser",
         "avatar": "Avatar",
-        "share": "Partager"
+        "share": "Partager",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "view": "Voir",
+        "viewAll": "Voir tout",
+        "language": "Langue",
+        "FAQs": "FAQ"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -313,10 +358,14 @@
         "totalTasks": "Tâches totales",
         "totalProperties": "Propriétés totales",
         "totalRevenue": "Total Revenue",
+        "totalManagers": "Total des Concierges",
         "statistics": "Statistiques",
-        "totalManagers": "Total Managers",
+        "totalUsers": "Total Users",
         "averagePrice": "Prix moyen",
-        "managers": "Managers"
+        "users": "Users",
+        "activeProperties": "Propriétés actives",
+        "lastUpdate": "Dernière Mise à Jour",
+        "assignedToMe": "Assigné à moi"
     },
     "tasks": {
         "title": "Tâches à faire",
@@ -328,6 +377,7 @@
         "actions": "Action",
         "edit": "Modifier",
         "delete": "Supprimer",
+        "pending": "Tâches en attente",
         "confirmDelete": {
             "title": "Confirmer la suppression",
             "content": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
@@ -342,9 +392,9 @@
         },
         "priority": {
             "title": "Priorité",
-            "high": "URGENT",
-            "medium": "MOYENNE",
-            "low": "FAIBLE"
+            "high": "Urgent",
+            "medium": "Moyenne",
+            "low": "Faible"
         },
         "statistics": {
             "totalTasks": "Tâches totales",
@@ -356,6 +406,10 @@
             "titleRequired": "Veuillez saisir le titre de la tâche",
             "priorityRequired": "Veuillez sélectionner une priorité",
             "dueDateRequired": "Veuillez sélectionner une date d'échéance"
+        },
+        "message": {
+            "statusUpdateSuccess": "Le statut de la tâche a été mis à jour avec succès",
+            "statusUpdateError": "Échec de la mise à jour du statut de la tâche"
         }
     },
     "revenue": {
@@ -377,9 +431,23 @@
         "editRevenue": "Modifier le revenu",
         "currency": "DHs",
         "deleteSuccess": "Revenu supprimé avec succès",
+        "createSuccess": "Revenu enregistré avec succès",
+        "createError": "Échec de l'enregistrement du revenu",
+        "error": "Erreur",
+        "generate": "Générer un revenu",
+        "createWithReservation": "Créer un Revenu",
+        "createNow": "Créer une entrée de revenu maintenant",
+        "createWarning": "Réservation créée mais il y a eu un problème lors de la création de l'entrée de revenu",
+        "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce revenu",
         "validation": {
             "selectMonth": "Veuillez sélectionner un mois",
-            "enterAmount": "Veuillez saisir le montant"
+            "enterAmount": "Veuillez saisir le montant",
+            "selectYear": "Veuillez sélectionner une année"
+        },
+        "create": {
+            "title": "Enregistrer les revenus",
+            "button": "Enregistrer les revenus",
+            "submit": "Enregistrer les revenus"
         }
     },
     "manual": {
@@ -474,7 +542,10 @@
             "residenceCountry": "Pays de résidence",
             "residenceCity": "Ville de résidence",
             "residenceAddress": "Adresse de résidence",
-            "postalCode": "Code postal"
+            "postalCode": "Code postal",
+            "checkIn": "Date d'arrivée",
+            "checkOut": "Date de départ",
+            "stayDates": "Dates de séjour"
         },
         "identity": {
             "title": "Information du document d'identité",
@@ -543,7 +614,15 @@
             "identity": "Veuillez télécharger votre pièce d'identité",
             "email": "Veuillez fournir une adresse e-mail.",
             "phone": "Veuillez saisir votre numéro de téléphone",
-            "signature": "Veuillez signer le formulaire"
+            "signature": "Veuillez signer le formulaire",
+            "checkIn": "Veuillez sélectionner la date d'arrivée",
+            "checkOut": "Veuillez sélectionner la date de départ",
+            "checkInPast": "La date d'arrivée ne peut pas être dans le passé",
+            "checkOutBeforeCheckIn": "La date de départ doit être postérieure à la date d'arrivée",
+            "datesNotAvailable": "Les dates sélectionnées ne sont pas disponibles",
+            "stayDates": "Veuillez sélectionner vos dates de séjour",
+            "datesNoLongerAvailable": "Ces dates ne sont plus disponibles. Veuillez sélectionner des dates différentes.",
+            "conflictingBookings": "La propriété est déjà réservée à ces dates"
         },
         "privacyPolicy": {
             "title": "Politique de confidentialité",
@@ -605,22 +684,29 @@
             }
         },
         "error": {
-            "pdfGeneration": "Erreur lors de la génération du PDF. Veuillez réessayer."
+            "pdfGeneration": "Erreur lors de la génération du PDF. Veuillez réessayer.",
+            "checkAvailability": "Erreur lors de la vérification de la disponibilité des dates"
         }
     },
     "auth": {
-        "login": "Se connecter",
-        "needAccount": "Besoin d'un compte?",
+        "login": "Connectez-vous à votre compte",
+        "welcome": "Bienvenue! Veuillez saisir vos coordonnées.",
+        "needAccount": "Vous n'avez pas de compte ?",
         "signupHere": "Inscrivez-vous ici",
+        "signupButton": "Inscrivez-vous",
+        "loginButton": "Se connecter",
         "loginWithGoogle": "Connectez-vous avec Google",
         "orUseEmail": "Ou utilisez E-mail",
-        "emailPlaceholder": "Email",
+        "emailPlaceholder": "Entrez votre email",
         "emailRequired": "Veuillez saisir votre email!",
-        "passwordPlaceholder": "Mot de passe",
+        "passwordPlaceholder": "Entrez votre Mot de passe",
         "passwordRequired": "Veuillez saisir votre Mot de passe!",
         "rememberMe": "Rappelez-vous de moi",
         "forgotPassword": "Mot de passe oublié?",
-        "loginButton": "Se connecter"
+        "loginAsManager": "Se connecter en tant que Gestionnaire",
+        "validation": {
+            "required": "Please input your password!"
+        }
     },
     "signup": {
         "startFree": "Commencez avec un compte gratuit",
@@ -655,7 +741,7 @@
             "rooms": "Chambres",
             "all": "Tous",
             "maxPeople": "Max Personnes",
-            "basicAmenities": "Commodités de base",
+            "basicEquipements": "Commodités de base",
             "showLess": "Afficher moins",
             "showMore": "Afficher plus"
         }
@@ -668,7 +754,7 @@
         "messageError2": "Échec du chargement des détails des lieux à proximité."
     },
     "contracts": {
-        "title": "Réservations de contrat",
+        "title": "Contrats de réservation",
         "guest": "Invité",
         "identity": "Identité",
         "signature": "Signature",
@@ -681,17 +767,28 @@
             "completed": "COMPLÉTÉ"
         },
         "actions": {
+            "actions": "Actions",
             "send": "Envoyer",
             "markSigned": "Marquer comme signé",
             "reject": "Rejeter",
             "complete": "Complète"
         },
         "details": {
-            "nationality": "Nationality",
-            "address": "Address",
-            "postalCode": "Postal Code",
-            "country": "Country",
-            "birthDate": "Birth Date"
+            "nationality": "Nationalité",
+            "address": "Adresse",
+            "postalCode": "Code postal",
+            "country": "Pays",
+            "birthDate": "Date de naissance",
+            "personalInfo": "Informations personnelles",
+            "stayDetails": "Détails du séjour",
+            "documentInfo": "Informations du document",
+            "documentType": "Type de document",
+            "documentNumber": "Numéro du document",
+            "documentIssueDate": "Date de délivrance",
+            "contractCreated": "Contrat créé le",
+            "contractUpdated": "Dernière mise à jour",
+            "residenceAddress": "Adresse de résidence",
+            "viewReservation": "Voir la réservation"
         },
         "error": {
             "fetch": "Impossible de récupérer les contrats",
@@ -705,12 +802,12 @@
         "share": "Partager",
         "loading": "Chargement...",
         "invalidCoordinates": "Coordonnées fournies non valides.",
-        "noAmenities": "Aucun équipement disponible",
+        "noEquipements": "Aucun équipement disponible",
         "note": "N.b :",
         "tabs": {
             "arrival": {
                 "title": "Arrivée",
-                "checkInTime": "L'heure d'enregistrement s'effectue à tout moment après {time}",
+                "checkInTime": "L'heure d'enregistrement s'effectue à tout moment après ",
                 "video": "Vidéo d'enregistrement",
                 "access": {
                     "title": "Obtenir l'accès"
@@ -737,17 +834,17 @@
             }
         }
     },
-    "manager": {
-        "manager": "Manager",
-        "verifySuccess": "Le manager a été vérifié",
-        "verifyError": "Échec de la vérification du manager",
+    "user": {
+        "user": "User",
+        "verifySuccess": "Le user a été vérifié",
+        "verifyError": "Échec de la vérification du user",
         "role": "Rôle",
         "verified": "Vérifié",
-        "verifyButton": "Vérifier le Manager",
+        "verifyButton": "Vérifier le User",
         "createdAt": "Créé le",
         "managedProperties": "Propriétés gérées",
-        "deleteSuccess": "Manager supprimé avec succès",
-        "deleteError": "Erreur lors de la suppression du manager: ",
+        "deleteSuccess": "User supprimé avec succès",
+        "deleteError": "Erreur lors de la suppression du user: ",
         "unknown": "Gestionnaire Inconnu",
         "loadError": "Erreur lors du chargement du gestionnaire",
         "verifiedStatus": {
@@ -783,6 +880,263 @@
             "taskMessage1": "Une nouvelle tâche ",
             "taskMessage2": " (Priorité: ",
             "taskMessage3": ") a été créée."
+        }
+    },
+    "footer": {
+        "created": "Créer et développé par Astral Digital agency"
+    },
+    "managers": {
+        "title": "Concierges",
+        "propertiesTitle": "Les propriétés gérées",
+        "addTitle": "Ajouter un Nouveau Concierge",
+        "editTitle": "Modifier le concierge",
+        "addButton": "Ajouter un concierge",
+        "addSuccess": "Invitation envoyée avec succès",
+        "addError": "Échec de l'ajout du concierge",
+        "assignButton": "Affecter",
+        "firstname": "Prénom",
+        "firstnamePlaceholder": "Entrez le prénom",
+        "lastname": "Nom",
+        "lastnamePlaceholder": "Entrez le nom",
+        "email": "Email",
+        "emailPlaceholder": "Entrez l'adresse email",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "Entrez le mot de passe",
+        "phone": "Numéro de téléphone",
+        "phonePlaceholder": "Entrez le numéro de téléphone",
+        "active": "actif",
+        "pending": "en attente",
+        "noUserId": "Aucun user sélectionné pour la création du concierge",
+        "manageProperties": "Propriétés gérées",
+        "validation": {
+            "required": "Ce champ est obligatoire",
+            "email": "Veuillez entrer un email valide",
+            "passwordLength": "Le mot de passe doit contenir au moins 6 caractères",
+            "phoneNumber": "Veuillez entrer un numéro de téléphone valide"
+        },
+        "assignmentStatus": "Statut de l'affectation",
+        "assignProperties": "Affecter des propriétés au concierge",
+        "selectManager": "Sélectionner un concierge",
+        "selectManagerFirst": "Veuillez d'abord sélectionner un concierge",
+        "selectPropertiesFirst": "Veuillez sélectionner au moins une propriété",
+        "selectManagerPlaceholder": "Choisir un concierge",
+        "selectProperties": "Sélectionner les propriétés à attribuer",
+        "assignSuccess": "Propriétés attribuées avec succès",
+        "assignError": "Échec de l'attribution des propriétés",
+        "propertyAlreadyAssigned": "Déjà affecté à un autre concierge",
+        "properties": {
+            "available": "Propriétés disponibles",
+            "assigned": "Propriétés affectées",
+            "assignedTo": "Propriété attribuée à"
+        },
+        "messages": {
+            "statusUpdateSuccess": "Le statut de l'affectation a été mis à jour avec succès",
+            "statusUpdateError": "Échec de la mise à jour du statut de l'affectation",
+            "propertyRemoved": "L'affectation de propriété a été supprimée avec succès",
+            "removeError": "Échec de la suppression de l'affectation de propriété",
+            "signinSuccess": "Votre inscription a été effectuée avec succès, vous pouvez vous connecter en tant que concierge",
+            "signinError": "Échec de l'enregistrement",
+            "invalidToken": "Jeton non valide",
+            "verificationFailed": "Échec de la vérification",
+            "failedInvitation": "Échec de l'envoi de l'invitation",
+            "failedAcceptInvitation": "Échec de l'acceptation de l'invitation",
+            "failedLogin": "La connexion a échoué",
+            "pleaseLogin": "Veuillez vous connecter",
+            "pleaseSignup": "Inscrivez-vous s'il vous plaît",
+            "assignSuccess": "Le rôle de concierge a été attribué avec succès",
+            "invalidInvitation": "Invitation invalide",
+            "signupSuccess": "Votre inscription a été complétée avec succès",
+            "alreadyAccepted": "L'invitation a déjà été acceptée",
+            "deleteSuccess": "Le concierge a été supprimé avec succès",
+            "deleteError": "Échec de la suppression du concierge",
+            "updateSuccess": "Le concierge a été mis à jour avec succès",
+            "updateError": "Échec de la mise à jour du concierge",
+            "fetchError": "Échec de la récupération des concierges",
+            "fetchPropertiesError": "Impossible de récupérer les propriétés attribuées pour ce concierge"
+        },
+        "completeProfile": "Complétez votre profil",
+        "confirmPassword": "Confirmez le mot de passe",
+        "confirmPasswordPlaceholder": "Veuillez confirmez le mot de passe",
+        "completeSetup": "Terminer",
+        "invitation": {
+            "title": "Invitation de concierge",
+            "from": "Invitation de",
+            "generic": "Invitation de concierge de propriété",
+            "existingUserMessage": "Vous avez déjà un compte. Cliquez sur le bouton ci-dessous pour accepter le rôle de concierge.",
+            "newUserMessage": "Vous devez créer un compte pour accepter cette invitation. Remplissez ce formulaire pour vous inscrire.",
+            "acceptButton": "Accepter l'invitation",
+            "proceedToSignupButton": "Créer un compte",
+            "expired": "Cette invitation a expiré",
+            "invalid": "Invitation non valide",
+            "signupSuccess": "Compte créé avec succès. Veuillez vous connecter pour continuer."
+        }
+    },
+    "contract": {
+        "bookingDates": "Dates de réservation",
+        "checkIn": "Check-In",
+        "checkOut": "Check-Out",
+        "checkInComplete": "Check-in terminé",
+        "checkInInComplete": "Incomplète",
+        "filfill": "Accomplissez les tâches en attente pour terminer votre enregistrement avant votre arrivée.",
+        "enjoyStay": "Félicitations ! Votre enregistrement est terminé, profitez de votre séjour !",
+        "guestRegistration": "Enregistrement invité",
+        "completed": "Terminé",
+        "guest": "Invité",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "dates": "Dates",
+        "underVerification": "En cours de vérification",
+        "verificationInProgress": "Vérification en cours",
+        "waitingForApproval": "En attente d'approbation",
+        "status": {
+            "title": "Statut du contrat",
+            "draft": "Brouillon",
+            "sent": "Envoyé",
+            "signed": "Signé",
+            "completed": "Terminé"
+        },
+        "error": {
+            "notFound": "Contrat non trouvé",
+            "tryAgain": "Veuillez vérifier le lien et réessayer"
+        },
+        "electronicLock": {
+            "title": "Votre Code d'Accès",
+            "instructions": "Utilisez ce code pour accéder aux serrures électroniques pendant votre séjour. Le code sera actif pendant toute la durée de votre réservation."
+        }
+    },
+    "verification": {
+        "checkEmail": "Vérifiez votre e-mail",
+        "emailSentTo": "Nous avons envoyé un lien de vérification à",
+        "followInstructions": "Veuillez vérifier votre boîte de réception et suivre les instructions pour vérifier votre compte. Si vous ne voyez pas l'e-mail, vérifiez votre dossier spam."
+    },
+    "reservation": {
+        "title": "Réservations",
+        "sendToGuest": "Envoyer au client",
+        "generateContract": "Générer le contrat",
+        "createWithRevenueSuccess": "Réservation et revenu créés avec succès",
+        "sentToGuestSuccess": "Réservation envoyée au client avec succès",
+        "create": {
+            "title": "Créer une nouvelle réservation",
+            "property": "Propriété",
+            "propertyRequired": "Veuillez sélectionner une propriété",
+            "selectProperty": "Choisir une propriété",
+            "dates": "Dates de réservation",
+            "datesRequired": "Veuillez sélectionner les dates de réservation",
+            "pricePerNight": "Prix par nuit",
+            "priceRequired": "Veuillez saisir le prix par nuit",
+            "bookingSource": "Source de réservation",
+            "selectSource": "Sélectionner la source de réservation",
+            "submit": "Créer la réservation",
+            "error": "Échec de la création de la réservation",
+            "button": "Nouvelle réservation"
+        },
+        "sources": {
+            "direct": "Réservation directe",
+            "other": "Autre"
+        },
+        "contract": {
+            "generation": "Génération du contrat",
+            "generateDescription": "Préparer un contrat pour cette réservation",
+            "readyToGenerate": "Votre réservation est prête pour la génération de contrat",
+            "contractReady": "Le modèle de contrat a été créé",
+            "sendDescription": "Envoyer le contrat au client",
+            "sendToGuest": "Envoyer le contrat au client",
+            "contractSent": "Le contrat a été envoyé au client",
+            "waitingForGuest": "En attente de la complétion du contrat par le client",
+            "signedDescription": "Le client a signé le contrat",
+            "completedDescription": "Le contrat a été entièrement complété",
+            "viewAllContracts": "Voir tous les contrats",
+            "generateSuccess": "Contrat généré avec succès",
+            "generationError": "Échec de la génération du contrat",
+            "sentSuccess": "Contrat envoyé au client avec succès",
+            "sentError": "Échec de l'envoi du contrat au client",
+            "contractCompleted": "Contrat complété",
+            "contractSigned": "Contrat signé",
+            "markComplete": "Marquer comme terminé",
+            "completeSuccess": "Contrat marqué comme terminé avec succès",
+            "completeError": "Échec du marquage du contrat comme terminé",
+            "completionDescription": "Le client a signé le contrat. Vous pouvez maintenant le marquer comme terminé."
+        },
+        "revenue": {
+            "create": {
+                "title": "Créer une entrée de revenus",
+                "submit": "Créer le revenu",
+                "error": "Échec de la création de l'entrée de revenus"
+            }
+        },
+        "steps": {
+            "created": "Créé",
+            "sent": "Envoyé",
+            "signed": "Signé",
+            "completed": "Complété"
+        },
+        "details": "Détails de la réservation",
+        "pricePerNight": "Prix par nuit",
+        "totalNights": "Nombre total de nuits",
+        "totalPrice": "Prix total",
+        "bookingSource": "Source de réservation",
+        "readyToGenerate": "La réservation est prête pour la génération de contrat",
+        "generateDescription": "Préparer un contrat pour cette réservation",
+        "noReservations": "Aucune réservation trouvée",
+        "status": "Statut",
+        "statuses": {
+            "draft": "Brouillon",
+            "sent": "Envoyé",
+            "confirmed": "Confirmé",
+            "cancelled": "Annulé"
+        },
+        "error": "Erreur",
+        "fetchError": "Impossible de récupérer la réservation",
+        "createSuccess": "Réservation créée avec succès",
+        "createError": "Échec de la création de la réservation",
+        "contractGeneration": "Génération du contrat",
+        "shareModalDescription": "Partagez ce lien de contrat avec le client",
+        "sendByEmail": "Envoyer par e-mail",
+        "contractSent": "Contrat envoyé",
+        "waitingForGuest": "En attente de la complétion du contrat par le client",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "contractReady": "Le contrat est prêt à être envoyé",
+        "sendDescription": "Envoyer le contrat au client pour complétion",
+        "contractGeneratedSuccess": "Contrat généré avec succès",
+        "contractGeneratedError": "Échec de la génération du contrat",
+        "sentToGuestConflict": "Impossible d'envoyer au client en raison d'un conflit de date avec les réservations existantes",
+        "sentToGuestError": "Échec de l'envoi du contrat",
+        "emailSubject": "Contrat pour votre réservation",
+        "emailBody": "Veuillez compléter votre contrat de réservation à l'adresse : ",
+        "list": {
+            "title": "Liste des réservations"
+        },
+        "dates": "Dates de réservation",
+        "nights": "Nombre de nuits",
+        "price": "Prix par nuit",
+        "createdAt": "Créé le",
+        "notFound": "Réservation non trouvée",
+        "tryAgain": "Veuillez vérifier le lien et réessayer",
+        "actionRequired": "Action requise",
+        "pleaseCompleteContract": "Veuillez compléter le contrat pour confirmer votre réservation",
+        "confirmed": "Réservation confirmée",
+        "confirmationSuccess": "Votre réservation a été confirmée avec succès",
+        "cancelled": "Réservation annulée",
+        "cancellationReason": "Cette réservation a été annulée",
+        "proceedToContract": "Terminer le contrat",
+        "printConfirmation": "Imprimer la confirmation",
+        "property": {
+            "details": "Détails de la propriété"
+        },
+        "lock": {
+            "title": "Serrure Électronique",
+            "enabled": "Serrure Électronique",
+            "disabled": "Serrure Électronique",
+            "active": "Active",
+            "inactive": "Inactive",
+            "codeInfo": "Code d'Accès",
+            "validityInfo": "Ce code sera valable pendant toute la durée du séjour de l'invité.",
+            "showCode": "Afficher le Code",
+            "hideCode": "Masquer le Code",
+            "noCodeInfo": "Aucun code de serrure électronique généré",
+            "enableLock": "Activer la serrure électronique pour cette réservation",
+            "code": "Code de Serrure Électronique (6 chiffres)"
         }
     }
 }

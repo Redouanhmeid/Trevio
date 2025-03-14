@@ -79,7 +79,7 @@ const Account = () => {
   isLoading,
   userData,
   getUserData,
-  updatePropertyManager,
+  updateUser,
   updateAvatar,
   success,
   error,
@@ -185,12 +185,7 @@ const Account = () => {
 
  const onFinish = (values) => {
   const fullPhoneNumber = `${countryCode}${values.phone}`;
-  updatePropertyManager(
-   userData.id,
-   values.firstname,
-   values.lastname,
-   fullPhoneNumber
-  );
+  updateUser(userData.id, values.firstname, values.lastname, fullPhoneNumber);
  };
 
  const handlePreview = async (file) => {

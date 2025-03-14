@@ -1,10 +1,6 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const {
- PropertyManager,
- PropertyManagerVerification,
- PasswordReset,
-} = require('../models');
+const { User, UserVerification, PasswordReset } = require('../models');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const sendMail = require('../helpers/sendMail');
@@ -42,36 +38,32 @@ transporter.verify((error, success) => {
 const createToken = (_id) => {
  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
 };
-// find one PropertyManager
-const getPropertyManager = async (req, res) => {
- PropertyManager.findOne({ where: { id: req.params.idpropertymanager } }).then(
-  (propertymanager) => {
-   res.json(propertymanager);
-  }
- );
+// Get single user
+const getUser = async (req, res) => {
+ User.findOne({ where: { id: req.params.iduser } }).then((user) => {
+  res.json(user);
+ });
 };
-const getPropertyManagerByEmail = async (req, res) => {
- PropertyManager.findOne({ where: { email: req.params.email } }).then(
-  (propertymanager) => {
-   res.json(propertymanager);
-  }
- );
+const getUserByEmail = async (req, res) => {
+ User.findOne({ where: { email: req.params.email } }).then((user) => {
+  res.json(user);
+ });
 };
-// find all PropertyManagers
-const getPropertyManagers = async (req, res) => {
- PropertyManager.findAll().then((propertymanagers) => {
-  res.json(propertymanagers);
+// Get all users
+const getUsers = async (req, res) => {
+ User.findAll().then((users) => {
+  res.json(users);
  });
 };
 
-// post a PropertyManager
-const postPropertyManager = async (req, res) => {
+// post a User
+const postUser = async (req, res) => {
  const { email, password, firstname, lastname, phone, avatar, isVerified } =
   req.body;
 
  try {
   // Check if the user already exists
-  let user = await PropertyManager.findOne({ where: { email } });
+  let user = await User.findOne({ where: { email } });
 
   if (user) {
    // If the user exists and isVerified is true, update user details
@@ -96,14 +88,14 @@ const postPropertyManager = async (req, res) => {
    const createdAt = Date.now();
    const expiresAt = Date.now() + 21600000;
 
-   user = await PropertyManager.ValidateCreate(
+   user = await User.ValidateCreate(
     email,
     password,
     firstname,
     lastname,
     phone || 'N/A', // Set default phone if empty
     avatar || '/avatars/default.png', // Set default avatar if not provided
-    'manager',
+    'client',
     isVerified || false // Set default isVerified to false if not provided
    );
 
@@ -119,7 +111,7 @@ const postPropertyManager = async (req, res) => {
 
     sendMail(email, uniqueString, res)
      .then(() => {
-      const newVerification = PropertyManagerVerification.Create(
+      const newVerification = UserVerification.Create(
        email,
        uniqueString,
        createdAt,
@@ -150,61 +142,76 @@ const postPropertyManager = async (req, res) => {
    }
   }
  } catch (error) {
-  console.error('Error in postPropertyManager:', error);
+  console.error('Error in postUser:', error);
   return res.status(400).json({ error: error.message });
  }
 };
 
-const verifyPropertyManager = async (req, res) => {
+const verifyUser = async (req, res) => {
  const { id } = req.params;
 
  try {
-  const propertyManager = await PropertyManager.findByPk(id);
+  const user = await User.findByPk(id);
 
-  if (!propertyManager) {
-   return res.status(404).json({ message: 'Manager non trouvé' });
+  if (!user) {
+   return res.status(404).json({ message: 'User non trouvé' });
   }
 
   // Update the isVerified status to true
-  await propertyManager.update({ isVerified: true });
+  await user.update({ isVerified: true });
 
-  return res.status(200).json({ message: 'Manager vérifié avec succès' });
+  return res.status(200).json({ message: 'User vérifié avec succès' });
  } catch (error) {
-  console.error('Erreur lors de la vérification du manager:', error);
+  console.error('Erreur lors de la vérification du user:', error);
   return res.status(500).json({ message: 'Erreur interne du serveur' });
  }
 };
 
-// Delete a property manager
-const deletePropertyManager = async (req, res) => {
+// Delete a user
+const deleteUser = async (req, res) => {
  const { id } = req.params;
 
  try {
-  const propertyManager = await PropertyManager.findByPk(id);
+  const user = await User.findByPk(id);
 
-  if (!propertyManager) {
-   return res.status(404).json({ message: 'Manager non trouvé' });
+  if (!user) {
+   return res.status(404).json({ message: 'User non trouvé' });
   }
 
-  await propertyManager.destroy();
-  return res.status(200).json({ message: 'Manager supprimé avec succès' });
+  await user.destroy();
+  return res.status(200).json({ message: 'User supprimé avec succès' });
  } catch (error) {
-  console.error('Erreur lors de la suppression du Manager:', error);
+  console.error('Erreur lors de la suppression du User:', error);
   return res.status(500).json({ message: 'Internal server error' });
  }
 };
 
-// PropertyManager Login
-const loginPropertyManager = async (req, res) => {
+// User Login
+const loginUser = async (req, res) => {
  let email = req.body.email;
  let password = req.body.password;
  try {
-  const user = await PropertyManager.Login(email, password);
+  const user = await User.Login(email, password);
+  console.log('Logged in user:', {
+   id: user.id,
+   email: user.email,
+   role: user.role,
+  });
 
   // create a token
-  const token = createToken(user._id);
+  const token = jwt.sign({ id: user.id }, process.env.SECRET, {
+   expiresIn: '3d',
+  });
+  console.log('Created token with secret:', process.env.SECRET); // Be careful with this in production!
 
-  res.status(200).json({ email, token });
+  res.status(200).json({
+   id: user.id,
+   email: user.email,
+   firstname: user.firstname,
+   lastname: user.lastname,
+   role: user.role,
+   token, // Include the token in response
+  });
  } catch (error) {
   res.status(400).json({ error: error.message });
  }
@@ -215,7 +222,7 @@ const verifyEmail = async (req, res) => {
  try {
   let uniqueString = req.params.uniqueString;
 
-  const PMV = await PropertyManagerVerification.findOne({
+  const PMV = await UserVerification.findOne({
    where: { uniqueString: uniqueString },
   });
 
@@ -227,7 +234,7 @@ const verifyEmail = async (req, res) => {
    //if token exist, find the user with that token
   } else {
    let email = PMV.email;
-   const PM = await PropertyManager.findOne({ where: { email: email } });
+   const PM = await User.findOne({ where: { email: email } });
    if (!PM) {
     return res.status(401).send({
      msg: "Nous n'avons pas pu trouver d'utilisateur pour cette vérification. Inscrivez vous s'il vous plait!",
@@ -241,7 +248,7 @@ const verifyEmail = async (req, res) => {
 
     //if user is not verified, change the verified to true by updating the field
    } else {
-    const updated = PropertyManager.update(
+    const updated = User.update(
      { isVerified: 1 },
      {
       where: { email: email },
@@ -252,7 +259,7 @@ const verifyEmail = async (req, res) => {
      return res.status(500).send({ msg: err.message });
      //else send status of 200
     } else {
-     const PMV = await PropertyManagerVerification.destroy({
+     const PMV = await UserVerification.destroy({
       where: { email: email },
      });
      return res
@@ -267,19 +274,19 @@ const verifyEmail = async (req, res) => {
  }
 };
 
-// Update property manager's firstname, lastname, and phone
-const updatePropertyManagerDetails = async (req, res) => {
- const { id } = req.params; // Assuming the id of the property manager is passed in the URL
+// Update user's firstname, lastname, and phone
+const updateUserDetails = async (req, res) => {
+ const { id } = req.params; // Assuming the id of the user is passed in the URL
  const { firstname, lastname, phone } = req.body;
 
  try {
-  const propertyManager = await PropertyManager.findByPk(id);
-  if (!propertyManager) {
-   return res.status(404).json({ message: 'Property manager not found' });
+  const user = await User.findByPk(id);
+  if (!user) {
+   return res.status(404).json({ message: 'User not found' });
   }
 
-  // Update the property manager's details
-  await propertyManager.update({
+  // Update the User's details
+  await user.update({
    firstname,
    lastname,
    phone,
@@ -292,27 +299,25 @@ const updatePropertyManagerDetails = async (req, res) => {
  }
 };
 
-// Update property manager's avatar
-const updatePropertyManagerAvatar = async (req, res) => {
+// Update User's avatar
+const updateUserAvatar = async (req, res) => {
  const { id } = req.params;
  const { avatar } = req.body;
 
  try {
-  const propertyManager = await PropertyManager.findByPk(id);
-  if (!propertyManager) {
-   return res.status(404).json({ message: 'Property manager not found' });
+  const user = await User.findByPk(id);
+  if (!user) {
+   return res.status(404).json({ message: 'User not found' });
   }
 
-  // Update the property manager's avatar
-  await propertyManager.update({
+  // Update the User's avatar
+  await user.update({
    avatar,
   });
 
-  return res
-   .status(200)
-   .json({ message: 'Property manager avatar updated successfully' });
+  return res.status(200).json({ message: 'User avatar updated successfully' });
  } catch (error) {
-  console.error('Error updating property manager avatar:', error);
+  console.error('Error updating User avatar:', error);
   return res.status(500).json({ message: 'Internal server error' });
  }
 };
@@ -323,14 +328,14 @@ const updatePassword = async (req, res) => {
  const { currentPassword, newPassword } = req.body;
 
  try {
-  // Check if the propertyManager exists
-  const propertyManager = await PropertyManager.findByPk(id);
-  if (!propertyManager) {
-   return res.status(404).json({ message: 'Manager introuvable' });
+  // Check if the user exists
+  const user = await User.findByPk(id);
+  if (!user) {
+   return res.status(404).json({ message: 'User introuvable' });
   }
 
-  // Check if the current password matches the propertyManager's password
-  const isMatch = await propertyManager.comparePassword(currentPassword);
+  // Check if the current password matches the user's password
+  const isMatch = await user.comparePassword(currentPassword);
   if (!isMatch) {
    return res.status(400).json({ message: 'Mot de passe actuel invalide' });
   }
@@ -339,8 +344,8 @@ const updatePassword = async (req, res) => {
   const hash = await bcrypt.hash(newPassword, salt);
 
   // Update the password
-  propertyManager.password = hash;
-  await propertyManager.save();
+  user.password = hash;
+  await user.save();
 
   res.status(200).json({ message: 'Mot de passe mis à jour avec succès' });
  } catch (error) {
@@ -359,7 +364,7 @@ const resetPasswordRequest = async (req, res) => {
  const { email } = req.body;
 
  try {
-  const user = await PropertyManager.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email } });
   if (!user) {
    return res.status(404).json({ message: 'Email not found' });
   }
@@ -430,7 +435,7 @@ const resetPassword = async (req, res) => {
    return res.status(400).json({ message: 'Code has expired' });
   }
 
-  const user = await PropertyManager.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email } });
   if (!user) {
    return res.status(404).json({ message: 'User not found' });
   }
@@ -451,17 +456,17 @@ const resetPassword = async (req, res) => {
 };
 
 module.exports = {
- getPropertyManager,
- getPropertyManagerByEmail,
- getPropertyManagers,
- postPropertyManager,
- verifyPropertyManager,
- loginPropertyManager,
+ getUser,
+ getUserByEmail,
+ getUsers,
+ postUser,
+ verifyUser,
+ loginUser,
  verifyEmail,
- updatePropertyManagerDetails,
- updatePropertyManagerAvatar,
+ updateUserDetails,
+ updateUserAvatar,
  updatePassword,
- deletePropertyManager,
+ deleteUser,
  resetPasswordRequest,
  verifyResetCode,
  resetPassword,

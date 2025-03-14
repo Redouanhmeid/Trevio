@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
-import useAmenity from '../../hooks/useAmenity';
+import useEquipement from '../../hooks/useEquipement';
 import MapMarker from './MapMarker';
 import ReactPlayer from 'react-player';
 import NearbyPlacesCarouselByType from './nearbyplacescarouselbytype';
@@ -43,7 +43,7 @@ import ShareModal from '../../components/common/ShareModal';
 import HouseManual from './HouseManual';
 
 const { Content } = Layout;
-const { Text, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
 const { Meta } = Card;
 
@@ -70,55 +70,57 @@ const isValidCoordinate = (coord) => typeof coord === 'number' && !isNaN(coord);
 const generateTabs = (
  isOwner,
  property,
- amenities,
- memoizedAmenities,
+ equipements,
+ memoizedEquipements,
  navigate,
  id,
  earlyCheckInParagraphs,
  accessToPropertyParagraphs,
  validLatitude,
  validLongitude,
- parkingAmenity,
- paidparkingAmenity,
+ parkingEquipement,
+ paidparkingEquipement,
  lateCheckOutPolicyParagraphs,
  beforeCheckOutParagraphs,
  t
 ) => [
  {
   key: '1',
-  icon: <i className="fa-light fa-key"></i>,
+  icon: <i className="fa-regular fa-arrow-left-to-arc"></i>,
   tab: t('guidebook.tabs.arrival.title'),
   content: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
-     <Divider>
-      <Text strong>
-       <i className="fa-light fa-key"></i> {t('guidebook.tabs.arrival.title')}
+     <Divider orientation="left">
+      <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
+       {t('guidebook.tabs.arrival.title')}
       </Text>
-      {isOwner && (
-       <Button
-        icon={<i className="fa-light fa-pen-to-square" />}
-        onClick={() => navigate(`/editcheckin?id=${id}`)}
-        type="link"
-        size="Large"
-        style={{ fontSize: 16 }}
-       />
-      )}
      </Divider>
+     {isOwner && (
+      <Button
+       icon={<i className="fa-regular fa-pen-to-square" />}
+       onClick={() => navigate(`/editcheckin?id=${id}`)}
+       type="link"
+       size="Large"
+       style={{ fontSize: 20, bottom: 6 }}
+      />
+     )}
     </Flex>
     {earlyCheckInParagraphs.length > 0 && (
      <div>
       <Row gutter={[16, 16]}>
-       <Col xs={24} md={16}>
-        <Paragraph>
+       <Col xs={24} md={12}>
+        <Paragraph strong>
          {t('guidebook.tabs.arrival.checkInTime')}
-         {formatTimeFromDatetime(property.checkInTime)}
+         <span className="PrimaryColor">
+          {formatTimeFromDatetime(property.checkInTime)}
+         </span>
         </Paragraph>
         {earlyCheckInParagraphs.map((paragraph, index) => (
          <Paragraph key={index}>{paragraph}</Paragraph>
         ))}
        </Col>
-       <Col xs={24} md={8}>
+       <Col xs={24} md={12}>
         {property.frontPhoto && <Image src={property.frontPhoto} />}
        </Col>
       </Row>
@@ -127,18 +129,20 @@ const generateTabs = (
     {/* Display video if videoCheckIn is not null or empty */}
     {property.videoCheckIn && (
      <div>
-      <Divider>
-       <i className="fa-light fa-video"></i>
-       <Text strong> {t('guidebook.tabs.arrival.video')}</Text>
+      <Divider orientation="left">
+       <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
+        {t('guidebook.tabs.arrival.video')}
+       </Text>
       </Divider>
       <ReactPlayer url={property.videoCheckIn} controls width="100%" />
      </div>
     )}
     {accessToPropertyParagraphs.length > 0 && (
      <div>
-      <Divider>
-       <i className="fa-light fa-lock-keyhole-open"></i>
-       <Text strong> {t('guidebook.tabs.arrival.access.title')}</Text>
+      <Divider orientation="left">
+       <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
+        {t('guidebook.tabs.arrival.access.title')}
+       </Text>
       </Divider>
       {accessToPropertyParagraphs.map((paragraph, index) => (
        <Paragraph key={index}>{paragraph}</Paragraph>
@@ -147,15 +151,18 @@ const generateTabs = (
     )}
     {property.guestAccessInfo && (
      <Paragraph>
-      <Text strong>{t('guidebook.note')} </Text>
+      <Text strong className="PrimaryColor">
+       {t('guidebook.note')}{' '}
+      </Text>
       {property.guestAccessInfo}
      </Paragraph>
     )}
 
     {validLatitude && validLongitude ? (
-     <Divider>
-      <i className="fa-light fa-map-location-dot"></i>
-      <Text strong> {t('guidebook.tabs.arrival.location')}</Text>
+     <Divider orientation="left">
+      <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
+       {t('guidebook.tabs.arrival.location')}
+      </Text>
      </Divider>
     ) : (
      <div>{t('guidebook.invalidCoordinates')}</div>
@@ -165,9 +172,9 @@ const generateTabs = (
       <Col
        xs={24}
        md={
-        parkingAmenity && paidparkingAmenity
+        parkingEquipement && paidparkingEquipement
          ? 12 // both exist
-         : parkingAmenity || paidparkingAmenity
+         : parkingEquipement || paidparkingEquipement
          ? 16 // one exists
          : 24 // none exist
        }
@@ -175,36 +182,34 @@ const generateTabs = (
        <MapMarker latitude={property.latitude} longitude={property.longitude} />
       </Col>
 
-      {parkingAmenity && (
-       <Col xs={24} md={paidparkingAmenity ? 6 : 8}>
-        <Text strong>
-         <i className="fa-light fa-circle-parking fa-lg" />{' '}
+      {parkingEquipement && (
+       <Col xs={24} md={paidparkingEquipement ? 6 : 8}>
+        <Text strong className="PrimaryColor" style={{ fontSize: 16 }}>
          {t('guidebook.tabs.arrival.parking.free')}
         </Text>
-        {ReactPlayer.canPlay(parkingAmenity.media) ? (
-         <ReactPlayer url={parkingAmenity.media} controls width="100%" />
+        {ReactPlayer.canPlay(parkingEquipement.media) ? (
+         <ReactPlayer url={parkingEquipement.media} controls width="100%" />
         ) : (
          <>
-          <Image width={'100%'} src={parkingAmenity.media} />
+          <Image width={'100%'} src={parkingEquipement.media} />
           <br />
-          <Paragraph>{parkingAmenity.description}</Paragraph>
+          <Paragraph>{parkingEquipement.description}</Paragraph>
          </>
         )}
        </Col>
       )}
-      {paidparkingAmenity && (
-       <Col xs={24} md={parkingAmenity ? 6 : 8}>
-        <Text strong>
-         <i className="fa-light fa-square-parking fa-lg" />{' '}
+      {paidparkingEquipement && (
+       <Col xs={24} md={parkingEquipement ? 6 : 8}>
+        <Text strong className="PrimaryColor" style={{ fontSize: 16 }}>
          {t('guidebook.tabs.arrival.parking.paid')}
         </Text>
-        {ReactPlayer.canPlay(parkingAmenity.media) ? (
-         <ReactPlayer url={paidparkingAmenity.media} controls width="100%" />
+        {ReactPlayer.canPlay(parkingEquipement.media) ? (
+         <ReactPlayer url={paidparkingEquipement.media} controls width="100%" />
         ) : (
          <>
-          <Image width={'100%'} src={paidparkingAmenity.media} />
+          <Image width={'100%'} src={paidparkingEquipement.media} />
           <br />
-          <Paragraph>{paidparkingAmenity.description}</Paragraph>
+          <Paragraph>{paidparkingEquipement.description}</Paragraph>
          </>
         )}
        </Col>
@@ -216,29 +221,23 @@ const generateTabs = (
  },
  {
   key: '2',
-  icon: <i className="fa-light fa-door-open"></i>,
+  icon: <i className="fa-regular fa-door-open"></i>,
   tab: t('guidebook.tabs.manual.title'),
   content: (
    <div>
-    <Flex gap="middle" align="center" justify="space-between">
-     <Divider>
-      <Text strong>
-       <i className="fa-light fa-door-open"></i>{' '}
-       {t('guidebook.tabs.manual.title')}
-      </Text>
-      {isOwner && (
-       <Button
-        icon={<i className="fa-light fa-pen-to-square" />}
-        onClick={() => navigate(`/editequipements?id=${id}`)}
-        type="link"
-        size="Large"
-        style={{ fontSize: 16 }}
-       />
-      )}
-     </Divider>
+    <Flex gap="middle" align="center" justify="flex-end">
+     {isOwner && (
+      <Button
+       icon={<i className="fa-regular fa-pen-to-square" />}
+       onClick={() => navigate(`/editequipements?id=${id}`)}
+       type="link"
+       size="Large"
+       style={{ fontSize: 20 }}
+      />
+     )}
     </Flex>
-    {amenities.length > 0 ? (
-     <HouseManual amenities={memoizedAmenities} />
+    {equipements.length > 0 ? (
+     <HouseManual equipements={memoizedEquipements} />
     ) : (
      <div
       style={{
@@ -247,7 +246,7 @@ const generateTabs = (
        justifyContent: 'center',
       }}
      >
-      {t('guidebook.noAmenities')}
+      {t('guidebook.noEquipements')}
      </div>
     )}
    </div>
@@ -255,32 +254,33 @@ const generateTabs = (
  },
  {
   key: '3',
-  icon: <i className="fa-light fa-lock-keyhole"></i>,
+  icon: <i className="fa-regular fa-arrow-right-to-arc"></i>,
   tab: t('guidebook.tabs.departure.title'),
   content: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
-     <Divider>
-      <Text strong>
-       <i className="fa-light fa-lock-keyhole"></i>{' '}
+     <Divider orientation="left">
+      <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
        {t('guidebook.tabs.departure.title')}
       </Text>
-      {isOwner && (
-       <Button
-        icon={<i className="fa-light fa-pen-to-square" />}
-        onClick={() => navigate(`/editcheckout?id=${id}`)}
-        type="link"
-        size="Large"
-        style={{ fontSize: 16 }}
-       />
-      )}
      </Divider>
+     {isOwner && (
+      <Button
+       icon={<i className="fa-regular fa-pen-to-square" />}
+       onClick={() => navigate(`/editcheckout?id=${id}`)}
+       type="link"
+       size="Large"
+       style={{ fontSize: 20, bottom: 6 }}
+      />
+     )}
     </Flex>
     {lateCheckOutPolicyParagraphs.length > 0 && (
      <div>
-      <Paragraph>
+      <Paragraph strong>
        {t('guidebook.tabs.departure.checkOutTime')}
-       {formatTimeFromDatetime(property.checkOutTime)}
+       <Text strong className="PrimaryColor">
+        {formatTimeFromDatetime(property.checkOutTime)}
+       </Text>
       </Paragraph>
       {lateCheckOutPolicyParagraphs.map((paragraph, index) => (
        <Paragraph key={index}>{paragraph}</Paragraph>
@@ -290,9 +290,10 @@ const generateTabs = (
 
     {beforeCheckOutParagraphs.length > 0 && (
      <div>
-      <Divider>
-       <i className="fa-light fa-house-person-leave"></i>
-       <Text strong> {t('guidebook.tabs.departure.beforeLeaving')}</Text>
+      <Divider orientation="left">
+       <Text strong className="PrimaryColor" style={{ fontSize: 20 }}>
+        {t('guidebook.tabs.departure.beforeLeaving')}
+       </Text>
       </Divider>
       {beforeCheckOutParagraphs.map((paragraph, index) => (
        <Paragraph key={index}>{paragraph}</Paragraph>
@@ -311,7 +312,7 @@ const generateTabs = (
  },
  {
   key: '4',
-  icon: <i className="fa-light fa-plate-utensils"></i>,
+  icon: <i className="fa-regular fa-plate-utensils"></i>,
   tab: t('guidebook.tabs.places.restaurants'),
   content: (
    <div>
@@ -331,7 +332,7 @@ const generateTabs = (
  },
  {
   key: '5',
-  icon: <i className="fa-light fa-sun-cloud"></i>,
+  icon: <i className="fa-regular fa-sun-cloud"></i>,
   tab: t('guidebook.tabs.places.activities'),
   content: (
    <div>
@@ -351,7 +352,7 @@ const generateTabs = (
  },
  {
   key: '6',
-  icon: <i className="fa-light fa-camera"></i>,
+  icon: <i className="fa-regular fa-camera"></i>,
   tab: t('guidebook.tabs.places.attractions'),
   content: (
    <div>
@@ -371,7 +372,7 @@ const generateTabs = (
  },
  {
   key: '7',
-  icon: <i className="fa-light fa-store"></i>,
+  icon: <i className="fa-regular fa-store"></i>,
   tab: t('guidebook.tabs.places.malls'),
   content: (
    <div>
@@ -395,45 +396,55 @@ const DigitalGuidebook = () => {
  const { t } = useTranslation();
  const screens = useBreakpoint();
  const location = useLocation();
- const { id } = queryString.parse(location.search);
+ const { hash } = queryString.parse(location.search);
  const navigate = useNavigate();
  const { user } = useAuthContext();
  const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserDataById, isLoading } = useUserData();
- const { property, loading, fetchProperty } = useProperty();
- const { getAllAmenities } = useAmenity();
- const [amenities, setAmenities] = useState([]);
+ const { property, loading, getIdFromHash, fetchProperty } = useProperty();
+ const { getAllEquipements } = useEquipement();
+ const [equipements, setEquipements] = useState([]);
  const [isOwner, setIsOwner] = useState(false);
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+ const [id, setId] = useState();
  const rows = 4;
 
  useEffect(() => {
-  fetchProperty(id);
- }, [loading, t]);
+  const fetchData = async () => {
+   if (hash) {
+    const numericId = await getIdFromHash(hash);
+    setId(numericId);
+    if (numericId) {
+     await fetchProperty(numericId);
+    }
+   }
+  };
+  fetchData();
+ }, [hash]);
 
  useEffect(() => {
-  if (property.propertyManagerId) {
-   getUserDataById(property.propertyManagerId);
+  if (property.userId) {
+   getUserDataById(property.userId);
   }
- }, [property.propertyManagerId]);
+ }, [property.userId]);
 
- const fetchAmenities = async () => {
+ const fetchEquipements = async () => {
   if (id) {
    try {
-    const response = await getAllAmenities(id);
+    const response = await getAllEquipements(id);
 
-    // Only update the amenities state if there are valid amenities to show
+    // Only update the equipements state if there are valid equipements to show
     if (response && Array.isArray(response) && response.length > 0) {
-     setAmenities(response);
+     setEquipements(response);
     }
    } catch (error) {
-    console.error(t('error.amenitiesFetch'), error);
+    console.error(t('error.equipementsFetch'), error);
    }
   }
  };
 
  useEffect(() => {
-  fetchAmenities();
+  fetchEquipements();
  }, [id]);
 
  useEffect(() => {
@@ -444,14 +455,19 @@ const DigitalGuidebook = () => {
   }
  }, [storedUser, userData]);
 
- const parsedAmenities = useMemo(() => ensureArray(amenities), [amenities]);
- const parkingAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'freeParking'),
-  [parsedAmenities]
+ const parsedEquipements = useMemo(
+  () => ensureArray(equipements),
+  [equipements]
  );
- const paidparkingAmenity = useMemo(
-  () => parsedAmenities.find((amenity) => amenity.name === 'paidParking'),
-  [parsedAmenities]
+ const parkingEquipement = useMemo(
+  () =>
+   parsedEquipements.find((equipement) => equipement.name === 'freeParking'),
+  [parsedEquipements]
+ );
+ const paidparkingEquipement = useMemo(
+  () =>
+   parsedEquipements.find((equipement) => equipement.name === 'paidParking'),
+  [parsedEquipements]
  );
  const earlyCheckInParagraphs = useMemo(
   () => ensureArray(property?.earlyCheckIn).map(getEarlyCheckInDetails),
@@ -484,34 +500,34 @@ const DigitalGuidebook = () => {
 
  const pageUrl = window.location.href;
 
- const memoizedAmenities = useMemo(() => {
-  // Transform amenities data into the required format
-  return amenities.reduce((acc, amenity) => {
-   acc[amenity.name] = {
-    description: amenity.description,
-    media: amenity.media,
-    wifiName: amenity.wifiName,
-    wifiPassword: amenity.wifiPassword,
+ const memoizedEquipements = useMemo(() => {
+  // Transform equipements data into the required format
+  return equipements.reduce((acc, equipement) => {
+   acc[equipement.name] = {
+    description: equipement.description,
+    media: equipement.media,
+    wifiName: equipement.wifiName,
+    wifiPassword: equipement.wifiPassword,
    };
    return acc;
   }, {});
- }, [amenities]);
+ }, [equipements]);
 
  const innerTabs = useMemo(
   () =>
    generateTabs(
     isOwner,
     property,
-    amenities,
-    memoizedAmenities,
+    equipements,
+    memoizedEquipements,
     navigate,
     id,
     earlyCheckInParagraphs,
     accessToPropertyParagraphs,
     validLatitude,
     validLongitude,
-    parkingAmenity,
-    paidparkingAmenity,
+    parkingEquipement,
+    paidparkingEquipement,
     lateCheckOutPolicyParagraphs,
     beforeCheckOutParagraphs,
     t
@@ -519,16 +535,16 @@ const DigitalGuidebook = () => {
   [
    isOwner,
    property,
-   amenities,
-   memoizedAmenities,
+   equipements,
+   memoizedEquipements,
    navigate,
    id,
    earlyCheckInParagraphs,
    accessToPropertyParagraphs,
    validLatitude,
    validLongitude,
-   parkingAmenity,
-   paidparkingAmenity,
+   parkingEquipement,
+   paidparkingEquipement,
    lateCheckOutPolicyParagraphs,
    beforeCheckOutParagraphs,
   ]
@@ -545,19 +561,18 @@ const DigitalGuidebook = () => {
  return (
   <Layout className="contentStyle">
    <Head />
-   <Layout className="container-fluid">
+   <Layout className="container">
     <Content>
      <Flex gap="middle" align="start" justify="space-between">
       <Button
-       type="default"
-       shape="round"
+       type="link"
        icon={<ArrowLeftOutlined />}
        onClick={() => navigate(-1)}
       >
        {t('button.back')}
       </Button>
       <Button
-       icon={<i className="fa-light fa-share-nodes" />}
+       icon={<i className="fa-regular fa-share-nodes" />}
        onClick={showShareModal}
       >
        {t('guidebook.share')}
@@ -570,6 +585,7 @@ const DigitalGuidebook = () => {
         defaultActiveKey="1"
         tabPosition={screens.md ? 'left' : 'top'}
         size="large"
+        className="digital-tabs"
         items={innerTabs.map((tab) => ({
          label: tab.tab,
          icon: tab.icon,

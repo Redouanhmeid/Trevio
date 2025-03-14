@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import {
  Layout,
+ Typography,
  Form,
- Divider,
  Row,
  Col,
  Checkbox,
@@ -16,11 +16,7 @@ import {
 } from 'antd';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
-import {
- ArrowLeftOutlined,
- ArrowRightOutlined,
- PlusOutlined,
-} from '@ant-design/icons';
+import { ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import ReactPlayer from 'react-player';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
@@ -29,10 +25,9 @@ import useUpdatePropertyCheckOut from '../../../hooks/useUpdateProperty';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import { useTranslation } from '../../../context/TranslationContext';
 
+const { Title } = Typography;
 const { Content } = Layout;
 const { TextArea } = Input;
-const format = 'HH:mm';
-
 // Default check-in/out times that make more business sense
 const DEFAULT_CHECK_IN_TIME = dayjs().hour(11).minute(0); // 11:00 AM
 const DEFAULT_CHECK_OUT_TIME = dayjs().hour(12).minute(0); // 12:00 AM
@@ -93,7 +88,7 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const Step2CheckInOut = ({ next, values }) => {
+const Step2CheckInOut = ({ next, values, ProgressSteps }) => {
  const { t } = useTranslation();
  const {
   updatePropertyCheckIn,
@@ -195,7 +190,8 @@ const Step2CheckInOut = ({ next, values }) => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-form">
+     <ProgressSteps />
      <Spin
       spinning={loading || checkInLoading || checkOutLoading}
       tip={t('loading.submission')}
@@ -240,8 +236,8 @@ const Step2CheckInOut = ({ next, values }) => {
         t={t}
        />
        <br />
-       <Row justify="end">
-        <Col xs={16} md={3}>
+       <Row justify="center">
+        <Col xs={12} md={12}>
          <Form.Item>
           <Button
            type="primary"
@@ -340,9 +336,11 @@ const CheckInForm = ({
  return (
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
-    <Divider orientation="left">
-     <h2 style={{ margin: 0 }}>{t('checkIn.title')}</h2>
-    </Divider>
+    <Title level={2}>
+     {t('checkIn.title')}
+     {'  '}
+     <i className="PrimaryColor fa-regular fa-arrow-left-to-arc" />
+    </Title>
     <TimePickerWithDefault
      value={CheckInTime}
      t={t}
@@ -499,9 +497,11 @@ const CheckOutForm = ({
  return (
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
-    <Divider orientation="left">
-     <h2 style={{ margin: 0 }}>{t('checkOut.title')}</h2>
-    </Divider>
+    <Title level={2}>
+     {t('checkOut.title')}
+     {'  '}
+     <i className="PrimaryColor fa-regular fa-arrow-right-to-arc" />
+    </Title>
     <TimePickerWithDefault
      value={CheckOutTime}
      t={t}

@@ -26,7 +26,7 @@ const useUploadPhotos = () => {
   formData.append('avatar', avatar[0].originFileObj);
   try {
    setUploading(true);
-   const response = await fetch('/upload/avatars', {
+   const response = await fetch('/avatars', {
     method: 'POST',
     body: formData,
    });
@@ -71,14 +71,14 @@ const useUploadPhotos = () => {
   }
  };
 
- const uploadAmenity = async (photo) => {
+ const uploadEquipement = async (photo) => {
   const formData = new FormData();
   formData.append('photo', photo[0].originFileObj); // Use the original file
 
   try {
    setUploading(true);
 
-   const response = await fetch('/amenities', {
+   const response = await fetch('/equipements', {
     method: 'POST',
     body: formData,
    });
@@ -224,54 +224,13 @@ const useUploadPhotos = () => {
   }
  };
 
- const uploadIdentity = async (identity, firstname, lastname) => {
-  try {
-   // Get the original file
-   const originalFile = identity[0].originFileObj;
-
-   // Get file extension from original file
-   const fileExt = originalFile.name.split('.').pop();
-
-   // Create custom filename with firstname and lastname
-   const Firstname = firstname?.toLowerCase() || '';
-   const Lastname = lastname?.toLowerCase() || '';
-   const timestamp = new Date().getTime();
-   const newFileName = `identity_${Firstname}_${Lastname}_${timestamp}.${fileExt}`;
-
-   // Create new File object with custom name
-   const customFile = new File([originalFile], newFileName, {
-    type: originalFile.type,
-   });
-   const formData = new FormData();
-   formData.append('identity', customFile);
-
-   setUploading(true);
-   const response = await fetch('/identities', {
-    method: 'POST',
-    body: formData,
-   });
-   if (!response.ok) {
-    throw new Error('Failed to upload Identity');
-   }
-   const data = await response.json();
-   setUploading(false);
-
-   return data.file.url;
-  } catch (error) {
-   console.error('Error uploading Identity:', error);
-   setUploading(false);
-   throw error;
-  }
- };
-
  return {
   uploadPhotos,
   uploadPlace,
-  uploadAmenity,
+  uploadEquipement,
   uploadFrontPhoto,
   uploadSignature,
   uploadAvatar,
-  uploadIdentity,
   uploading,
   uploadProgress,
  };

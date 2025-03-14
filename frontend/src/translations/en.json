@@ -2,6 +2,7 @@
     "header": {
         "adminPanel": "Administrator Panel",
         "dashboard": "Dashboard",
+        "mydashbord": "My Dashboard",
         "Revandtasks": "Revenues and Tasks",
         "account": "My Account",
         "referral": "Refer a Friend",
@@ -12,12 +13,17 @@
     },
     "property": {
         "title": "Properties",
+        "address": "Address",
+        "status": "Status",
         "pending": "Pending Properties",
+        "noProperties": "no properties exist",
+        "managed": "Managed properties",
+        "owned": "Your properties",
         "basic": {
             "title": "Register your property information",
-            "name": "Name",
+            "name": "Full name",
             "description": "Description",
-            "type": "Property Type",
+            "type": "Type",
             "location": "Location",
             "capacity": "Max People",
             "rooms": "Rooms",
@@ -29,15 +35,15 @@
             "bookingUrl": "Booking URL",
             "selectLocation": "Select a location on the map",
             "Capacity": "Capacity Person",
-            "priceNight": "Dh / Night"
+            "priceNight": "Per Night"
         },
         "checkOutTitle": "Check-out",
         "checkOutDepartureTime": "What time would you like guests to leave?",
         "checkOut": {
             "policyTitle": "Select the statements that best describe your late check-out policy:"
         },
-        "amenities": {
-            "title": "Tell guests what amenities your property has:"
+        "equipements": {
+            "title": "Tell guests what equipements your property has:"
         },
         "edit": {
             "title": "Edit your property's basic information"
@@ -62,11 +68,12 @@
         "actions": {
             "actions": "Actions",
             "guidebook": "Access Digital Guidebook",
-            "guestForm": "Guest Reservation Form",
+            "guestForm": "Reservation Form",
             "contracts": "Manage Reservation Contracts",
             "enable": "Enable Property",
             "disable": "Disable Property",
             "delete": "Delete Property",
+            "remove": "Remove",
             "viewCard": "View the card",
             "addCard": "Add a card",
             "editCard": "Edit the card",
@@ -81,7 +88,19 @@
         "noPropertiesSelected": "No properties selected for verification.",
         "bulkVerifySuccess": " properties verified!",
         "verifySelected": "Verify selected properties",
-        "view": "View"
+        "view": "View",
+        "tag": {
+            "airconditioned": "Air-conditioned",
+            "smartlock": "Smartlock"
+        },
+        "showAllPhotos": "Show all photos",
+        "book": "Book",
+        "learnMore": "Learn more",
+        "propertyStatus": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "pending": "Pending"
+        }
     },
     "type": {
         "house": "House",
@@ -104,6 +123,7 @@
         "addPhotos": "Add Photos",
         "lastName": "Please provide your Last Name.",
         "firstName": "Please provide your First Name.",
+        "phone": "Please provide your phone number.",
         "email": "Please provide a valid email address.",
         "createPassword": "Please create a password.",
         "passwordLength": "Password must be at least 8 characters long.",
@@ -182,7 +202,7 @@
     "rules": {
         "title": "House Rules",
         "noNoise": "No noise after 11pm",
-        "noFood": "No food or drinks in bedrooms",
+        "noFoodDrinks": "No food or drinks in bedrooms",
         "noParties": "No parties or events",
         "noSmoking": "No smoking",
         "noPets": "No pets",
@@ -202,7 +222,7 @@
         "deleteError": "Error deleting: ",
         "reviewAndApprove": "Review and Approve"
     },
-    "amenity": {
+    "equipement": {
         "editTitle": "Edit House Manual",
         "addCard": "Add a card for",
         "mediaUrl": "Media URL",
@@ -214,10 +234,10 @@
         "confirmDelete": "Are you sure you want to delete?",
         "confirmYes": "Yes",
         "confirmNo": "No",
-        "deleteSuccess": "Amenity deleted successfully.",
-        "deleteError": "Error deleting amenity:",
-        "createSuccess": "Amenity created successfully",
-        "createError": "Failed to create amenity",
+        "deleteSuccess": "Equipement deleted successfully.",
+        "deleteError": "Error deleting equipement:",
+        "createSuccess": "Equipement created successfully",
+        "createError": "Failed to create equipement",
         "categories": {
             "bathroom": "Bathroom",
             "bedroomLinen": "Bedroom & Linen",
@@ -258,7 +278,24 @@
         "freeParking": "Free Parking",
         "paidParking": "Paid Parking",
         "pool": "Swimming Pool",
-        "garbageCan": "Garbage Container"
+        "garbageCan": "Garbage Container",
+        "soap": "Soap",
+        "hot water": "Hot water",
+        "basic equipement": "Basic equipment",
+        "blankets": "Blankets",
+        "bathroom": "Bathroom",
+        "bedroomLinen": "Bedroom & Linen",
+        "entertainment": "Entertainment",
+        "kitchen": "Kitchen",
+        "kitchenDiningRoom": "Kitchen and dining room",
+        "heatingCooling": "Heating & Cooling",
+        "homeSecurity": "Home Security",
+        "internetOffice": "Internet & Office",
+        "parkingFacilities": "Parking & Facilities",
+        "mattresspillow": "Mattress pillow",
+        "cameras": "Cameras",
+        "kitchenset": "Kitchen set",
+        "coffeepot": "Coffee pot"
     },
     "account": {
         "manage": "Manage my account",
@@ -290,7 +327,14 @@
         "search": "Search",
         "reset": "Reset",
         "avatar": "Avatar",
-        "share": "Share"
+        "share": "Share",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "view": "View",
+        "viewAll": "View all",
+        "language": "Language",
+        "FAQs": "FAQs"
     },
     "timePicker": {
         "defaultCheckIn": "Default time: 11:00",
@@ -314,10 +358,14 @@
         "totalTasks": "Total Tasks",
         "totalProperties": "Total Properties",
         "totalRevenue": "Total Revenue",
+        "totalManagers": "Total Concierges",
         "statistics": "Statistics",
-        "totalManagers": "Total Managers",
+        "totalUsers": "Total Users",
         "averagePrice": "Average Price",
-        "managers": "Managers"
+        "users": "Users",
+        "activeProperties": "Active properties",
+        "lastUpdate": "Last Update",
+        "assignedToMe": "Assigned To Me"
     },
     "tasks": {
         "title": "To Do",
@@ -329,6 +377,7 @@
         "actions": "Actions",
         "edit": "Edit",
         "delete": "Delete",
+        "pending": "Pending tasks",
         "confirmDelete": {
             "title": "Confirm Delete",
             "content": "Are you sure you want to delete this task?",
@@ -343,9 +392,9 @@
         },
         "priority": {
             "title": "Priority",
-            "high": "URGENT",
-            "medium": "MEDIUM",
-            "low": "LOW"
+            "high": "Urgent",
+            "medium": "Medium",
+            "low": "Low"
         },
         "statistics": {
             "totalTasks": "Total Tasks",
@@ -357,6 +406,10 @@
             "titleRequired": "Please enter the task title",
             "priorityRequired": "Please select a priority",
             "dueDateRequired": "Please select a due date"
+        },
+        "message": {
+            "statusUpdateSuccess": "Task status has been updated successfully",
+            "statusUpdateError": "Failed to update task status"
         }
     },
     "revenue": {
@@ -378,9 +431,23 @@
         "editRevenue": "Edit Revenue",
         "currency": "DHs",
         "deleteSuccess": "Revenue entry deleted successfully",
+        "createSuccess": "Revenue recorded successfully",
+        "createError": "Failed to record revenue",
+        "error": "Error",
+        "generate": "Generate Revenue",
+        "createWithReservation": "Create Revenue",
+        "createNow": "Create revenue entry now",
+        "createWarning": "Reservation created but there was an issue creating the revenue entry",
+        "notesPlaceholder": "Add any additional notes about this revenue",
         "validation": {
             "selectMonth": "Please select a month",
-            "enterAmount": "Please enter the amount"
+            "enterAmount": "Please enter the amount",
+            "selectYear": "Please select a year"
+        },
+        "create": {
+            "title": "Record Revenue",
+            "button": "Record Revenue",
+            "submit": "Save Revenue"
         }
     },
     "manual": {
@@ -475,7 +542,10 @@
             "residenceCountry": "Country of residence",
             "residenceCity": "City of residence",
             "residenceAddress": "Address of residence",
-            "postalCode": "Postal code"
+            "postalCode": "Postal code",
+            "checkIn": "Check-in Date",
+            "checkOut": "Check-out Date",
+            "stayDates": "Stay Dates"
         },
         "identity": {
             "title": "Identity document information",
@@ -544,7 +614,15 @@
             "identity": "Please upload your ID",
             "email": "Please provide an email address.",
             "phone": "Please enter your phone number",
-            "signature": "Please sign the form"
+            "signature": "Please sign the form",
+            "checkIn": "Please select check-in date",
+            "checkOut": "Please select check-out date",
+            "checkInPast": "Check-in date cannot be in the past",
+            "checkOutBeforeCheckIn": "Check-out date must be after check-in date",
+            "datesNotAvailable": "Selected dates are not available",
+            "stayDates": "Please select your stay dates",
+            "datesNoLongerAvailable": "These dates are no longer available. Please select different dates.",
+            "conflictingBookings": "Property is already booked during these dates"
         },
         "privacyPolicy": {
             "title": "Privacy Policy",
@@ -606,22 +684,29 @@
             }
         },
         "error": {
-            "pdfGeneration": "Error generating PDF. Please try again."
+            "pdfGeneration": "Error generating PDF. Please try again.",
+            "checkAvailability": "Error checking date availability"
         }
     },
     "auth": {
-        "login": "Login",
-        "needAccount": "Need an account?",
+        "login": "Log in to your account",
+        "welcome": "Welcome back! Please enter your details.",
+        "needAccount": "Don't have an account?",
         "signupHere": "Sign up here",
+        "signupButton": "Sign up",
+        "loginButton": "Login",
         "loginWithGoogle": "Login with Google",
         "orUseEmail": "Or use Email",
-        "emailPlaceholder": "Email",
+        "emailPlaceholder": "Enter your email",
         "emailRequired": "Please input your email!",
-        "passwordPlaceholder": "Password",
+        "passwordPlaceholder": "Enter your Password",
         "passwordRequired": "Please input your password!",
         "rememberMe": "Remember me",
         "forgotPassword": "Forgot password?",
-        "loginButton": "Login"
+        "loginAsManager": "Login as Manager",
+        "validation": {
+            "required": "Please input your password!"
+        }
     },
     "signup": {
         "startFree": "Start with a free account",
@@ -656,7 +741,7 @@
             "rooms": "Rooms",
             "all": "All",
             "maxPeople": "Max People",
-            "basicAmenities": "Basic Amenities",
+            "basicEquipements": "Basic Equipements",
             "showLess": "Show Less",
             "showMore": "Show More"
         }
@@ -665,10 +750,11 @@
         "headerContent": "InfoWindow Header Content",
         "markerLocation": "This is the location of the marker.",
         "SeeOnMaps": "See on Google Maps",
-        "messageError": "Failed to load location details."
+        "messageError": "Failed to load location details.",
+        "messageError2": "Échec du chargement des détails des lieux à proximité."
     },
     "contracts": {
-        "title": "Contract Reservations",
+        "title": "Reservation contracts",
         "guest": "Guest",
         "identity": "Identity",
         "signature": "Signature",
@@ -681,6 +767,7 @@
             "completed": "COMPLETED"
         },
         "actions": {
+            "actions": "Actions",
             "send": "Send",
             "markSigned": "Mark as signed",
             "reject": "Reject",
@@ -691,7 +778,17 @@
             "address": "Address",
             "postalCode": "Postal Code",
             "country": "Country",
-            "birthDate": "Birth Date"
+            "birthDate": "Birth Date",
+            "personalInfo": "Personal Information",
+            "stayDetails": "Stay Details",
+            "documentInfo": "Document Information",
+            "documentType": "Document Type",
+            "documentNumber": "Document Number",
+            "documentIssueDate": "Issue Date",
+            "contractCreated": "Contract Created",
+            "contractUpdated": "Last Updated",
+            "residenceAddress": "Residence Address",
+            "viewReservation": "View Reservation"
         },
         "error": {
             "fetch": "Unable to fetch contracts",
@@ -705,7 +802,7 @@
         "share": "Share",
         "loading": "Loading...",
         "invalidCoordinates": "Invalid coordinates provided.",
-        "noAmenities": "No amenities available",
+        "noEquipements": "No equipements available",
         "note": "Note:",
         "tabs": {
             "arrival": {
@@ -737,19 +834,19 @@
             }
         }
     },
-    "manager": {
-        "manager": "Manager",
-        "verifySuccess": "Manager has been verified",
-        "verifyError": "Failed to verify manager",
+    "user": {
+        "user": "User",
+        "verifySuccess": "User has been verified",
+        "verifyError": "Failed to verify user",
         "role": "Role",
         "verified": "Verified",
-        "verifyButton": "Verify Manager",
+        "verifyButton": "Verify User",
         "createdAt": "Created on",
         "managedProperties": "Managed Properties",
-        "deleteSuccess": "Manager deleted successfully",
-        "deleteError": "Error deleting manager: ",
-        "unknown": "Unknown Manager",
-        "loadError": "Error loading manager",
+        "deleteSuccess": "User deleted successfully",
+        "deleteError": "Error deleting user: ",
+        "unknown": "Unknown User",
+        "loadError": "Error loading user",
         "verifiedStatus": {
             "verified": "Verified",
             "unverified": "Unverified"
@@ -783,6 +880,263 @@
             "taskMessage1": "A new task \"",
             "taskMessage2": "\" (Priority: ",
             "taskMessage3": ") has been created."
+        }
+    },
+    "footer": {
+        "created": "Created and developed by Astral Digital agency"
+    },
+    "managers": {
+        "title": "Concierges",
+        "propertiesTitle": "Managed properties",
+        "addTitle": "Invite New Concierge",
+        "editTitle": "Edit Concierge",
+        "addButton": "Invite Concierge",
+        "addSuccess": "Invitation sent successfully",
+        "addError": "Failed to invite concierge",
+        "assignButton": "Assign",
+        "firstname": "First Name",
+        "firstnamePlaceholder": "Enter first name",
+        "lastname": "Last Name",
+        "lastnamePlaceholder": "Enter last name",
+        "email": "Email",
+        "emailPlaceholder": "Enter email address",
+        "password": "Password",
+        "passwordPlaceholder": "Enter password",
+        "phone": "Phone Number",
+        "phonePlaceholder": "Enter phone number",
+        "active": "active",
+        "pending": "pending",
+        "noUserId": "No user selected for concierge creation",
+        "manageProperties": "Managed properties",
+        "validation": {
+            "required": "This field is required",
+            "email": "Please enter a valid email",
+            "passwordLength": "Password must be at least 6 characters",
+            "phoneNumber": "Please enter a valid phone number"
+        },
+        "assignmentStatus": "Assignment status",
+        "assignProperties": "Assign Properties to concierge",
+        "selectManager": "Select concierge",
+        "selectManagerFirst": "Please select a concierge first",
+        "selectPropertiesFirst": "Please select at least one property",
+        "selectManagerPlaceholder": "Choose a concierge",
+        "selectProperties": "Select Properties to Assign",
+        "assignSuccess": "Properties assigned successfully",
+        "assignError": "Failed to assign properties",
+        "propertyAlreadyAssigned": "Already assigned to another concierge",
+        "properties": {
+            "available": "Available properties",
+            "assigned": "Properties assigned",
+            "assignedTo": "Property assigned to"
+        },
+        "messages": {
+            "statusUpdateSuccess": "Assignment status has been updated successfully",
+            "statusUpdateError": "Failed to update Assignment status",
+            "propertyRemoved": "Property assignment removed successfully",
+            "removeError": "Failed to remove property assignment",
+            "signinSuccess": "Your registration has been completed successfully, you can sign in as a Concierge",
+            "signinError": "Failed to complete your registration",
+            "invalidToken": "Invalid token",
+            "verificationFailed": "Verification failed",
+            "failedInvitation": "Failed to send invitation",
+            "failedAcceptInvitation": "Failed to accept invitation",
+            "failedLogin": "Login failed",
+            "pleaseLogin": "Please login",
+            "pleaseSignup": "Sign up please",
+            "assignSuccess": "Concierge role assigned successfully",
+            "invalidInvitation": "Invalid Invitation",
+            "signupSuccess": "Your registration has been successfully completed",
+            "alreadyAccepted": "Invitation was already accepted",
+            "deleteSuccess": "Concierge deleted successfully",
+            "deleteError": "Failed to delete concierge",
+            "updateSuccess": "Manager updated successfully",
+            "updateError": "Failed to update concierge",
+            "fetchError": "Failed to fetch concierges",
+            "fetchPropertiesError": "Failed to fetch assigned properties for this concierge"
+        },
+        "completeProfile": "Complete your profile",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Please confirm password",
+        "completeSetup": "Finish",
+        "invitation": {
+            "title": "Concierge Invitation",
+            "from": "Invitation from",
+            "generic": "Property Concierge Invitation",
+            "existingUserMessage": "You already have an account. Click the button below to accept the concierge role.",
+            "newUserMessage": "You need to create an account to accept this invitation. Fill out this form to register.",
+            "acceptButton": "Accept Invitation",
+            "proceedToSignupButton": "Create Account",
+            "expired": "This invitation has expired",
+            "invalid": "Invalid invitation",
+            "signupSuccess": "Account created successfully. Please log in to continue."
+        }
+    },
+    "contract": {
+        "bookingDates": "Booking dates",
+        "checkIn": "Check-In",
+        "checkOut": "Check-Out",
+        "checkInComplete": "Check-in Complete",
+        "checkInInComplete": "Check-in Incomplete",
+        "filfill": "Fulfill the pending tasks to complete your check-in before your arrival.",
+        "enjoyStay": "Congratulations! Your check-in is completed, enjoy your stay!",
+        "guestRegistration": "Guest Registration",
+        "completed": "Completed",
+        "guest": "Guest",
+        "email": "Email",
+        "phone": "Phone",
+        "dates": "Dates",
+        "underVerification": "Under verification",
+        "verificationInProgress": "Verification in progress",
+        "waitingForApproval": "Waiting for approval",
+        "status": {
+            "title": "Contract Status",
+            "draft": "Draft",
+            "sent": "Sent",
+            "signed": "Signed",
+            "completed": "Completed"
+        },
+        "error": {
+            "notFound": "Contract Not Found",
+            "tryAgain": "Please check the link and try again"
+        },
+        "electronicLock": {
+            "title": "Your Access Code",
+            "instructions": "Use this code to access the electronic locks during your stay. The code will be active for the duration of your reservation."
+        }
+    },
+    "verification": {
+        "checkEmail": "Check your email",
+        "emailSentTo": "We've sent a verification link to",
+        "followInstructions": "Please check your inbox and follow the instructions to verify your account. If you don't see the email, check your spam folder."
+    },
+    "reservation": {
+        "title": "Reservations",
+        "sendToGuest": "Send to Guest",
+        "generateContract": "Generate Contract",
+        "createWithRevenueSuccess": "Reservation and revenue created successfully",
+        "sentToGuestSuccess": "Reservation sent to guest successfully",
+        "create": {
+            "title": "Create New Reservation",
+            "property": "Property",
+            "propertyRequired": "Please select a property",
+            "selectProperty": "Select a property",
+            "dates": "Reservation Dates",
+            "datesRequired": "Please select reservation dates",
+            "pricePerNight": "Price per Night",
+            "priceRequired": "Please enter the price per night",
+            "bookingSource": "Booking Source",
+            "selectSource": "Select booking source",
+            "submit": "Create Reservation",
+            "error": "Failed to create reservation",
+            "button": "New Reservation"
+        },
+        "sources": {
+            "direct": "Direct Booking",
+            "other": "Other"
+        },
+        "contract": {
+            "generation": "Contract Generation",
+            "generateDescription": "Prepare a contract for this reservation",
+            "readyToGenerate": "Your reservation is ready for contract generation",
+            "contractReady": "Contract shell has been created",
+            "sendDescription": "Send the contract to the guest",
+            "sendToGuest": "Send Contract to Guest",
+            "contractSent": "Contract has been sent to the guest",
+            "waitingForGuest": "Waiting for guest to complete the contract",
+            "signedDescription": "The guest has signed the contract",
+            "completedDescription": "The contract has been fully completed",
+            "viewAllContracts": "View All Contracts",
+            "generateSuccess": "Contract generated successfully",
+            "generationError": "Failed to generate contract",
+            "sentSuccess": "Contract sent to guest successfully",
+            "sentError": "Failed to send contract to guest",
+            "contractCompleted": "Contract completed",
+            "contractSigned": "Contract signed",
+            "markComplete": "Mark as Complete",
+            "completeSuccess": "Contract marked as completed successfully",
+            "completeError": "Failed to mark contract as completed",
+            "completionDescription": "The guest has signed the contract. You can now mark it as complete."
+        },
+        "revenue": {
+            "create": {
+                "title": "Create Revenue Entry",
+                "submit": "Create Revenue",
+                "error": "Failed to create revenue entry"
+            }
+        },
+        "steps": {
+            "created": "Created",
+            "sent": "Sent",
+            "signed": "Signed",
+            "completed": "Completed"
+        },
+        "details": "Reservation Details",
+        "pricePerNight": "Price per Night",
+        "totalNights": "Total Nights",
+        "totalPrice": "Total Price",
+        "bookingSource": "Booking Source",
+        "readyToGenerate": "Reservation is ready for contract generation",
+        "generateDescription": "Prepare a contract for this reservation",
+        "noReservations": "No reservations found",
+        "status": "Status",
+        "statuses": {
+            "draft": "Draft",
+            "sent": "Sent",
+            "confirmed": "Confirmed",
+            "cancelled": "Cancelled"
+        },
+        "error": "Error",
+        "fetchError": "Failed to fetch reservation",
+        "createSuccess": "Reservation created successfully",
+        "createError": "Failed to create reservation",
+        "contractGeneration": "Contract Generation",
+        "shareModalDescription": "Share this contract link with the guest",
+        "sendByEmail": "Send by Email",
+        "contractSent": "Contract Sent",
+        "waitingForGuest": "Waiting for guest to complete the contract",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "contractReady": "Contract is ready to be sent",
+        "sendDescription": "Send the contract to the guest for completion",
+        "contractGeneratedSuccess": "Contract generated successfully",
+        "contractGeneratedError": "Failed to generate contract",
+        "sentToGuestConflict": "Cannot send to guest due to date conflict with existing reservations",
+        "sentToGuestError": "Failed to send contract",
+        "emailSubject": "Contract for Your Reservation",
+        "emailBody": "Please complete your reservation contract at: ",
+        "list": {
+            "title": "Reservations List"
+        },
+        "dates": "Reservation Dates",
+        "nights": "Number of Nights",
+        "price": "Price per Night",
+        "createdAt": "Created On",
+        "notFound": "Reservation Not Found",
+        "tryAgain": "Please check the link and try again",
+        "actionRequired": "Action Required",
+        "pleaseCompleteContract": "Please complete the contract to confirm your reservation",
+        "confirmed": "Reservation Confirmed",
+        "confirmationSuccess": "Your reservation has been confirmed successfully",
+        "cancelled": "Reservation Cancelled",
+        "cancellationReason": "This reservation has been cancelled",
+        "proceedToContract": "Complete Contract",
+        "printConfirmation": "Print Confirmation",
+        "property": {
+            "details": "Property Details"
+        },
+        "lock": {
+            "title": "Electronic Lock",
+            "enabled": "Electronic Lock",
+            "disabled": "Electronic Lock",
+            "active": "Active",
+            "inactive": "Inactive",
+            "codeInfo": "Access Code",
+            "validityInfo": "This code will be valid for the duration of the guest's stay.",
+            "showCode": "Show Code",
+            "hideCode": "Hide Code",
+            "noCodeInfo": "No electronic lock code generated",
+            "enableLock": "Enable electronic lock for this reservation",
+            "code": "Electronic Lock Code (6 digits)"
         }
     }
 }

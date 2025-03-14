@@ -52,16 +52,16 @@ const utils = {
  },
 };
 
-const deleteAmenityFiles = async (amenity) => {
+const deleteEquipementFiles = async (equipement) => {
  const deletionErrors = [];
- if (amenity.media) {
+ if (equipement.media) {
   await utils.deleteFileFromDirectory(
-   amenity.media,
-   'AMENITIES',
+   equipement.media,
+   'EQUIPEMENTS',
    deletionErrors
   );
   if (!fileDeleted) {
-   console.warn(`Failed to delete file for amenity: ${amenity.id}`);
+   console.warn(`Failed to delete file for equipement: ${equipement.id}`);
   }
  }
  utils.handleDeletionErrors(deletionErrors);
@@ -92,14 +92,14 @@ const deletePropertyFiles = async (property) => {
   await utils.deleteFileFromDirectory(property.photo, 'PLACES', deletionErrors);
  }
 
- // Delete associated amenity files if amenities exist
- if (property.Amenities && Array.isArray(property.Amenities)) {
-  for (const amenity of property.Amenities) {
+ // Delete associated equipement files if equipements exist
+ if (property.Equipements && Array.isArray(property.Equipements)) {
+  for (const equipement of property.Equipements) {
    try {
-    await deleteAmenityFiles(amenity);
+    await deleteEquipementFiles(equipement);
    } catch (error) {
-    console.error('Error deleting amenity files:', error);
-    deletionErrors.push(`Failed to delete amenity files: ${error.message}`);
+    console.error('Error deleting equipement files:', error);
+    deletionErrors.push(`Failed to delete equipement files: ${error.message}`);
    }
   }
  }
@@ -109,6 +109,6 @@ const deletePropertyFiles = async (property) => {
 
 module.exports = {
  deletePropertyFiles,
- deleteAmenityFiles,
+ deleteEquipementFiles,
  ...utils, // Export utilities in case they're needed elsewhere
 };

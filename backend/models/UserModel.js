@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 module.exports = (db, type) => {
- let propertymanager = db.define('propertymanager', {
+ let user = db.define('user', {
   id: {
    type: type.INTEGER,
    autoIncrement: true,
@@ -33,8 +33,8 @@ module.exports = (db, type) => {
    allowNull: true,
   },
   role: {
-   type: type.STRING(50),
-   defaultValue: 'manager',
+   type: type.ENUM('admin', 'client'),
+   defaultValue: 'client',
    allowNull: false,
   },
   //isVerified is set to default false once a user signs up
@@ -46,7 +46,7 @@ module.exports = (db, type) => {
   },
  });
 
- propertymanager.ValidateCreate = async function (
+ user.ValidateCreate = async function (
   email,
   password,
   firstname,
@@ -73,7 +73,7 @@ module.exports = (db, type) => {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const propertyManager = await propertymanager.create({
+  const newUser = await user.create({
    email,
    password: hash,
    firstname,
@@ -84,10 +84,10 @@ module.exports = (db, type) => {
    isVerified,
   });
 
-  return propertyManager;
+  return newUser;
  };
 
- propertymanager.Login = async function (email, password) {
+ user.Login = async function (email, password) {
   const user = await this.findOne({ where: { email } });
   if (!user) {
    throw Error('Adresse Email incorrecte!');
@@ -99,11 +99,9 @@ module.exports = (db, type) => {
   return user;
  };
 
- propertymanager.prototype.comparePassword = async function (
-  candidatePassword
- ) {
+ user.prototype.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
  };
 
- return propertymanager;
+ return user;
 };

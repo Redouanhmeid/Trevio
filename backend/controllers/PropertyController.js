@@ -1,5 +1,10 @@
 const haversine = require('haversine-distance');
-const { Property, Amenity, PropertyTask } = require('../models');
+const {
+ Property,
+ Equipement,
+ PropertyTask,
+ UserProperty,
+} = require('../models');
 const { deletePropertyFiles } = require('../helpers/utils');
 const { Sequelize, Op } = require('sequelize');
 
@@ -9,10 +14,56 @@ const getProperty = async (req, res) => {
   res.json(property);
  });
 };
-// find Property by propertyManagerId
-const getPropertiesByManagerId = async (req, res) => {
- const propertyManagerId = req.params.id; // Assuming id is passed in the URL params
- Property.findAll({ where: { propertyManagerId } }).then((properties) => {
+// Add this function to PropertyController.js
+
+const getAvailablePropertiesForAssignment = async (req, res) => {
+ const { clientId } = req.params;
+
+ try {
+  // First, get all properties for this client
+  const clientProperties = await Property.findAll({
+   where: {
+    clientId: clientId,
+    status: 'enable', // Only get enabled properties
+   },
+  });
+
+  if (!clientProperties || clientProperties.length === 0) {
+   return res.status(200).json([]);
+  }
+
+  // Find all properties that are already assigned to concierges with active status
+  const assignedProperties = await UserProperty.findAll({
+   where: {
+    clientId: clientId,
+    status: 'active',
+   },
+   attributes: ['propertyId'],
+  });
+
+  // Extract just the property IDs
+  const assignedPropertyIds = assignedProperties.map(
+   (assignment) => assignment.propertyId
+  );
+
+  // Filter out properties that are already assigned
+  const availableProperties = clientProperties.filter(
+   (property) => !assignedPropertyIds.includes(property.id)
+  );
+
+  return res.status(200).json(availableProperties);
+ } catch (error) {
+  console.error('Error fetching available properties:', error);
+  return res.status(500).json({
+   error: 'Failed to fetch available properties',
+   details: error.message,
+  });
+ }
+};
+// find Property by userId
+const getPropertiesByClientId = async (req, res) => {
+ const clientId = req.params.clientId; // Assuming id is passed in the URL params
+ Property.findAll({ where: { clientId } }).then((properties) => {
   res.json(properties);
  });
 };
@@ -76,7 +127,7 @@ const deleteProperty = async (req, res) => {
  try {
   const { id } = req.params;
 
-  const amenities = await Amenity.findAll({
+  const equipements = await Equipement.findAll({
    where: { propertyId: id },
   });
   const property = await Property.findByPk(id);
@@ -85,8 +136,8 @@ const deleteProperty = async (req, res) => {
    return res.status(404).json({ error: 'Property not found' });
   }
 
-  // Add the amenities to the property object
-  property.Amenities = amenities;
+  // Add the equipements to the property object
+  property.Equipements = equipements;
 
   // Delete all associated files first
   try {
@@ -193,19 +244,19 @@ const updatePropertyBasicInfo = async (req, res) => {
  }
 };
 
-const updatePropertyAmenities = async (req, res) => {
+const updatePropertyEquipements = async (req, res) => {
  try {
   const { id } = req.params;
-  const { basicAmenities } = req.body;
+  const { basicEquipements } = req.body;
   const property = await Property.findByPk(id);
   if (!property) {
    return res.status(404).json({ error: 'Property not found' });
   }
-  await property.update({ basicAmenities });
+  await property.update({ basicEquipements });
   res.status(200).json(property);
  } catch (error) {
   console.error(error);
-  res.status(500).json({ error: 'Failed to update property amenities' });
+  res.status(500).json({ error: 'Failed to update property equipements' });
  }
 };
 
@@ -407,29 +458,32 @@ const toggleEnableProperty = async (req, res) => {
  }
 };
 
-const getPropertyManagerTasks = async (req, res) => {
- try {
-  const propertyManagerId = req.params.managerId;
+const getIdFromHash = async (req, res) => {
+ if (!req || !res) {
+  console.error('Request or response object is undefined');
+  return;
+ }
 
-  const tasks = await PropertyTask.findAll({
-   include: [
-    {
-     model: Property,
-     as: 'property',
-     where: { propertyManagerId },
-     attributes: ['name', 'id'],
-    },
-   ],
-   order: [
-    ['dueDate', 'ASC'],
-    ['priority', 'DESC'],
-   ],
+ try {
+  const { hashId } = req.params;
+
+  if (!hashId) {
+   return res.status(400).json({ error: 'HashId is required' });
+  }
+
+  const property = await Property.findOne({
+   where: { hashId },
+   attributes: ['id'],
   });
 
-  res.status(200).json(tasks);
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+
+  return res.status(200).json({ id: property.id });
  } catch (error) {
-  console.error(error);
-  res.status(500).json({ error: 'Failed to fetch property manager tasks' });
+  console.error('Error in getIdFromHash:', error);
+  return res.status(500).json({ error: error.message });
  }
 };
 
@@ -437,13 +491,14 @@ module.exports = {
  getProperties,
  getPendingProperties,
  getProperty,
- getPropertiesByManagerId,
+ getAvailablePropertiesForAssignment,
+ getPropertiesByClientId,
  createProperty,
  updateProperty,
  deleteProperty,
  getPropertiesByPlaceLatLon,
  updatePropertyBasicInfo,
- updatePropertyAmenities,
+ updatePropertyEquipements,
  updatePropertyCapacity,
  updatePropertyRules,
  updatePropertyCheckIn,
@@ -452,5 +507,5 @@ module.exports = {
  verifyProperty,
  bulkVerifyProperties,
  toggleEnableProperty,
- getPropertyManagerTasks,
+ getIdFromHash,
 };

@@ -23,7 +23,7 @@ import { useTranslation } from '../../../context/TranslationContext';
 const { Content } = Layout;
 const { Title } = Typography;
 
-const Step5HouseManual = ({ prev, values }) => {
+const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
  const {
   updatePropertyCapacity,
@@ -110,7 +110,8 @@ const Step5HouseManual = ({ prev, values }) => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-form">
+     <ProgressSteps />
      <Form
       name="step5"
       layout="vertical"
@@ -171,36 +172,37 @@ const Step5HouseManual = ({ prev, values }) => {
           <Row gutter={[24, 0]}>
            <Col xs={24}>
             <Checkbox value="noNoise">
-             <i className="fa-light fa-volume-slash fa-xl" />{' '}
+             <i className="PrimaryColor fa-regular fa-volume-slash fa-xl" />{' '}
              {t('rules.noNoise')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noFoodDrinks">
-             <i className="fa-light fa-utensils-slash fa-xl" />{' '}
-             {t('rules.noFood')}
+             <i className="PrimaryColor fa-regular fa-utensils-slash fa-xl" />{' '}
+             {t('rules.noFoodDrinks')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noParties">
-             <i className="fa-light fa-champagne-glasses fa-xl" />{' '}
+             <i className="PrimaryColor fa-regular fa-champagne-glasses fa-xl" />{' '}
              {t('rules.noParties')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noSmoking">
-             <i className="fa-light fa-ban-smoking fa-xl" />{' '}
+             <i className="PrimaryColor fa-regular fa-ban-smoking fa-xl" />{' '}
              {t('rules.noSmoking')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noPets">
-             <i className="fa-light fa-paw-simple fa-xl" /> {t('rules.noPets')}
+             <i className="PrimaryColor fa-regular fa-paw-simple fa-xl" />{' '}
+             {t('rules.noPets')}
             </Checkbox>
            </Col>
            <Col xs={24}>
             <Checkbox value="noUnmarriedCouple">
-             <i className="fa-light fa-ban fa-xl" />{' '}
+             <i className="PrimaryColor fa-regular fa-ban fa-xl" />{' '}
              {t('rules.noUnmarriedCouple')}
             </Checkbox>
            </Col>
@@ -210,7 +212,7 @@ const Step5HouseManual = ({ prev, values }) => {
              checked={showAdditionalRules}
              onChange={(e) => setShowAdditionalRules(e.target.checked)}
             >
-             <i className="fa-light fa-circle-info fa-xl" />{' '}
+             <i className="PrimaryColor fa-regular fa-circle-info fa-xl" />{' '}
              {t('rules.additionalRules')}
             </Checkbox>
            </Col>
@@ -255,8 +257,8 @@ const Step5HouseManual = ({ prev, values }) => {
          <br />
         </Col>
        ))}
-      <Row justify="end">
-       <Col xs={8} md={1}>
+      <Row justify="center">
+       <Col xs={8} md={2}>
         <Form.Item>
          <Button
           htmlType="submit"
@@ -267,7 +269,7 @@ const Step5HouseManual = ({ prev, values }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={16} md={3}>
+       <Col xs={16} md={6}>
         <Form.Item>
          <Button
           type="primary"

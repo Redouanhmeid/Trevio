@@ -4,13 +4,14 @@ const {
  getProperties,
  getPendingProperties,
  getProperty,
- getPropertiesByManagerId,
+ getAvailablePropertiesForAssignment,
+ getPropertiesByClientId,
  createProperty,
  updateProperty,
  deleteProperty,
  getPropertiesByPlaceLatLon,
  updatePropertyBasicInfo,
- updatePropertyAmenities,
+ updatePropertyEquipements,
  updatePropertyCapacity,
  updatePropertyRules,
  updatePropertyCheckIn,
@@ -19,7 +20,7 @@ const {
  verifyProperty,
  bulkVerifyProperties,
  toggleEnableProperty,
- getPropertyManagerTasks,
+ getIdFromHash,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
@@ -30,15 +31,17 @@ router.get('/pending', getPendingProperties); // Admin-only route
 router.get('/properties', getPropertiesByPlaceLatLon);
 // Route to get a property
 router.get('/:id', getProperty);
-// Route to get a property by propertyManagerId
-router.get('/bypm/:id', getPropertiesByManagerId);
+// Route to get available properties for assignment
+router.get('/available/:clientId', getAvailablePropertiesForAssignment);
+// Route to get a property by userId
+router.get('/byclient/:clientId', getPropertiesByClientId);
 // Route for creating a new property
 router.post('/', createProperty);
 // Route for updating a property
 router.put('/:id', updateProperty);
 // Routes for specific property updates
 router.put('/:id/basic-info', updatePropertyBasicInfo);
-router.put('/:id/equipements', updatePropertyAmenities);
+router.put('/:id/equipements', updatePropertyEquipements);
 router.put('/:id/capacity', updatePropertyCapacity);
 router.put('/:id/rules', updatePropertyRules);
 router.put('/:id/check-in', updatePropertyCheckIn);
@@ -51,6 +54,6 @@ router.put('/:id/verify', verifyProperty);
 router.post('/bulkVerify', bulkVerifyProperties);
 router.put('/:id/toggleenable', toggleEnableProperty);
 
-router.get('/propertytask/manager/:managerId/tasks', getPropertyManagerTasks);
+router.get('/hash/:hashId', getIdFromHash);
 
 module.exports = router;

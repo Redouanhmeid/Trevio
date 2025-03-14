@@ -3,6 +3,8 @@ import {
  Row,
  Col,
  Card,
+ Button,
+ Rate,
  Spin,
  Image,
  Flex,
@@ -11,6 +13,7 @@ import {
  Carousel,
  message,
 } from 'antd';
+import { HeartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { filterProperties } from '../../utils/filterProperties';
 import { getLocationForCityOrUser } from '../../utils/utils';
@@ -29,7 +32,7 @@ const PropertyList = ({
  range,
  roomValue,
  paxValue,
- checkedbasicAmenities,
+ checkedbasicEquipements,
 }) => {
  const navigate = useNavigate();
  const { t } = useTranslation();
@@ -52,7 +55,7 @@ const PropertyList = ({
      range,
      roomValue,
      paxValue,
-     checkedbasicAmenities
+     checkedbasicEquipements
     )
    );
   }
@@ -63,12 +66,8 @@ const PropertyList = ({
   range,
   roomValue,
   paxValue,
-  checkedbasicAmenities,
+  checkedbasicEquipements,
  ]);
-
- const display = (id) => {
-  navigate(`/propertydetails?id=${id}`);
- };
 
  const handleImageLoad = (e, index) => {
   const { naturalWidth, naturalHeight } = e.target;
@@ -96,71 +95,128 @@ const PropertyList = ({
     filteredProperties.map((property) => (
      <Col xs={24} md={6} key={property.id}>
       <Card
-       onClick={() => display(property.id)}
        key={property.id}
-       style={{ textAlign: 'center', cursor: 'pointer' }}
+       hoverable={false}
+       bordered={false}
+       style={{
+        overflow: 'hidden',
+        body: { padding: '12px' },
+       }}
        cover={
-        <Carousel
-         className="propertycarousel"
-         autoplay
-         effect="fade"
-         key={property.id}
-        >
-         {property.photos.map((photo, index) => (
-          <div key={index} className="image-container">
-           <Image
-            key={index}
-            alt={property.name}
-            src={photo}
-            preview={false}
-            fallback={fallback}
-            placeholder={
-             <div className="image-placeholder">{t('common.loading')}</div>
-            }
-            className={`card-image ${imageAspectRatios[index]}`}
-            onLoad={(e) => handleImageLoad(e, index)}
-           />
-          </div>
-         ))}
-        </Carousel>
+        <div style={{ position: 'relative' }}>
+         <Carousel className="propertycarousel" autoplay effect="fade">
+          {property.photos.map((photo, index) => (
+           <div key={index} className="image-container">
+            <Image
+             alt={property.name}
+             src={photo}
+             preview={false}
+             fallback={fallback}
+             placeholder={
+              <div className="image-placeholder">{t('common.loading')}</div>
+             }
+             className={`card-image ${imageAspectRatios[index]}`}
+             onLoad={(e) => handleImageLoad(e, index)}
+            />
+           </div>
+          ))}
+         </Carousel>
+         <Button
+          type="text"
+          icon={<HeartOutlined style={{ color: '#6D5FFA' }} />}
+          style={{
+           position: 'absolute',
+           top: '10px',
+           right: '10px',
+           background: 'white',
+           borderRadius: '50%',
+           width: '32px',
+           height: '32px',
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           border: 'none',
+           zIndex: 1,
+           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+          onClick={(e) => {
+           e.stopPropagation();
+           // Add favorite functionality here
+          }}
+         />
+        </div>
        }
       >
-       <Card.Meta
-        title={
-         <Flex gap="small" vertical>
-          <Text strong>{property.name}</Text>
-          <Flex gap="small" justify="space-between" wrap>
-           <Tag
-            bordered={false}
-            icon={<i className="tag-icon-style fa-light fa-location-dot"></i>}
-           >
-            {property.placeName}
-           </Tag>
-           <Tag bordered={false}>
-            <Text strong>{property.price} Dh</Text>
-           </Tag>
-          </Flex>
+       <Flex vertical gap={4}>
+        <Flex
+         justify="space-between"
+         align="center"
+         style={{ marginBottom: '4px' }}
+        >
+         <Text style={{ color: '#666' }}>
+          <i
+           className="PrimaryColor fa-light fa-location-dot"
+           style={{ marginRight: '4px' }}
+          />
+          {property.placeName}
+         </Text>
+         <Flex align="center" gap="4px">
+          <Rate
+           disabled
+           value={1}
+           count={1}
+           style={{ fontSize: '14px', color: '#FFB800' }}
+          />
+          <Text strong>4,3</Text>
          </Flex>
-        }
-        description={
-         <Flex gap="small" justify="space-around">
-          <Tag
-           className="custom-tag"
-           bordered={false}
-           icon={<i className="tag-icon-style fa-light fa-bed"></i>}
-          >
-           {property.beds} {t('manual.bed')}
-          </Tag>
-          <Tag
-           className="custom-tag"
-           bordered={false}
-           icon={<i className="tag-icon-style fa-light fa-bed-front"></i>}
-          >
-           {property.rooms} {t('manual.room')}
-          </Tag>
-         </Flex>
-        }
-       />
+        </Flex>
+
+        <Text strong style={{ fontSize: '16px' }}>
+         {property.name}
+        </Text>
+
+        <Text strong style={{ fontSize: '16px', marginBottom: '8px' }}>
+         {property.price}{' '}
+         <Text
+          type="secondary"
+          style={{ fontWeight: 'normal', fontSize: '14px' }}
+         >
+          {t('property.basic.priceNight')}
+         </Text>
+        </Text>
+
+        <Flex gap="middle" style={{ marginBottom: '16px' }}>
+         <Text type="secondary">
+          <i
+           className="PrimaryColor fa-light fa-snowflake"
+           style={{ marginRight: '4px' }}
+          />
+          {t('property.tag.airconditioned')}
+         </Text>
+         <Text type="secondary">
+          <i
+           className="PrimaryColor fa-light fa-lock"
+           style={{ marginRight: '4px' }}
+          />
+          {t('property.tag.smartlock')}
+         </Text>
+        </Flex>
+
+        <Flex gap="middle">
+         <Button
+          type="primary"
+          style={{ flex: 1, background: '#8B5CF6', borderColor: '#8B5CF6' }}
+         >
+          {t('property.book')}
+         </Button>
+         <Button
+          style={{ flex: 1 }}
+          onClick={() => navigate(`/propertydetails?hash=${property.hashId}`)}
+         >
+          {t('property.learnMore')}
+         </Button>
+        </Flex>
+       </Flex>
       </Card>
      </Col>
     ))}

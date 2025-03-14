@@ -44,8 +44,8 @@ const getBase64 = (file) =>
 
 const EditProperty = () => {
  const location = useLocation();
- const { id } = queryString.parse(location.search);
- const { property, loading, fetchProperty } = useProperty();
+ const { hash } = queryString.parse(location.search);
+ const { property, loading, getIdFromHash, fetchProperty } = useProperty();
  const navigate = useNavigate();
  const { uploadPhotos, uploadFrontPhoto } = useUploadPhotos();
  const { updateProperty } = useUpdateProperty();
@@ -65,11 +65,12 @@ const EditProperty = () => {
  const [fileList2, setFileList2] = useState([]);
  const [previewImage2, setPreviewImage2] = useState('');
  const [previewOpen2, setPreviewOpen2] = useState(false);
+ const [id, setId] = useState();
 
  const parseJSONFields = (property) => {
   const fields = [
    'photos',
-   'basicAmenities',
+   'basicEquipements',
    'safetyFeatures',
    'elements',
    'houseRules',
@@ -86,8 +87,18 @@ const EditProperty = () => {
  };
 
  useEffect(() => {
-  fetchProperty(id);
- }, [loading]);
+  const fetchData = async () => {
+   if (hash) {
+    const numericId = await getIdFromHash(hash);
+    setId(numericId);
+    if (numericId) {
+     console.log('Fetching property with numericId:', numericId);
+     await fetchProperty(numericId);
+    }
+   }
+  };
+  fetchData();
+ }, [hash]);
 
  useEffect(() => {
   if (!loading && property) {
@@ -175,7 +186,7 @@ const EditProperty = () => {
    capacity,
    rooms,
    beds,
-   basicAmenities,
+   basicEquipements,
    safetyFeatures,
    elements,
    houseRules,
@@ -195,7 +206,7 @@ const EditProperty = () => {
    checkInTime.format('YYYY-MM-DD HH:mm:ss') || property.checkInTime;
   formData.checkOutTime =
    checkOutTime.format('YYYY-MM-DD HH:mm:ss') || property.checkOutTime;
-  formData.propertyManagerId = property.propertyManagerId;
+  formData.userId = property.userId;
   if (showAdditionalRules) {
    formData.houseRules.push(`additionalRules: ${additionalRules}`);
   }
@@ -231,7 +242,7 @@ const EditProperty = () => {
    setSuccessMessage('Property updated successfully');
    setErrorMessage('');
    setTimeout(() => {
-    navigate(`/propertydetails?id=${id}`);
+    navigate(`/propertydetails?hash=${id}`);
    }, 2000);
   } catch (error) {
    console.error('Error updating property:', error);
@@ -325,7 +336,7 @@ const EditProperty = () => {
          <Col xs={24} md={24}>
           <Form.Item
            label={<Title level={4}>Manuelle de la maison:</Title>}
-           name="basicAmenities"
+           name="basicEquipements"
           >
            <Checkbox.Group className="equipement-checkbox-group">
             <Row gutter={[24, 0]}>
@@ -383,7 +394,7 @@ const EditProperty = () => {
                </Checkbox>
               </Col>
               <Col xs={12}>
-               <Checkbox value="basicequipement" style={{ lineHeight: 1 }}>
+               <Checkbox value="basicequipements" style={{ lineHeight: 1 }}>
                 <i className="fa-light fa-toilet-paper-blank fa-xl" />{' '}
                 Équipements de base
                 <br />

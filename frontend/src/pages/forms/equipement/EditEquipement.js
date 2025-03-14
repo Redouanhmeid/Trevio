@@ -22,7 +22,7 @@ import Foot from '../../../components/common/footer';
 import ImgCrop from 'antd-img-crop';
 import useUploadPhotos from '../../../hooks/useUploadPhotos';
 import ReactPlayer from 'react-player';
-import useAmenity from '../../../hooks/useAmenity';
+import useEquipement from '../../../hooks/useEquipement';
 import { useTranslation } from '../../../context/TranslationContext';
 
 const { Title, Text } = Typography;
@@ -36,17 +36,22 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const EditAmenity = () => {
+const EditEquipement = () => {
  const location = useLocation();
  const { id } = location.state;
  const { t } = useTranslation();
  const navigate = useNavigate();
- const { uploadAmenity } = useUploadPhotos();
- const { loading, error, deleteAmenity, updateAmenity, getOneAmenity } =
-  useAmenity();
+ const { uploadEquipement } = useUploadPhotos();
+ const {
+  loading,
+  error,
+  deleteEquipement,
+  updateEquipement,
+  getOneEquipement,
+ } = useEquipement();
 
  const [form] = Form.useForm();
- const [amenity, setAmenity] = useState('');
+ const [equipment, setEquipement] = useState('');
  const [mediaType, setMediaType] = useState('Photo');
  const [videoUrl, setVideoUrl] = useState('');
  const [previewOpen, setPreviewOpen] = useState(false);
@@ -54,40 +59,40 @@ const EditAmenity = () => {
  const [fileList, setFileList] = useState([]);
  const [isSubmitting, setIsSubmitting] = useState(false);
 
- const getAmenity = async (id) => {
+ const getEquipement = async (id) => {
   try {
-   const data = await getOneAmenity(id);
-   setAmenity(data);
+   const data = await getOneEquipement(id);
+   setEquipement(data);
   } catch (error) {
-   console.error('Error fetching amenity:', error);
+   console.error('Error fetching equipment:', error);
   }
  };
 
  useEffect(() => {
-  getAmenity(id);
+  getEquipement(id);
  }, [id]);
 
  useEffect(() => {
-  if (amenity) {
+  if (equipment) {
    form.setFieldsValue({
-    name: amenity.name,
-    description: amenity.description,
-    media: amenity.media,
-    wifiName: amenity.wifiName,
-    wifiPassword: amenity.wifiPassword,
-    mediaType: ReactPlayer.canPlay(amenity.media) ? 'Video' : 'Photo',
+    name: equipment.name,
+    description: equipment.description,
+    media: equipment.media,
+    wifiName: equipment.wifiName,
+    wifiPassword: equipment.wifiPassword,
+    mediaType: ReactPlayer.canPlay(equipment.media) ? 'Video' : 'Photo',
    });
 
-   setVideoUrl(amenity.media);
-   setMediaType(ReactPlayer.canPlay(amenity.media) ? 'Video' : 'Photo');
+   setVideoUrl(equipment.media);
+   setMediaType(ReactPlayer.canPlay(equipment.media) ? 'Video' : 'Photo');
 
-   if (!ReactPlayer.canPlay(amenity.media) && amenity.media) {
+   if (!ReactPlayer.canPlay(equipment.media) && equipment.media) {
     setFileList([
-     { uid: '-1', name: 'image.jpg', status: 'done', url: amenity.media },
+     { uid: '-1', name: 'image.jpg', status: 'done', url: equipment.media },
     ]);
    }
   }
- }, [amenity, form]);
+ }, [equipment, form]);
 
  const onChangeMediaType = (e) => {
   setMediaType(e.target.value);
@@ -133,26 +138,26 @@ const EditAmenity = () => {
 
    if (mediaType === 'Photo' && fileList.length > 0) {
     const currentFile = fileList[0];
-    if (currentFile.url && currentFile.url.startsWith('/amenities')) {
+    if (currentFile.url && currentFile.url.startsWith('/equipements')) {
      mediaUrl = currentFile.url;
     } else if (currentFile.originFileObj) {
-     mediaUrl = await uploadAmenity(fileList);
+     mediaUrl = await uploadEquipement(fileList);
     }
    }
 
    const updateData = {
-    id: amenity.id,
-    name: amenity.name,
+    id: equipment.id,
+    name: equipment.name,
     description: values.description,
     media: mediaUrl,
-    propertyId: amenity.propertyId,
-    ...(amenity.name === 'wifi' && {
+    propertyId: equipment.propertyId,
+    ...(equipment.name === 'wifi' && {
      wifiName: values.wifiName,
      wifiPassword: values.wifiPassword,
     }),
    };
 
-   await updateAmenity(updateData);
+   await updateEquipement(updateData);
    navigate(-1);
   } catch (error) {
    console.error('Error:', error);
@@ -162,12 +167,12 @@ const EditAmenity = () => {
  };
 
  const confirmDelete = async (id) => {
-  await deleteAmenity(id);
+  await deleteEquipement(id);
   if (!error) {
-   message.success(t('amenity.deleteSuccess'));
+   message.success(t('equipment.deleteSuccess'));
    navigate(-1);
   } else {
-   message.error(`${t('amenity.deleteError')}: ${error.message}`);
+   message.error(`${t('equipment.deleteError')}: ${error.message}`);
   }
  };
 
@@ -193,10 +198,10 @@ const EditAmenity = () => {
      </Button>
 
      <Popconfirm
-      title={t('amenity.confirmDelete')}
-      onConfirm={() => confirmDelete(amenity.id)}
-      okText={t('amenity.confirmYes')}
-      cancelText={t('amenity.confirmNo')}
+      title={t('equipment.confirmDelete')}
+      onConfirm={() => confirmDelete(equipment.id)}
+      okText={t('equipment.confirmYes')}
+      cancelText={t('equipment.confirmNo')}
      >
       <Button
        danger
@@ -214,16 +219,18 @@ const EditAmenity = () => {
     </Flex>
     <Row gutter={[16, 16]}>
      <Col xs={24}>
-      <Title level={2}>{`${t('amenity.addCard')} ${t('amenity.name')}`}</Title>
+      <Title level={2}>{`${t('equipment.addCard')} ${t(
+       'equipment.name'
+      )}`}</Title>
       <Form
-       name="amenity_form"
+       name="equipment_form"
        initialValues={{ remember: true }}
        onFinish={onFinish}
        layout="vertical"
        size="large"
        form={form}
        initialValues={{
-        mediaType: amenity.media,
+        mediaType: equipment.media,
        }}
       >
        <Row gutter={[32, 16]}>
@@ -243,7 +250,7 @@ const EditAmenity = () => {
          </Flex>
          <br />
          {mediaType === 'Photo' ? (
-          <Form.Item label={t('amenity.mediaUrl')} name="media">
+          <Form.Item label={t('equipment.mediaUrl')} name="media">
            <div>
             <ImgCrop rotationSlider>
              <Upload
@@ -280,9 +287,9 @@ const EditAmenity = () => {
            label={
             <>
              <Text>
-              {t('amenity.videoUrlLabel')}
+              {t('equipment.videoUrlLabel')}
               <br />
-              <Text type="secondary">{t('amenity.videoUrlHint')}</Text>
+              <Text type="secondary">{t('equipment.videoUrlHint')}</Text>
              </Text>
             </>
            }
@@ -307,20 +314,20 @@ const EditAmenity = () => {
           offset: 2,
          }}
         >
-         <Form.Item label={t('amenity.guestMessage')} name="description">
+         <Form.Item label={t('equipment.guestMessage')} name="description">
           <Input.TextArea rows={6} showCount maxLength={500} />
          </Form.Item>
         </Col>
-        {amenity.name === 'wifi' && (
+        {equipment.name === 'wifi' && (
          <Col xs={24} md={12}>
           <Row gutter={[16, 0]}>
            <Col xs={24} md={12}>
-            <Form.Item label={t('amenity.wifiName')} name="wifiName">
+            <Form.Item label={t('equipment.wifiName')} name="wifiName">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
            <Col xs={24} md={12}>
-            <Form.Item label={t('amenity.wifiPassword')} name="wifiPassword">
+            <Form.Item label={t('equipment.wifiPassword')} name="wifiPassword">
              <Input showCount maxLength={25} />
             </Form.Item>
            </Col>
@@ -355,4 +362,4 @@ const EditAmenity = () => {
  );
 };
 
-export default EditAmenity;
+export default EditEquipement;

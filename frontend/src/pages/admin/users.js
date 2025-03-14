@@ -20,16 +20,17 @@ import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useUserData } from '../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
+import { frFormatDate } from '../../utils/utils';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const Managers = () => {
+const Users = () => {
  const {
-  Managers = [], // Default to an empty array
+  Users = [], // Default to an empty array
   isLoading,
-  fetchAllManagers,
-  deleteManagerById,
+  fetchAllUsers,
+  deleteUserById,
   success,
   error,
  } = useUserData();
@@ -39,7 +40,7 @@ const Managers = () => {
  const { t } = useTranslation();
 
  useEffect(() => {
-  fetchAllManagers();
+  fetchAllUsers();
  }, [isLoading]);
 
  const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -110,6 +111,7 @@ const Managers = () => {
    key: 'email',
    sorter: (a, b) => a.email.localeCompare(b.email),
    ...getColumnSearchProps('email'),
+   render: (text) => <Text strong>{text}</Text>,
   },
   {
    title: t('account.firstName'),
@@ -133,28 +135,28 @@ const Managers = () => {
    ...getColumnSearchProps('phone'),
   },
   {
-   title: t('manager.verified'),
+   title: t('user.verified'),
    dataIndex: 'isVerified',
    key: 'isVerified',
    filters: [
-    { text: t('manager.verifiedStatus.verified'), value: true },
-    { text: t('manager.verifiedStatus.unverified'), value: false },
+    { text: t('user.verifiedStatus.verified'), value: true },
+    { text: t('user.verifiedStatus.unverified'), value: false },
    ],
    onFilter: (value, record) => record.isVerified === value,
    render: (isVerified) => (
     <Tag color={isVerified ? 'green' : 'red'}>
      {isVerified
-      ? t('manager.verifiedStatus.verified')
-      : t('manager.verifiedStatus.unverified')}
+      ? t('user.verifiedStatus.verified')
+      : t('user.verifiedStatus.unverified')}
     </Tag>
    ),
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-   render: (createdAt) => new Date(createdAt).toLocaleString(),
+   render: (createdAt) => frFormatDate(createdAt),
   },
   {
    title: t('property.actions.actions'),
@@ -163,7 +165,7 @@ const Managers = () => {
     <Space>
      <Button
       icon={<i className="Dashicon fa-light fa-eye" key="display" />}
-      onClick={() => navigate(`/manager?id=${record.id}`)}
+      onClick={() => navigate(`/user?id=${record.id}`)}
       shape="circle"
       type="link"
      />
@@ -190,15 +192,15 @@ const Managers = () => {
  ];
 
  const confirmDelete = async (id) => {
-  await deleteManagerById(id);
+  await deleteUserById(id);
   if (!error) {
-   message.success(t('manager.deleteSuccess'));
+   message.success(t('user.deleteSuccess'));
   } else {
-   message.error(t('manager.deleteError', { error: error.message }));
+   message.error(t('user.deleteError', { error: error.message }));
   }
  };
 
- if (!Array.isArray(Managers)) {
+ if (!Array.isArray(Users)) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -208,21 +210,20 @@ const Managers = () => {
  return (
   <Layout className="contentStyle">
    <Head />
-   <Content className="container-fluid">
+   <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="link"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
      {t('button.back')}
     </Button>
-    <Title level={2}>{t('dashboard.managers')}</Title>
+    <Title level={2}>{t('dashboard.users')}</Title>
     <Row gutter={[16, 16]}>
      <Col xs={24} md={24}>
       <Table
        columns={columns}
-       dataSource={Managers}
+       dataSource={Users}
        loading={isLoading}
        rowKey="id"
       />
@@ -234,4 +235,4 @@ const Managers = () => {
  );
 };
 
-export default Managers;
+export default Users;

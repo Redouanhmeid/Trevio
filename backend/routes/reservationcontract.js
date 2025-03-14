@@ -6,6 +6,8 @@ const {
  deleteContract,
  getContractsForProperty,
  getContractById,
+ getContractByReservationId,
+ getContractByHash,
  updateContractStatus,
  checkAvailability,
 } = require('../controllers/ReservationContractController');
@@ -14,6 +16,9 @@ const {
 router.post('/contracts', createContract);
 router.get('/properties/:propertyId', getContractsForProperty);
 router.get('/contracts/:id', getContractById);
+// Get contract by reservation ID
+router.get('/reservation/:reservationId/contract', getContractByReservationId);
+router.get('/contracts/hash/:hashId', getContractByHash);
 router.put('/contracts/:id', updateContract);
 router.delete('/contracts/:id', deleteContract);
 

@@ -9,10 +9,11 @@ const useReservationContract = () => {
 
  // Create a new contract
  const createContract = async (contractData) => {
+  console.log(contractData);
   setLoading(true);
   setError(null);
   try {
-   const response = await axios.post(`${apiBase}/contracts`, contractData);
+   const response = await axios.post(`${apiBase}contracts`, contractData);
    return response.data;
   } catch (err) {
    setError(err.response?.data?.error || 'Failed to create contract');
@@ -46,7 +47,7 @@ const useReservationContract = () => {
   setError(null);
   try {
    const response = await axios.patch(
-    `${apiBase}/contracts/${contractId}/status`,
+    `${apiBase}contracts/${contractId}/status`,
     {
      status,
     }
@@ -90,24 +91,55 @@ const useReservationContract = () => {
   }
  };
 
- // Check property availability
- const checkAvailability = async (
-  propertyId,
-  startDate,
-  endDate,
-  excludeContractId = null
- ) => {
+ const getContractByReservationId = async (reservationId) => {
   setLoading(true);
   setError(null);
   try {
-   const params = new URLSearchParams({
-    startDate: startDate.toISOString(),
-    endDate: endDate.toISOString(),
-    ...(excludeContractId && { excludeContractId }),
-   });
-
    const response = await axios.get(
-    `${apiBase}/properties/${propertyId}/availability?${params}`
+    `${apiBase}/reservation/${reservationId}/contract`
+   );
+   return response.data;
+  } catch (err) {
+   // If it's a 404, it means no contract exists yet - this might be expected
+   if (err.response?.status === 404) {
+    return null;
+   }
+   setError(
+    err.response?.data?.error || 'Failed to fetch contract for this reservation'
+   );
+   throw err;
+  } finally {
+   setLoading(false);
+  }
+ };
+ // Get a single contract by hashId
+ const getContractByHash = async (hashId) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.get(`${apiBase}/contracts/hash/${hashId}`);
+   return response.data;
+  } catch (err) {
+   setError(err.response?.data?.error || 'Failed to fetch contract');
+   throw err;
+  } finally {
+   setLoading(false);
+  }
+ };
+
+ // Check property availability
+ const checkAvailability = async (propertyId, checkInDate, checkOutDate) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.get(
+    `${apiBase}/properties/${propertyId}/availability`,
+    {
+     params: {
+      startDate: checkInDate.format('YYYY-MM-DD'),
+      endDate: checkOutDate.format('YYYY-MM-DD'),
+     },
+    }
    );
    return response.data;
   } catch (err) {
@@ -140,7 +172,9 @@ const useReservationContract = () => {
   updateContract,
   updateContractStatus,
   getContractsByProperty,
+  getContractByReservationId,
   getContractById,
+  getContractByHash,
   checkAvailability,
   deleteContract,
  };

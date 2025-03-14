@@ -10,31 +10,32 @@ import frFR from 'antd/locale/fr_FR';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import ProtectedRoute from './utils/ProtectedRoute';
+import { ConfigProvider } from 'antd';
 import NotFoundPage from './pages/notfoundpage';
 import AdminPanel from './pages/admin/adminpanel';
-import Managers from './pages/admin/managers';
+import Users from './pages/admin/users';
 import Properties from './pages/admin/properties';
 import NearbyPlaces from './pages/admin/nearbyplaces';
-import Manager from './pages/admin/manager';
+import User from './pages/admin/user';
 import NearbyPlace from './pages/admin/nearbyplace';
 import Login from './pages/forms/sign/login';
 import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
-import { ConfigProvider } from 'antd';
 import Guestform from './pages/forms/guestform';
 import MapPicker from './pages/forms/propertypost/MapPicker';
-import PropertyManagerHome from './pages/propertymanagerhome';
+import Dashboard from './pages/Dashboard';
 import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
 import AddProperty from './pages/forms/propertypost/AddProperty';
 import EditProperty from './pages/forms/propertyedit/EditProperty';
 import EditBasicInfo from './pages/forms/propertyedit/EditBasicInfo';
-import EditEquipement from './pages/forms/propertyedit/EditEquipement';
+import EditEquipements from './pages/forms/propertyedit/EditEquipements';
 import EditPhotos from './pages/forms/propertyedit/EditPhotos';
 import EditHouseRules from './pages/forms/propertyedit/EditHouseRules';
 import EditCheckIn from './pages/forms/propertyedit/EditCheckIn';
-import AddAmenity from './pages/forms/amenity/AddAmenity';
-import EditAmenity from './pages/forms/amenity/EditAmenity';
+import AddEquipement from './pages/forms/equipement/AddEquipement';
+import EditEquipement from './pages/forms/equipement/EditEquipement';
 import DigitalGuidebook from './pages/components/DigitalGuidebook';
 import ResetPasswordRequest from './pages/forms/sign/ResetPasswordRequest';
 import VerifyResetCode from './pages/forms/sign/VerifyResetCode';
@@ -47,48 +48,292 @@ import ContractsList from './pages/components/ContractsList';
 import RevTasksDashboard from './pages/RevTasksDashboard';
 import PropertyRevenueDashboard from './pages/admin/PropertyRevenueDashboard';
 import PropertyTaskDashboard from './pages/admin/PropertyTaskDashboard';
+import AddConciergeForm from './pages/forms/concierge/AddConciergeForm';
+import ConciergeProperties from './pages/manager/ConciergeProperties';
+import AssignConciergeForm from './pages/forms/concierge/AssignConciergeForm';
+import ManagerVerification from './pages/forms/concierge/ManagerVerification';
+import ManagerDashboard from './pages/manager/ManagerDashboard';
+import GuestContractView from './pages/guest/GuestContractView';
+import EmailVerificationMessage from './pages/forms/sign/EmailVerificationMessage';
+import CreateReservationForm from './pages/forms/reservation/CreateReservationForm';
+import ReservationsList from './pages/forms/reservation/ReservationsList';
+import GenerateContract from './pages/forms/reservation/GenerateContract';
+import GuestReservationView from './pages/guest/GuestReservationView';
 
 const router = createBrowserRouter([
- { path: '/', element: <App />, errorElement: <NotFoundPage /> },
- { path: '/dashboard', element: <PropertyManagerHome /> },
- { path: '/revtaskdashboard', element: <RevTasksDashboard /> },
- { path: '/propertyrevenuedashboard', element: <PropertyRevenueDashboard /> },
- { path: '/propertytaskdashboard', element: <PropertyTaskDashboard /> },
- { path: '/adminpanel', element: <AdminPanel /> },
- { path: '/managers', element: <Managers /> },
- { path: '/manager', element: <Manager /> },
- { path: '/properties', element: <Properties /> },
- { path: '/nearbyplaces', element: <NearbyPlaces /> },
- { path: '/nearbyplace', element: <NearbyPlace /> },
- { path: '/pendingproperties', element: <Pendingproperties /> },
- { path: '/pendingnearbyplaces', element: <PendingNearbyPlaces /> },
+ { path: '/', element: <Login />, errorElement: <NotFoundPage /> },
+ {
+  path: '/dashboard',
+  element: (
+   <ProtectedRoute>
+    <Dashboard />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/revtaskdashboard',
+  element: <RevTasksDashboard />,
+ },
+ {
+  path: '/propertyrevenuedashboard',
+  element: <PropertyRevenueDashboard />,
+ },
+ {
+  path: '/propertytaskdashboard',
+  element: <PropertyTaskDashboard />,
+ },
+ {
+  path: '/add-concierge',
+  element: (
+   <ProtectedRoute>
+    <AddConciergeForm />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/assign-concierge',
+  element: (
+   <ProtectedRoute>
+    <AssignConciergeForm />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/concierges/:managerId/properties',
+  element: (
+   <ProtectedRoute>
+    <ConciergeProperties />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/manager/verify/:token',
+  element: <ManagerVerification />,
+ },
+ {
+  path: '/manager/dashboard',
+  element: (
+   <ProtectedRoute>
+    <ManagerDashboard />
+   </ProtectedRoute>
+  ),
+ },
+
+ {
+  path: '/adminpanel',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <AdminPanel />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/clients',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <Users />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/client',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <User />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/properties',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <Properties />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/nearbyplaces',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <NearbyPlaces />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/nearbyplace',
+  element: (
+   <ProtectedRoute requiredRole="admin">
+    <NearbyPlace />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/pendingproperties',
+  element: (
+   <ProtectedRoute>
+    <Pendingproperties />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/pendingnearbyplaces',
+  element: (
+   <ProtectedRoute>
+    <PendingNearbyPlaces />
+   </ProtectedRoute>
+  ),
+ },
  { path: '/login', element: <Login /> },
  { path: '/signup', element: <Signup /> },
- { path: '/account', element: <Account /> },
+ {
+  path: '/verify-email',
+  element: <EmailVerificationMessage />,
+ },
+ {
+  path: '/account',
+  element: (
+   <ProtectedRoute>
+    <Account />
+   </ProtectedRoute>
+  ),
+ },
  { path: '/profile', element: <Profile /> },
  { path: '/reset-password-request', element: <ResetPasswordRequest /> },
  { path: '/verify-reset-code', element: <VerifyResetCode /> },
  { path: '/new-password', element: <NewPassword /> },
- { path: '/guestform', element: <Guestform /> },
- { path: '/addproperty', element: <AddProperty /> },
+ {
+  path: '/guestform',
+  element: <Guestform />,
+ },
+ {
+  path: '/addproperty',
+  element: (
+   <ProtectedRoute>
+    <AddProperty />
+   </ProtectedRoute>
+  ),
+ },
  { path: '/mappicker', element: <MapPicker /> },
  { path: '/propertydetails', element: <PropertyDetails /> },
- { path: '/createnearbyplace', element: <CreateNearbyPlace /> },
- { path: '/editproperty', element: <EditProperty /> },
- { path: '/editbasicinfo', element: <EditBasicInfo /> },
- { path: '/editequipements', element: <EditEquipement /> },
- { path: '/editphotos', element: <EditPhotos /> },
- { path: '/edithouserules', element: <EditHouseRules /> },
- { path: '/editcheckin', element: <EditCheckIn /> },
- { path: '/editcheckout', element: <EditCheckOut /> },
- { path: '/addamenity', element: <AddAmenity /> },
- { path: '/editamenity', element: <EditAmenity /> },
+ {
+  path: '/createnearbyplace',
+  element: (
+   <ProtectedRoute>
+    <CreateNearbyPlace />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editproperty',
+  element: (
+   <ProtectedRoute>
+    <EditProperty />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editbasicinfo',
+  element: (
+   <ProtectedRoute>
+    <EditBasicInfo />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editequipements',
+  element: (
+   <ProtectedRoute>
+    <EditEquipement />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editphotos',
+  element: (
+   <ProtectedRoute>
+    <EditPhotos />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/edithouserules',
+  element: (
+   <ProtectedRoute>
+    <EditHouseRules />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editcheckin',
+  element: (
+   <ProtectedRoute>
+    <EditCheckIn />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editcheckout',
+  element: (
+   <ProtectedRoute>
+    <EditCheckOut />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/addequipement',
+  element: (
+   <ProtectedRoute>
+    <AddEquipement />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/editequipement',
+  element: (
+   <ProtectedRoute>
+    <EditEquipement />
+   </ProtectedRoute>
+  ),
+ },
  { path: '/digitalguidebook', element: <DigitalGuidebook /> },
- { path: '/contractslist', element: <ContractsList /> },
+ {
+  path: '/contractslist',
+  element: <ContractsList />,
+ },
+ { path: '/guest/contract/:hashId', element: <GuestContractView /> },
+ {
+  path: '/reservations',
+  element: (
+   <ProtectedRoute>
+    <ReservationsList />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/create-reservation',
+  element: (
+   <ProtectedRoute>
+    <CreateReservationForm />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/generate-contract/:id',
+  element: (
+   <ProtectedRoute>
+    <GenerateContract />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/guest/reservation/:hashId',
+  element: <GuestReservationView />,
+ },
+ ,
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
- <ConfigProvider locale={frFR} theme={themeConfig}>
+ <ConfigProvider locale={frFR} theme={trevioThemeConfig}>
   <AuthContextProvider>
    <TranslationProvider>
     <RouterProvider router={router} />

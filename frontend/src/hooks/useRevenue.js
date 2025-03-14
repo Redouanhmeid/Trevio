@@ -40,13 +40,13 @@ const useRevenue = () => {
   }
  };
 
- const addMonthlyRevenue = async (revenueData) => {
+ const addRevenue = async (revenueData) => {
   setLoading(true);
   try {
    const response = await axios.post(`${apiBase}/revenue`, revenueData);
    return response.data;
   } catch (error) {
-   if (error.response.status === 400) {
+   if (error.response?.status === 400) {
     setError(error.response.data.error);
    } else {
     setError(error);
@@ -83,14 +83,31 @@ const useRevenue = () => {
   }
  };
 
+ const createRevenueFromReservation = async (reservationId, revenueData) => {
+  setLoading(true);
+  try {
+   const response = await axios.post(
+    `${apiBase}/reservation/${reservationId}/revenue`,
+    revenueData
+   );
+   return response.data;
+  } catch (error) {
+   setError(error.response?.data?.error || error.message);
+   return null;
+  } finally {
+   setLoading(false);
+  }
+ };
+
  return {
   loading,
   error,
   getPropertyRevenue,
   getAnnualRevenue,
-  addMonthlyRevenue,
+  addRevenue,
   updateRevenue,
   deleteRevenue,
+  createRevenueFromReservation,
  };
 };
 

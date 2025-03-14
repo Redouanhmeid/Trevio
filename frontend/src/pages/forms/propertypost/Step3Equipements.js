@@ -18,41 +18,41 @@ import { useTranslation } from '../../../context/TranslationContext';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-const Step3Equipements = ({ next, prev, values }) => {
+const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
  const {
-  updatePropertyAmenities,
-  isLoading: amenitiesLoading,
-  error: amenitiesError,
+  updatePropertyEquipements,
+  isLoading: equipementsLoading,
+  error: equipementsError,
   success,
  } = useUpdateProperty(values.propertyId);
 
  const [loading, setLoading] = useState(false);
- const [BasicAmenities, setBasicAmenities] = useState([]);
+ const [BasicEquipements, setBasicEquipements] = useState([]);
 
- const onChangeBasicAmenities = (checkedvalues) => {
-  setBasicAmenities(checkedvalues);
+ const onChangeBasicEquipements = (checkedvalues) => {
+  setBasicEquipements(checkedvalues);
  };
 
  const submitFormData = async () => {
-  if (loading || amenitiesLoading) {
+  if (loading || equipementsLoading) {
    return; // Prevent multiple submissions while loading
   }
 
   try {
    setLoading(true);
 
-   const amenitiesData = {
-    basicAmenities: BasicAmenities,
+   const equipementsData = {
+    basicEquipements: BasicEquipements,
    };
 
    try {
-    await updatePropertyAmenities(amenitiesData);
+    await updatePropertyEquipements(equipementsData);
     // If update successful, update values and proceed
-    values.basicAmenities = BasicAmenities;
+    values.basicEquipements = BasicEquipements;
     next();
    } catch (error) {
-    message.error(t('amenity.updateError'));
+    message.error(t('equipement.updateError'));
    }
   } catch (error) {
    console.error('Error submitting form:', error);
@@ -62,27 +62,28 @@ const Step3Equipements = ({ next, prev, values }) => {
   }
  };
 
- const isSubmitting = loading || amenitiesLoading;
+ const isSubmitting = loading || equipementsLoading;
 
  return (
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-form">
+     <ProgressSteps />
      <Form
       name="step3"
       layout="vertical"
       onFinish={submitFormData}
       size="large"
       initialValues={{
-       basicAmenities: values.basicAmenities || [],
+       basicEquipements: values.basicEquipements || [],
       }}
      >
-      <Title level={2}>{t('property.amenities.title')}</Title>
+      <Title level={2}>{t('property.equipements.title')}</Title>
       <Row gutter={[16, 8]}>
        <Col xs={24} md={24}>
-        <Form.Item name="basicAmenities">
-         <Checkbox.Group onChange={onChangeBasicAmenities}>
+        <Form.Item name="basicEquipements">
+         <Checkbox.Group onChange={onChangeBasicEquipements}>
           <Row gutter={[24, 0]}>
            <Col xs={24}>
             {/* Bathroom */}
@@ -90,23 +91,25 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.bathroom')}
+               {t('equipement.categories.bathroom')}
               </Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="shower">
-               <i className="fa-light fa-shower fa-xl" /> {t('amenity.shower')}
+               <i className="PrimaryColor fa-regular fa-shower fa-lg" />{' '}
+               {t('equipement.shower')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="jacuzzi">
-               <i className="fa-light fa-hot-tub-person fa-xl" />{' '}
-               {t('amenity.jacuzzi')}
+               <i className="PrimaryColor fa-regular fa-hot-tub-person fa-lg" />{' '}
+               {t('equipement.jacuzzi')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="bathtub">
-               <i className="fa-light fa-bath fa-xl" /> {t('amenity.bathtub')}
+               <i className="PrimaryColor fa-regular fa-bath fa-lg" />{' '}
+               {t('equipement.bathtub')}
               </Checkbox>
              </Col>
             </Row>
@@ -115,34 +118,37 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.bedroomLinen')}
+               {t('equipement.categories.bedroomLinen')}
               </Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="washingMachine">
-               <i className="fa-light fa-washing-machine fa-xl" />{' '}
-               {t('amenity.washingMachine')}
+               <i className="PrimaryColor fa-regular fa-washing-machine fa-lg" />{' '}
+               {t('equipement.washingMachine')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="dryerheat">
-               <i className="fa-light fa-dryer-heat fa-xl" />{' '}
-               {t('amenity.dryerheat')}
+               <i className="PrimaryColor fa-regular fa-dryer-heat fa-lg" />{' '}
+               {t('equipement.dryerheat')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="vacuum">
-               <i className="fa-light fa-vacuum fa-xl" /> {t('amenity.vacuum')}
+               <i className="PrimaryColor fa-regular fa-vacuum fa-lg" />{' '}
+               {t('equipement.vacuum')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="vault">
-               <i className="fa-light fa-vault fa-xl" /> {t('amenity.vault')}
+               <i className="PrimaryColor fa-regular fa-vault fa-lg" />{' '}
+               {t('equipement.vault')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="babybed">
-               <i className="fa-light fa-baby fa-xl" /> {t('amenity.babybed')}
+               <i className="PrimaryColor fa-regular fa-baby fa-lg" />{' '}
+               {t('equipement.babybed')}
               </Checkbox>
              </Col>
             </Row>
@@ -151,24 +157,25 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.entertainment')}
+               {t('equipement.categories.entertainment')}
               </Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="television">
-               <i className="fa-light fa-tv fa-xl" /> {t('amenity.television')}
+               <i className="PrimaryColor fa-regular fa-tv fa-xl" />{' '}
+               {t('equipement.television')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="speaker">
-               <i className="fa-light fa-speaker fa-xl" />{' '}
-               {t('amenity.speaker')}
+               <i className="PrimaryColor fa-regular fa-speaker fa-xl" />{' '}
+               {t('equipement.speaker')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="gameconsole">
-               <i className="fa-light fa-gamepad-modern fa-xl" />{' '}
-               {t('amenity.gameconsole')}
+               <i className="PrimaryColor fa-regular fa-gamepad-modern fa-xl" />{' '}
+               {t('equipement.gameconsole')}
               </Checkbox>
              </Col>
             </Row>
@@ -177,36 +184,37 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.kitchen')}
+               {t('equipement.categories.kitchen')}
               </Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="oven">
-               <i className="fa-light fa-oven fa-xl" /> {t('amenity.oven')}
+               <i className="PrimaryColor fa-regular fa-oven fa-xl" />{' '}
+               {t('equipement.oven')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="microwave">
-               <i className="fa-light fa-microwave fa-xl" />{' '}
-               {t('amenity.microwave')}
+               <i className="PrimaryColor fa-regular fa-microwave fa-xl" />{' '}
+               {t('equipement.microwave')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="coffeemaker">
-               <i className="fa-light fa-coffee-pot fa-xl" />{' '}
-               {t('amenity.coffeemaker')}
+               <i className="PrimaryColor fa-regular fa-coffee-pot fa-xl" />{' '}
+               {t('equipement.coffeemaker')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="fridge">
-               <i className="fa-light fa-refrigerator fa-xl" />{' '}
-               {t('amenity.fridge')}
+               <i className="PrimaryColor fa-regular fa-refrigerator fa-xl" />{' '}
+               {t('equipement.fridge')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="fireburner">
-               <i className="fa-light fa-fire-burner fa-xl" />{' '}
-               {t('amenity.fireburner')}
+               <i className="PrimaryColor fa-regular fa-fire-burner fa-xl" />{' '}
+               {t('equipement.fireburner')}
               </Checkbox>
              </Col>
             </Row>
@@ -215,37 +223,37 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.heatingCooling')}
+               {t('equipement.categories.heatingCooling')}
               </Text>
              </Col>
              <Col xs={10} md={8}>
               <Checkbox value="heating">
-               <i className="fa-light fa-temperature-arrow-up fa-xl" />{' '}
-               {t('amenity.heating')}
+               <i className="PrimaryColor fa-regular fa-temperature-arrow-up fa-xl" />{' '}
+               {t('equipement.heating')}
               </Checkbox>
              </Col>
              <Col xs={14} md={8}>
               <Checkbox value="airConditioning">
-               <i className="fa-light fa-snowflake fa-xl" />{' '}
-               {t('amenity.airConditioning')}
+               <i className="PrimaryColor fa-regular fa-snowflake fa-xl" />{' '}
+               {t('equipement.airConditioning')}
               </Checkbox>
              </Col>
              <Col xs={10} md={8}>
               <Checkbox value="fireplace">
-               <i className="fa-light fa-fireplace fa-xl" />{' '}
-               {t('amenity.fireplace')}
+               <i className="PrimaryColor fa-regular fa-fireplace fa-xl" />{' '}
+               {t('equipement.fireplace')}
               </Checkbox>
              </Col>
              <Col xs={14} md={8}>
               <Checkbox value="ceilingfan">
-               <i className="fa-light fa-fan fa-xl" />
-               {t('amenity.ceilingfan')}
+               <i className="PrimaryColor fa-regular fa-fan fa-xl" />{' '}
+               {t('equipement.ceilingfan')}
               </Checkbox>
              </Col>
              <Col xs={14} md={8}>
               <Checkbox value="tablefan">
-               <i className="fa-light fa-fan-table fa-xl" />{' '}
-               {t('amenity.tablefan')}
+               <i className="PrimaryColor fa-regular fa-fan-table fa-xl" />{' '}
+               {t('equipement.tablefan')}
               </Checkbox>
              </Col>
             </Row>
@@ -254,25 +262,25 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.homeSecurity')}
+               {t('equipement.categories.homeSecurity')}
               </Text>
              </Col>
-             <Col xs={24} md={8}>
+             <Col xs={24} md={16}>
               <Checkbox value="fingerprint">
-               <i className="fa-light fa-fingerprint fa-xl" />{' '}
-               {t('amenity.fingerprint')}
+               <i className="PrimaryColor fa-regular fa-fingerprint fa-xl" />{' '}
+               {t('equipement.fingerprint')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="lockbox">
-               <i className="fa-light fa-lock-hashtag fa-xl" />{' '}
-               {t('amenity.lockbox')}
+               <i className="PrimaryColor fa-regular fa-lock-hashtag fa-xl" />{' '}
+               {t('equipement.lockbox')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="parkingaccess">
-               <i className="fa-light fa-square-parking fa-xl" />{' '}
-               {t('amenity.parkingaccess')}
+               <i className="PrimaryColor fa-regular fa-square-parking fa-xl" />{' '}
+               {t('equipement.parkingaccess')}
               </Checkbox>
              </Col>
             </Row>
@@ -281,18 +289,19 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.internetOffice')}
+               {t('equipement.categories.internetOffice')}
               </Text>
              </Col>
              <Col xs={24} md={8}>
               <Checkbox value="wifi">
-               <i className="fa-light fa-wifi fa-xl" /> {t('amenity.wifi')}
+               <i className="PrimaryColor fa-regular fa-wifi fa-xl" />{' '}
+               {t('equipement.wifi')}
               </Checkbox>
              </Col>
-             <Col xs={24} md={8}>
+             <Col xs={24} md={16}>
               <Checkbox value="dedicatedworkspace">
-               <i className="fa-light fa-chair-office fa-xl" />{' '}
-               {t('amenity.dedicatedworkspace')}
+               <i className="PrimaryColor fa-regular fa-chair-office fa-xl" />{' '}
+               {t('equipement.dedicatedworkspace')}
               </Checkbox>
              </Col>
             </Row>
@@ -301,31 +310,31 @@ const Step3Equipements = ({ next, prev, values }) => {
              <Col xs={24}>
               <Text strong>
                <br />
-               {t('amenity.categories.parkingFacilities')}
+               {t('equipement.categories.parkingFacilities')}
               </Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="freeParking">
-               <i className="fa-light fa-circle-parking fa-xl" />{' '}
-               {t('amenity.freeParking')}
+               <i className="PrimaryColor fa-regular fa-circle-parking fa-xl" />{' '}
+               {t('equipement.freeParking')}
               </Checkbox>
              </Col>
-             <Col xs={12} md={8}>
+             <Col xs={12} md={16}>
               <Checkbox value="paidParking">
-               <i className="fa-light fa-square-parking fa-xl" />{' '}
-               {t('amenity.paidParking')}
+               <i className="PrimaryColor fa-regular fa-square-parking fa-xl" />{' '}
+               {t('equipement.paidParking')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="pool">
-               <i className="fa-light fa-water-ladder fa-xl" />{' '}
-               {t('amenity.pool')}
+               <i className="PrimaryColor fa-regular fa-water-ladder fa-xl" />{' '}
+               {t('equipement.pool')}
               </Checkbox>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="garbageCan">
-               <i className="fa-light fa-trash-can fa-xl" />{' '}
-               {t('amenity.garbageCan')}
+               <i className="PrimaryColor fa-regular fa-trash-can fa-xl" />{' '}
+               {t('equipement.garbageCan')}
               </Checkbox>
              </Col>
             </Row>
@@ -335,8 +344,8 @@ const Step3Equipements = ({ next, prev, values }) => {
         </Form.Item>
        </Col>
       </Row>
-      <Row justify="end">
-       <Col xs={8} md={1}>
+      <Row justify="center">
+       <Col xs={8} md={2}>
         <Form.Item>
          <Button
           htmlType="submit"
@@ -347,15 +356,9 @@ const Step3Equipements = ({ next, prev, values }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={16} md={3}>
+       <Col xs={16} md={6}>
         <Form.Item>
-         <Button
-          type="primary"
-          htmlType="submit"
-          style={{ width: '100%' }}
-          loading={isSubmitting}
-          disabled={isSubmitting}
-         >
+         <Button type="primary" htmlType="submit" loading={isSubmitting} block>
           {t('button.continue')} {<ArrowRightOutlined />}
          </Button>
         </Form.Item>

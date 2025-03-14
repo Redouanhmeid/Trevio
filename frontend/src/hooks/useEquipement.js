@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const useAmenity = () => {
+const useEquipement = () => {
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState(null);
 
- const getAllAmenities = async (propertyId) => {
+ const getAllEquipements = async (propertyId) => {
   setLoading(true);
   try {
-   const response = await axios.get(`/api/v1/amenities/${propertyId}`);
+   const response = await axios.get(`/api/v1/equipments/${propertyId}`);
    return response.data;
   } catch (error) {
    setError(error);
@@ -18,10 +18,10 @@ const useAmenity = () => {
   }
  };
 
- const getOneAmenity = async (id) => {
+ const getOneEquipement = async (id) => {
   setLoading(true);
   try {
-   const response = await axios.get(`/api/v1/amenities/one/${id}`);
+   const response = await axios.get(`/api/v1/equipments/one/${id}`);
    setLoading(false);
    return response.data;
   } catch (error) {
@@ -31,10 +31,10 @@ const useAmenity = () => {
   }
  };
 
- const postAmenity = async (amenityData) => {
+ const postEquipement = async (equipementData) => {
   setLoading(true);
   try {
-   const response = await axios.post(`/api/v1/amenities/`, amenityData);
+   const response = await axios.post(`/api/v1/equipments/`, equipementData);
    setLoading(false);
    return response.data;
   } catch (error) {
@@ -44,11 +44,11 @@ const useAmenity = () => {
   }
  };
 
- const updateAmenity = async (amenityData) => {
+ const updateEquipement = async (equipementData) => {
   try {
    const response = await axios.put(
-    `/api/v1/amenities/${amenityData.id}`,
-    amenityData
+    `/api/v1/equipements/${equipementData.id}`,
+    equipementData
    );
    return response.data;
   } catch (error) {
@@ -57,10 +57,10 @@ const useAmenity = () => {
   }
  };
 
- const deleteAmenity = async (id) => {
+ const deleteEquipement = async (id) => {
   setLoading(true);
   try {
-   const response = await axios.delete(`/api/v1/amenities/${id}`);
+   const response = await axios.delete(`/api/v1/equipments/${id}`);
    setLoading(false);
    return response.data;
   } catch (error) {
@@ -73,12 +73,12 @@ const useAmenity = () => {
  return {
   loading,
   error,
-  getAllAmenities,
-  getOneAmenity,
-  postAmenity,
-  updateAmenity,
-  deleteAmenity,
+  getAllEquipements,
+  getOneEquipement,
+  postEquipement,
+  updateEquipement,
+  deleteEquipement,
  };
 };
 
-export default useAmenity;
+export default useEquipement;

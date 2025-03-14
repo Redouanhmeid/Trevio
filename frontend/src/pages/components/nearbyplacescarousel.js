@@ -85,7 +85,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {PlacesToEat.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-plate-utensils"></i>{' '}
+      <i className="PrimaryColor fa-regular fa-plate-utensils"></i>{' '}
       {t('guidebook.tabs.places.restaurants')}
      </Title>
      <div style={{ position: 'relative' }}>
@@ -115,7 +115,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Activities.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-sun-cloud"></i>{' '}
+      <i className="PrimaryColor fa-regular fa-sun-cloud"></i>{' '}
       {t('guidebook.tabs.places.activities')}
      </Title>
      <div style={{ position: 'relative' }}>
@@ -143,7 +143,7 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Attractions.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-camera"></i>{' '}
+      <i className="PrimaryColor fa-regular fa-camera"></i>{' '}
       {t('guidebook.tabs.places.attractions')}
      </Title>
      <div style={{ position: 'relative' }}>
@@ -171,7 +171,8 @@ const NearbyPlacesCarousel = ({ latitude, longitude }) => {
    {Malls.length > 0 && (
     <>
      <Title level={3}>
-      <i className="fa-light fa-store"></i> {t('guidebook.tabs.places.malls')}
+      <i className="PrimaryColor fa-regular fa-store"></i>{' '}
+      {t('guidebook.tabs.places.malls')}
      </Title>
      <div style={{ position: 'relative' }}>
       <div className="nearbyplacescarouselarrow left">
@@ -203,19 +204,22 @@ const Place = ({ place }) => {
  const screens = useBreakpoint();
  return (
   <Card
+   hoverable={false}
+   bordered={false}
    className="custom-card"
    cover={
-    <div
-     className="nearbyplacescarousel"
-     style={{ borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}
-    >
+    <div className="nearbyplacescarousel" hoverable="false">
      <Image
       alt={place.name}
       src={place.photo}
       style={{
+       position: 'absolute',
+       top: 0,
+       left: 0,
        objectFit: 'cover',
        width: '100%',
        height: '100%',
+       borderRadius: 16,
       }}
      />
     </div>
@@ -224,23 +228,33 @@ const Place = ({ place }) => {
     width: 'calc(100% - 16px)',
     margin: '0 8px',
     height: screens.xs ? '220px' : 'auto',
+    position: 'relative',
+    textAlign: 'center',
    }}
   >
    <Card.Meta
     title={
-     <Text
-      style={{
-       fontSize: '16px',
-       display: '-webkit-box',
-       WebkitLineClamp: 2, // Limit to two lines
-       WebkitBoxOrient: 'vertical',
-       overflow: 'hidden',
-       textOverflow: 'ellipsis',
-       whiteSpace: 'normal', // Allow text to wrap
-      }}
+     <Flex
+      gap="middle"
+      justify="center"
+      align="center"
+      vertical
+      style={{ height: '54px' }}
      >
-      {place.name}
-     </Text>
+      <Text
+       style={{
+        fontSize: '16px',
+        display: '-webkit-box',
+        WebkitLineClamp: 2, // Limit to two lines
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'normal', // Allow text to wrap
+       }}
+      >
+       {place.name}
+      </Text>
+     </Flex>
     }
     description={
      <Flex justify="space-between" align="center" wrap>
@@ -258,7 +272,9 @@ const Place = ({ place }) => {
        target="_blank"
        type="link"
        size={40}
-       icon={<i className="fa-lg fa-light fa-map-location-dot"></i>}
+       icon={
+        <i className="fa-lg PrimaryColor fa-regular fa-map-location-dot"></i>
+       }
       />
      </Flex>
     }

@@ -1,4 +1,4 @@
-const { ReservationContract } = require('../models');
+const { ReservationContract, Reservation } = require('../models');
 
 // Create a new contract
 const createContract = async (req, res) => {
@@ -99,6 +99,69 @@ const getContractById = async (req, res) => {
  }
 };
 
+// Get contract by reservation ID
+const getContractByReservationId = async (req, res) => {
+ const { reservationId } = req.params;
+
+ try {
+  const contract = await ReservationContract.findOne({
+   where: { reservationId: reservationId },
+  });
+
+  if (!contract) {
+   return res
+    .status(404)
+    .json({ error: 'Contract not found for this reservation' });
+  }
+
+  res.status(200).json(contract);
+ } catch (error) {
+  console.error('Error getting contract by reservation ID:', error);
+  res.status(500).json({
+   error: 'Failed to get contract',
+   details: error.message,
+  });
+ }
+};
+
+// Get contract by hash
+const getContractByHash = async (req, res) => {
+ const { hashId } = req.params;
+
+ try {
+  const contract = await ReservationContract.findByHash(hashId);
+
+  if (!contract) {
+   return res.status(404).json({ error: 'Contract not found' });
+  }
+
+  // Include the associated reservation to get electronic lock data
+  const reservation = await Reservation.findOne({
+   where: { id: contract.reservationId },
+   attributes: [
+    'id',
+    'startDate',
+    'endDate',
+    'electronicLockEnabled',
+    'electronicLockCode',
+   ],
+  });
+
+  const responseData = contract.toJSON();
+  if (reservation) {
+   responseData.reservation = reservation;
+  }
+
+  res.status(200).json(responseData);
+ } catch (error) {
+  console.error('Error getting contract by hash:', error);
+  res.status(500).json({
+   error: 'Failed to get contract',
+   details: error.message,
+  });
+ }
+};
+
 // Update contract status
 const updateContractStatus = async (req, res) => {
  const { id } = req.params;
@@ -148,18 +211,28 @@ const updateContractStatus = async (req, res) => {
 // Check property availability
 const checkAvailability = async (req, res) => {
  const { propertyId } = req.params;
- const { startDate, endDate } = req.query;
+ const { startDate, endDate } = req.query; // For GET request
+ // const { startDate, endDate } = req.body;  // If you prefer POST
 
  try {
-  const isAvailable = await ReservationContract.checkAvailability(
+  if (!startDate || !endDate) {
+   return res.status(400).json({
+    error: 'Missing required dates',
+    details: 'Both startDate and endDate are required',
+   });
+  }
+
+  const result = await ReservationContract.checkAvailability(
    propertyId,
-   new Date(startDate),
-   new Date(endDate)
+   startDate,
+   endDate
   );
 
   res.status(200).json({
-   available: isAvailable,
-   dates: { startDate, endDate },
+   propertyId,
+   startDate,
+   endDate,
+   ...result,
   });
  } catch (error) {
   console.error('Error checking availability:', error);
@@ -176,6 +249,8 @@ module.exports = {
  deleteContract,
  getContractsForProperty,
  getContractById,
+ getContractByReservationId,
+ getContractByHash,
  updateContractStatus,
  checkAvailability,
 };

@@ -11,6 +11,7 @@ import {
  Tag,
  Popconfirm,
  Image,
+ Rate,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
@@ -19,9 +20,10 @@ import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
 import { useTranslation } from '../../context/TranslationContext';
+import { frFormatDate } from '../../utils/utils';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const NearbyPlaces = () => {
  const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
@@ -129,6 +131,7 @@ const NearbyPlaces = () => {
    key: 'name',
    sorter: (a, b) => a.name.localeCompare(b.name),
    ...getColumnSearchProps('name'),
+   render: (text) => <Text strong>{text}</Text>,
   },
   {
    title: t('nearbyPlace.address'),
@@ -142,37 +145,37 @@ const NearbyPlaces = () => {
    dataIndex: 'rating',
    key: 'rating',
    sorter: (a, b) => a.rating - b.rating,
-   render: (rating) => <span>{rating} / 5</span>,
+   render: (rating) => <Rate value={rating} disabled />,
   },
   {
-   title: t('manager.verified'),
+   title: t('user.verified'),
    dataIndex: 'isVerified',
    key: 'isVerified',
    filters: [
-    { text: t('manager.verifiedStatus.verified'), value: true },
-    { text: t('manager.verifiedStatus.unverified'), value: false },
+    { text: t('user.verifiedStatus.verified'), value: true },
+    { text: t('user.verifiedStatus.unverified'), value: false },
    ],
    onFilter: (value, record) => record.isVerified === value,
    render: (isVerified) => (
     <Tag color={isVerified ? 'green' : 'red'}>
      {isVerified
-      ? t('manager.verifiedStatus.verified')
-      : t('manager.verifiedStatus.unverified')}
+      ? t('user.verifiedStatus.verified')
+      : t('user.verifiedStatus.unverified')}
     </Tag>
    ),
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-   render: (createdAt) => new Date(createdAt).toLocaleString(),
+   render: (createdAt) => frFormatDate(createdAt),
   },
   {
    title: t('property.actions.actions'),
    key: 'actions',
    render: (_, record) => (
-    <Space>
+    <Space align="baseline">
      <Button
       icon={<i className="Dashicon fa-light fa-pen-to-square" key="edit" />}
       onClick={() => navigate(`/nearbyplace?id=${record.id}`)}
@@ -209,10 +212,9 @@ const NearbyPlaces = () => {
  return (
   <Layout className="contentStyle">
    <Head />
-   <Content className="container-fluid">
+   <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="link"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >

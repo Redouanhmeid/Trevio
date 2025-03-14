@@ -1,0 +1,5 @@
+CREATE DATABASE IF NOT EXISTS concierge_wp;
+GRANT ALL PRIVILEGES ON concierge_wp.* TO 'wordpress'@'%';
+CREATE DATABASE IF NOT EXISTS trevio_app;
+GRANT ALL PRIVILEGES ON trevio_app.* TO 'root'@'%';
+FLUSH PRIVILEGES;

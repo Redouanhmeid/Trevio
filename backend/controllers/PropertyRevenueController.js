@@ -1,43 +1,59 @@
 // controllers/PropertyRevenueController.js
-const { PropertyRevenue, Property } = require('../models');
+const { PropertyRevenue, Property, Reservation } = require('../models');
 const { Op } = require('sequelize');
 
-const addMonthlyRevenue = async (req, res) => {
+const addRevenue = async (req, res) => {
  try {
-  const { propertyId, amount, month, year, notes, createdBy } = req.body;
+  const {
+   propertyId,
+   reservationId,
+   amount,
+   startDate,
+   endDate,
+   notes,
+   createdBy,
+  } = req.body;
 
-  // Check if revenue for this month already exists
+  // Check if revenue for this period already exists
   const existingRevenue = await PropertyRevenue.findOne({
-   where: { propertyId, month, year },
+   where: {
+    propertyId,
+    [Op.or]: [
+     {
+      startDate: { [Op.lte]: endDate },
+      endDate: { [Op.gte]: startDate },
+     },
+    ],
+   },
   });
 
   if (existingRevenue) {
    return res.status(400).json({
-    error: 'Les revenus de ce mois existent déjà',
+    error: 'Les revenus pour cette période existent déjà',
    });
   }
 
   const revenue = await PropertyRevenue.create({
    propertyId,
+   reservationId,
    amount,
-   month,
-   year,
+   startDate,
+   endDate,
    notes,
    createdBy,
   });
 
   res.status(201).json(revenue);
-  console.log(res);
  } catch (error) {
   console.error(error);
   res.status(500).json({ error: "Échec de l'ajout de revenus" });
  }
 };
 
-const updateMonthlyRevenue = async (req, res) => {
+const updateRevenue = async (req, res) => {
  try {
   const { id } = req.params;
-  const { amount, notes, month, year } = req.body;
+  const { amount, notes, startDate, endDate } = req.body;
 
   const revenue = await PropertyRevenue.findByPk(id);
 
@@ -47,18 +63,27 @@ const updateMonthlyRevenue = async (req, res) => {
     .json({ error: 'Enregistrement des revenus non trouvé' });
   }
 
-  // Check if revenue for the updated month and year already exists
+  // Check if another revenue for the updated period already exists
   const existingRevenue = await PropertyRevenue.findOne({
-   where: { propertyId: revenue.propertyId, month, year },
+   where: {
+    propertyId: revenue.propertyId,
+    id: { [Op.ne]: id },
+    [Op.or]: [
+     {
+      startDate: { [Op.lte]: endDate },
+      endDate: { [Op.gte]: startDate },
+     },
+    ],
+   },
   });
 
-  if (existingRevenue && existingRevenue.id !== revenue.id) {
+  if (existingRevenue) {
    return res
     .status(400)
-    .json({ error: 'Les revenus de ce mois existent déjà' });
+    .json({ error: 'Les revenus pour cette période existent déjà' });
   }
 
-  await revenue.update({ amount, notes, month, year });
+  await revenue.update({ amount, notes, startDate, endDate });
 
   res.status(200).json(revenue);
  } catch (error) {
@@ -70,19 +95,11 @@ const updateMonthlyRevenue = async (req, res) => {
 const getPropertyRevenue = async (req, res) => {
  try {
   const { propertyId } = req.params;
-  const { year, month } = req.query;
-
   const whereClause = { propertyId };
-
-  if (year) whereClause.year = year;
-  if (month) whereClause.month = month;
 
   const revenues = await PropertyRevenue.findAll({
    where: whereClause,
-   order: [
-    ['year', 'DESC'],
-    ['month', 'DESC'],
-   ],
+   order: [['startDate', 'DESC']],
    include: [
     {
      model: Property,
@@ -106,27 +123,91 @@ const getAnnualRevenue = async (req, res) => {
   const { propertyId } = req.params;
   const { year } = req.params;
 
+  // Calculate date range for the specified year
+  const startOfYear = new Date(parseInt(year), 0, 1);
+  const endOfYear = new Date(parseInt(year), 11, 31);
+
   const revenues = await PropertyRevenue.findAll({
    where: {
     propertyId,
-    year,
+    [Op.or]: [
+     { startDate: { [Op.between]: [startOfYear, endOfYear] } },
+     { endDate: { [Op.between]: [startOfYear, endOfYear] } },
+     {
+      [Op.and]: [
+       { startDate: { [Op.lte]: startOfYear } },
+       { endDate: { [Op.gte]: endOfYear } },
+      ],
+     },
+    ],
    },
-   order: [['month', 'ASC']],
-   attributes: ['month', 'amount', 'notes'],
+   order: [['startDate', 'ASC']],
+   attributes: ['startDate', 'endDate', 'amount', 'notes'],
   });
 
-  const totalRevenue = revenues.reduce(
+  // Group revenues by month for the annual report
+  const monthlyRevenues = Array(12)
+   .fill(0)
+   .map((_, i) => ({
+    month: i + 1,
+    amount: 0,
+    notes: '',
+   }));
+
+  // Distribute revenue across months proportionally if it spans multiple months
+  revenues.forEach((revenue) => {
+   const start = new Date(Math.max(revenue.startDate, startOfYear));
+   const end = new Date(Math.min(revenue.endDate, endOfYear));
+
+   const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+   const amount = parseFloat(revenue.amount);
+
+   // Create a map of days per month in this revenue period
+   const monthDays = {};
+   let currentDate = new Date(start);
+
+   while (currentDate <= end) {
+    const month = currentDate.getMonth();
+    monthDays[month] = (monthDays[month] || 0) + 1;
+
+    // Move to next day
+    currentDate.setDate(currentDate.getDate() + 1);
+   }
+
+   // Distribute revenue proportionally based on days in each month
+   Object.entries(monthDays).forEach(([month, days]) => {
+    const monthIndex = parseInt(month);
+    const proportion = days / totalDays;
+    monthlyRevenues[monthIndex].amount += amount * proportion;
+
+    // Add note if there's any
+    if (revenue.notes) {
+     if (monthlyRevenues[monthIndex].notes) {
+      monthlyRevenues[monthIndex].notes += '; ';
+     }
+     monthlyRevenues[monthIndex].notes += revenue.notes;
+    }
+   });
+  });
+
+  // Calculate total revenue for the year
+  const totalRevenue = monthlyRevenues.reduce(
    (sum, rev) => sum + Number(rev.amount),
    0
   );
 
+  // Format amounts to 2 decimal places
+  monthlyRevenues.forEach((rev) => {
+   rev.amount = Math.round(rev.amount * 100) / 100;
+  });
+
   res.status(200).json({
-   revenues,
-   totalRevenue,
+   revenues: monthlyRevenues,
+   totalRevenue: Math.round(totalRevenue * 100) / 100,
   });
  } catch (error) {
   console.error(error);
-  res.status(500).json({ error: 'Échec de la récupération du revenu annuele' });
+  res.status(500).json({ error: 'Échec de la récupération du revenu annuel' });
  }
 };
 
@@ -155,10 +236,54 @@ const deleteRevenue = async (req, res) => {
  }
 };
 
+// New function to create revenue from a contract
+const createRevenueFromReservation = async (req, res) => {
+ try {
+  const { reservationId } = req.params;
+  const { amount, notes, createdBy } = req.body;
+
+  // Fetch the reservation to get propertyId and dates
+  const reservation = await Reservation.findByPk(reservationId);
+
+  if (!reservation) {
+   return res.status(404).json({ error: 'Réservation non trouvée' });
+  }
+
+  // Check if revenue already exists for this reservation
+  const existingRevenue = await PropertyRevenue.findOne({
+   where: { reservationId },
+  });
+
+  if (existingRevenue) {
+   return res.status(400).json({
+    error: 'Un revenu existe déjà pour cette réservation',
+   });
+  }
+
+  const revenue = await PropertyRevenue.create({
+   propertyId: reservation.propertyId,
+   reservationId,
+   amount,
+   startDate: reservation.startDate,
+   endDate: reservation.endDate,
+   notes,
+   createdBy,
+  });
+
+  res.status(201).json(revenue);
+ } catch (error) {
+  console.error(error);
+  res
+   .status(500)
+   .json({ error: "Échec de l'ajout de revenus depuis la réservation" });
+ }
+};
+
 module.exports = {
- addMonthlyRevenue,
- updateMonthlyRevenue,
+ addRevenue,
+ updateRevenue,
  getPropertyRevenue,
  getAnnualRevenue,
  deleteRevenue,
+ createRevenueFromReservation,
 };

@@ -106,8 +106,8 @@ const UPLOADS_PATH =
  process.env.UPLOADS_PATH || path.join(__dirname, 'uploads');
 const AVATARS_PATH =
  process.env.AVATARS_PATH || path.join(__dirname, 'avatars');
-const AMENITIES_PATH =
- process.env.AMENITIES_PATH || path.join(__dirname, 'amenities');
+const EQUIPMENTS_PATH =
+ process.env.EQUIPMENTS_PATH || path.join(__dirname, 'equipments');
 const FRONTPHOTOS_PATH =
  process.env.FRONTPHOTOS_PATH || path.join(__dirname, 'frontphotos');
 const PLACES_PATH = process.env.PLACES_PATH || path.join(__dirname, 'places');
@@ -131,8 +131,8 @@ const avatars = multer({
   checkFileType(file, cb);
  },
 });
-const amenitiesUpload = multer({
- storage: storage(AMENITIES_PATH),
+const equipmentsUpload = multer({
+ storage: storage(EQUIPMENTS_PATH),
  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit
  fileFilter: function (req, file, cb) {
   checkFileType(file, cb);
@@ -207,7 +207,7 @@ app.post('/places', singleUpload.single('photo'), (req, res) => {
 app.use('/places', express.static(PLACES_PATH));
 
 // Handle file upload for avatars
-app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
+app.post('/avatars', avatars.single('avatar'), (req, res) => {
  if (!req.file) {
   return res.status(400).json({ error: 'No file uploaded' });
  }
@@ -222,20 +222,20 @@ app.post('/upload/avatars', avatars.single('avatar'), (req, res) => {
 
 app.use('/avatars', express.static(AVATARS_PATH));
 
-app.post('/amenities', amenitiesUpload.single('photo'), (req, res) => {
+app.post('/equipments', equipmentsUpload.single('photo'), (req, res) => {
  if (!req.file) {
   return res.status(400).json({ error: 'No file uploaded' });
  }
 
  const file = {
   filename: req.file.filename,
-  url: `/amenities/${req.file.filename}`,
+  url: `/equipments/${req.file.filename}`,
  };
 
  res.json({ file: file });
 });
 
-app.use('/amenities', express.static(AMENITIES_PATH));
+app.use('/equipments', express.static(EQUIPMENTS_PATH));
 
 app.post('/frontphotos', frontPhotoUpload.single('photo'), (req, res) => {
  if (!req.file) {
@@ -280,25 +280,31 @@ app.post('/identities', identityUpload.single('identity'), (req, res) => {
 app.use('/identities', express.static(IDENTITIES_PATH));
 
 // require routes
-const PropertyManagerRouter = require('./routes/propertymanager');
+const UserRouter = require('./routes/user');
 const PropertyRouter = require('./routes/property');
+const ReservationRouter = require('./routes/reservation');
 const NearbyPlaceRouter = require('./routes/nearbyplace');
-const AmenityRouter = require('./routes/amenity');
+const EquipmentRouter = require('./routes/equipment');
 const ReservationContractRouter = require('./routes/reservationcontract');
 const PropertyRevenueRouter = require('./routes/propertyrevenue');
 const PropertyTaskRouter = require('./routes/propertytask');
 const NotificationRouter = require('./routes/notification');
+const managerInvitationRoutes = require('./routes/managerinvitation');
+const conciergeRoutes = require('./routes/concierge');
 
 // Routes
 // All of our routes will be prefixed with /api/v1/
-app.use('/api/v1/propertymanagers', PropertyManagerRouter);
+app.use('/api/v1/users', UserRouter);
 app.use('/api/v1/properties', PropertyRouter);
+app.use('/api/v1/reservations', ReservationRouter);
 app.use('/api/v1/nearbyplaces', NearbyPlaceRouter);
-app.use('/api/v1/amenities', AmenityRouter);
+app.use('/api/v1/equipments', EquipmentRouter);
 app.use('/api/v1/reservationcontract', ReservationContractRouter);
 app.use('/api/v1/propertyrevenue', PropertyRevenueRouter);
 app.use('/api/v1/propertytask', PropertyTaskRouter);
 app.use('/api/v1/notifications', NotificationRouter);
+app.use('/api/v1/manager-invitations', managerInvitationRoutes);
+app.use('/api/v1/concierges', conciergeRoutes);
 
 // Serve static files from the React app
 const REACT_APP_PATH =

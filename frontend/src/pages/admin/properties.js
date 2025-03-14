@@ -20,9 +20,10 @@ import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
+import { frFormatDate } from '../../utils/utils';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const Properties = () => {
  const {
@@ -33,11 +34,11 @@ const Properties = () => {
   deleteProperty,
   fetchAllProperties,
  } = useProperty();
- const { fetchManagerById } = useUserData();
+ const { fetchUserById } = useUserData();
  const navigate = useNavigate();
  const { t } = useTranslation();
 
- const [managersMap, setManagersMap] = useState({});
+ const [usersMap, setUsersMap] = useState({});
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
 
@@ -46,41 +47,33 @@ const Properties = () => {
  }, [loading]);
 
  useEffect(() => {
-  const fetchManagersData = async () => {
-   const newManagersMap = { ...managersMap };
+  const fetchUsersData = async () => {
+   const newUsersMap = { ...usersMap };
 
    for (const property of properties) {
-    if (
-     property.propertyManagerId &&
-     !newManagersMap[property.propertyManagerId]
-    ) {
+    if (property.userId && !newUsersMap[property.userId]) {
      try {
-      // Await the manager data directly from the API
-      const manager = await fetchManagerById(property.propertyManagerId);
+      // Await the user data directly from the API
+      const user = await fetchUserById(property.userId);
 
-      // Check if the manager data is available and update the map
-      if (manager && manager.firstname && manager.lastname) {
-       newManagersMap[
-        property.propertyManagerId
-       ] = `${manager.firstname} ${manager.lastname}`;
+      // Check if the user data is available and update the map
+      if (user && user.firstname && user.lastname) {
+       newUsersMap[property.userId] = `${user.firstname} ${user.lastname}`;
       } else {
-       console.warn(`No manager found for ID: ${property.propertyManagerId}`);
-       newManagersMap[property.propertyManagerId] = t('manager.unknown'); // Fallback
+       console.warn(`No user found for ID: ${property.userId}`);
+       newUsersMap[property.userId] = t('user.unknown'); // Fallback
       }
      } catch (error) {
-      console.error(
-       `Failed to fetch manager with ID: ${property.propertyManagerId}`,
-       error
-      );
-      newManagersMap[property.propertyManagerId] = t('manager.loadError'); // Error fallback
+      console.error(`Failed to fetch user with ID: ${property.userId}`, error);
+      newUsersMap[property.userId] = t('user.loadError'); // Error fallback
      }
     }
    }
-   setManagersMap(newManagersMap);
+   setUsersMap(newUsersMap);
   };
 
   if (properties.length > 0) {
-   fetchManagersData();
+   fetchUsersData();
   }
  }, [properties]);
 
@@ -137,10 +130,10 @@ const Properties = () => {
    <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
   ),
   onFilter: (value, record) => {
-   if (dataIndex === 'propertyManagerId') {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName
-     ? managerName.toLowerCase().includes(value.toLowerCase())
+   if (dataIndex === 'userId') {
+    const userName = usersMap[record.userId];
+    return userName
+     ? userName.toLowerCase().includes(value.toLowerCase())
      : false;
    }
    return record[dataIndex]
@@ -148,9 +141,9 @@ const Properties = () => {
     : false;
   },
   render: (text, record) => {
-   if (dataIndex === 'propertyManagerId') {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName || t('common.loading');
+   if (dataIndex === 'userId') {
+    const userName = usersMap[record.userId];
+    return userName || t('common.loading');
    }
    return searchedColumn === dataIndex ? <strong>{text}</strong> : text;
   },
@@ -167,7 +160,7 @@ const Properties = () => {
    key: 'photos',
    render: (photos) =>
     photos && photos.length > 0 ? (
-     <Image src={photos[0]} shape="square" size="large" width={64} />
+     <Image src={photos[0]} shape="square" size="large" width={80} />
     ) : null,
   },
   {
@@ -176,11 +169,13 @@ const Properties = () => {
    key: 'name',
    sorter: (a, b) => a.name.localeCompare(b.name),
    ...getColumnSearchProps('name'),
+   render: (text) => <Text strong>{text}</Text>,
   },
   {
    title: t('property.basic.type'),
    dataIndex: 'type',
    key: 'type',
+   width: 130,
    filterDropdown: ({
     setSelectedKeys,
     selectedKeys,
@@ -232,6 +227,7 @@ const Properties = () => {
    title: t('property.basic.price'),
    dataIndex: 'price',
    key: 'price',
+   width: 120,
    sorter: (a, b) => a.price - b.price,
    render: (price) => `${price} ${t('property.basic.priceNight')}`,
   },
@@ -337,20 +333,20 @@ const Properties = () => {
    ...getColumnSearchProps('placeName'),
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-   render: (createdAt) => new Date(createdAt).toLocaleString(),
+   render: (createdAt) => frFormatDate(createdAt),
   },
   {
-   title: t('manager.manager'),
-   key: 'propertyManagerId',
+   title: t('user.user'),
+   key: 'userId',
    render: (_, record) => {
-    const managerName = managersMap[record.propertyManagerId]; // Get the manager's name from the map
-    return managerName || t('common.loading'); // Display the manager's name or 'Loading...'
+    const userName = usersMap[record.userId]; // Get the user's name from the map
+    return userName || t('common.loading'); // Display the user's name or 'Loading...'
    },
-   // Add search filter based on manager's name
+   // Add search filter based on user's name
    filterDropdown: ({
     setSelectedKeys,
     selectedKeys,
@@ -359,7 +355,7 @@ const Properties = () => {
    }) => (
     <div style={{ padding: 8 }}>
      <Input
-      placeholder={t('property.searchManager')}
+      placeholder={t('property.searchUser')}
       value={selectedKeys[0]}
       onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
       onPressEnter={() => confirm()}
@@ -389,9 +385,9 @@ const Properties = () => {
     <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
    ),
    onFilter: (value, record) => {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName
-     ? managerName.toLowerCase().includes(value.toLowerCase())
+    const userName = usersMap[record.userId];
+    return userName
+     ? userName.toLowerCase().includes(value.toLowerCase())
      : false;
    },
   },
@@ -402,19 +398,13 @@ const Properties = () => {
     <Space>
      <Button
       icon={<i className="Dashicon fa-light fa-eye" key="display" />}
-      onClick={() => navigate(`/propertydetails?id=${record.id}`)}
-      type="link"
-      shape="circle"
-     />
-     <Button
-      icon={<i className="Dashicon fa-light fa-pen-to-square" key="edit" />}
-      onClick={() => navigate(`/editproperty?id=${record.id}`)}
+      onClick={() => navigate(`/propertydetails?hash=${record.hashId}`)}
       type="link"
       shape="circle"
      />
      <Button
       icon={<i className="Dashicon fa-light fa-house-lock" key="ellipsis" />}
-      onClick={() => navigate(`/digitalguidebook?id=${record.id}`)}
+      onClick={() => navigate(`/digitalguidebook?hash=${record.hashId}`)}
       type="link"
       shape="circle"
      />
@@ -482,10 +472,9 @@ const Properties = () => {
  return (
   <Layout className="contentStyle">
    <Head />
-   <Content className="container-fluid">
+   <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="link"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >

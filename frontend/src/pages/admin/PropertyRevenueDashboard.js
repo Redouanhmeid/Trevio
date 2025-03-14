@@ -239,7 +239,7 @@ const PropertyRevenueDashboard = () => {
 
    if (result) {
     const notification = await createRevenueUpdateNotification(
-     Number(userId), // propertyManagerId
+     Number(userId), // userId
      Number(propertyId, 10), // propertyId
      parseInt(values.amount), // amount
      month, // month
@@ -286,8 +286,7 @@ const PropertyRevenueDashboard = () => {
    <Head onUserData={handleUserData} />
    <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="text"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
@@ -364,7 +363,7 @@ const PropertyRevenueDashboard = () => {
          <Line
           type="monotone"
           dataKey="revenue"
-          stroke="#aa7e42"
+          stroke="#6D5FFA"
           activeDot={{ r: 8 }}
          />
         </LineChart>

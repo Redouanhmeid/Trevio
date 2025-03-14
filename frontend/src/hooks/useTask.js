@@ -47,6 +47,20 @@ const useTask = () => {
   }
  };
 
+ const getUserTasks = async (userId) => {
+  setLoading(true);
+  try {
+   let url = `${apiBase}/user/${userId}/tasks`;
+   const response = await axios.get(url);
+   return response.data;
+  } catch (error) {
+   setError(error);
+   return null;
+  } finally {
+   setLoading(false);
+  }
+ };
+
  const createTask = async (taskData) => {
   setLoading(true);
   try {
@@ -106,6 +120,7 @@ const useTask = () => {
   error,
   getPropertyTasks,
   getTask,
+  getUserTasks,
   createTask,
   updateTask,
   updateTaskStatus,

@@ -38,23 +38,15 @@ const PendingProperties = () => {
 
  const { createPropertyVerificationNotification } = useNotification();
 
- const [managersMap, setManagersMap] = useState({});
+ const [usersMap, setUsersMap] = useState({});
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
  const [selectionType, setSelectionType] = useState('checkbox');
  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
  // Handle single property verification
- const handleVerifyProperty = async (
-  propertyManagerId,
-  propertyId,
-  propertyName
- ) => {
-  const result = await verifyProperty(
-   propertyManagerId,
-   propertyId,
-   propertyName
-  );
+ const handleVerifyProperty = async (userId, propertyId, propertyName) => {
+  const result = await verifyProperty(userId, propertyId, propertyName);
   if (result) {
    message.success(t('property.verifySuccess'));
   }
@@ -135,10 +127,10 @@ const PendingProperties = () => {
    <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
   ),
   onFilter: (value, record) => {
-   if (dataIndex === 'propertyManagerId') {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName
-     ? managerName.toLowerCase().includes(value.toLowerCase())
+   if (dataIndex === 'userId') {
+    const userName = usersMap[record.userId];
+    return userName
+     ? userName.toLowerCase().includes(value.toLowerCase())
      : false;
    }
    return record[dataIndex]
@@ -146,9 +138,9 @@ const PendingProperties = () => {
     : false;
   },
   render: (text, record) => {
-   if (dataIndex === 'propertyManagerId') {
-    const managerName = managersMap[record.propertyManagerId];
-    return managerName || t('common.loading');
+   if (dataIndex === 'userId') {
+    const userName = usersMap[record.userId];
+    return userName || t('common.loading');
    }
    return searchedColumn === dataIndex ? <strong>{text}</strong> : text;
   },
@@ -183,7 +175,7 @@ const PendingProperties = () => {
    render: (_, record) => (
     <Button
      icon={<i className="Dashicon fa-light fa-eye" key="display" />}
-     onClick={() => navigate(`/propertydetails?id=${record.id}`)}
+     onClick={() => navigate(`/propertydetails?hash=${record.hashId}`)}
      type="link"
      shape="circle"
     />
@@ -354,7 +346,7 @@ const PendingProperties = () => {
    ...getColumnSearchProps('placeName'),
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
@@ -367,9 +359,7 @@ const PendingProperties = () => {
    render: (_, record) => (
     <Button
      type="primary"
-     onClick={() =>
-      handleVerifyProperty(record.propertyManagerId, record.id, record.name)
-     }
+     onClick={() => handleVerifyProperty(record.userId, record.id, record.name)}
     >
      {t('property.verify')}
     </Button>
@@ -394,10 +384,9 @@ const PendingProperties = () => {
  return (
   <Layout className="contentStyle">
    <Head />
-   <Content className="container-fluid">
+   <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="link"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >

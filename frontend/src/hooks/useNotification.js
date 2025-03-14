@@ -9,11 +9,11 @@ const useNotification = () => {
 
  const apiBase = '/api/v1/notifications';
 
- // Get all notifications for a property manager
- const getManagerNotifications = async (propertyManagerId) => {
+ // Get all notifications for a user
+ const getUserNotifications = async (userId) => {
   setLoading(true);
   try {
-   const response = await axios.get(`${apiBase}/manager/${propertyManagerId}`);
+   const response = await axios.get(`${apiBase}/user/${userId}`);
    return response.data;
   } catch (error) {
    setError(error);
@@ -67,9 +67,9 @@ const useNotification = () => {
  };
 
  // Get unread notifications count
- const getUnreadCount = async (propertyManagerId) => {
+ const getUnreadCount = async (userId) => {
   try {
-   const response = await axios.get(`${apiBase}/unread/${propertyManagerId}`);
+   const response = await axios.get(`${apiBase}/unread/${userId}`);
    return response.data.unreadCount;
   } catch (error) {
    setError(error);
@@ -91,13 +91,11 @@ const useNotification = () => {
   }
  };
 
- // Mark all notifications as read for a manager
- const markAllAsRead = async (propertyManagerId) => {
+ // Mark all notifications as read for a user
+ const markAllAsRead = async (userId) => {
   setLoading(true);
   try {
-   const response = await axios.put(
-    `${apiBase}/manager/${propertyManagerId}/read-all`
-   );
+   const response = await axios.put(`${apiBase}/user/${userId}/read-all`);
    return response.data;
   } catch (error) {
    setError(error);
@@ -108,12 +106,12 @@ const useNotification = () => {
  };
 
  const createPropertyVerificationNotification = async (
-  propertyManagerId,
+  userId,
   propertyId,
   propertyName
  ) => {
   return await createNotification({
-   propertyManagerId,
+   userId,
    propertyId,
    title: t('notification.messages.createTitle'),
    message: `${t('notification.messages.createMessage1')}${propertyName}${t(
@@ -126,13 +124,13 @@ const useNotification = () => {
 
  // Helper function to create common notifications
  const createPropertyUpdateNotification = async (
-  propertyManagerId,
+  userId,
   propertyId,
   title,
   message
  ) => {
   return await createNotification({
-   propertyManagerId,
+   userId,
    propertyId,
    title,
    message,
@@ -142,14 +140,14 @@ const useNotification = () => {
  };
 
  const createRevenueUpdateNotification = async (
-  propertyManagerId,
+  userId,
   propertyId,
   amount,
   month,
   year
  ) => {
   return await createNotification({
-   propertyManagerId,
+   userId,
    propertyId,
    title: t('notification.messages.revenueTitle'),
    message: `${t('notification.messages.revenueMessage1')}${amount}${t(
@@ -161,13 +159,13 @@ const useNotification = () => {
  };
 
  const createTaskUpdateNotification = async (
-  propertyManagerId,
+  userId,
   propertyId,
   taskTitle,
   priority
  ) => {
   return await createNotification({
-   propertyManagerId,
+   userId,
    propertyId,
    title: 'Nouvelle tâche',
    message: `Une nouvelle tâche "${taskTitle}" (Priorité: ${priority}) a été créée.`,
@@ -179,7 +177,7 @@ const useNotification = () => {
  return {
   loading,
   error,
-  getManagerNotifications,
+  getUserNotifications,
   getPropertyNotifications,
   createNotification,
   markAsRead,

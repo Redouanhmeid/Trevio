@@ -2,17 +2,23 @@
 const express = require('express');
 const router = express.Router();
 const {
- addMonthlyRevenue,
- updateMonthlyRevenue,
+ addRevenue,
+ updateRevenue,
  getPropertyRevenue,
  getAnnualRevenue,
  deleteRevenue,
+ createRevenueFromReservation,
 } = require('../controllers/PropertyRevenueController');
 
-router.post('/revenue', addMonthlyRevenue);
-router.put('/revenue/:id', updateMonthlyRevenue);
+// Basic revenue CRUD operations
+router.post('/revenue', addRevenue);
+router.put('/revenue/:id', updateRevenue);
 router.get('/property/:propertyId/revenue', getPropertyRevenue);
 router.get('/property/:propertyId/annual-revenue/:year', getAnnualRevenue);
 router.delete('/revenue/:id', deleteRevenue);
+router.post(
+ '/reservation/:reservationId/revenue',
+ createRevenueFromReservation
+);
 
 module.exports = router;

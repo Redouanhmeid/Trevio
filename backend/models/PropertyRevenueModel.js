@@ -1,4 +1,3 @@
-// models/PropertyRevenueModel.js
 module.exports = (db, type) => {
  const propertyRevenue = db.define('propertyrevenue', {
   id: {
@@ -14,20 +13,24 @@ module.exports = (db, type) => {
     key: 'id',
    },
   },
+  reservationId: {
+   type: type.INTEGER,
+   allowNull: true,
+   references: {
+    model: 'reservations',
+    key: 'id',
+   },
+  },
   amount: {
    type: type.DECIMAL(10, 2),
    allowNull: false,
   },
-  month: {
-   type: type.INTEGER,
+  startDate: {
+   type: type.DATEONLY,
    allowNull: false,
-   validate: {
-    min: 1,
-    max: 12,
-   },
   },
-  year: {
-   type: type.INTEGER,
+  endDate: {
+   type: type.DATEONLY,
    allowNull: false,
   },
   notes: {

@@ -1,17 +1,24 @@
-import { Select } from 'antd';
+import { Dropdown } from 'antd';
 import { useTranslation } from '../context/TranslationContext';
-import languages from './languages';
+import getLanguages from './languages';
 
 export const LanguageSelector = () => {
  const { currentLanguage, setLanguage } = useTranslation();
 
+ const menuItems = {
+  items: getLanguages(currentLanguage).map((option) => ({
+   key: option.value,
+   label: option.label,
+   onClick: () => setLanguage(option.value),
+  })),
+ };
+
  return (
-  <Select
-   value={currentLanguage}
-   onChange={setLanguage}
-   options={languages}
-   style={{ width: 120 }}
-   dropdownStyle={{ maxHeight: 400 }}
-  />
+  <Dropdown menu={menuItems} trigger={['click']} placement="bottomRight">
+   <i
+    className="PrimaryColor fa-light fa-globe fa-2xl"
+    style={{ cursor: 'pointer' }}
+   />
+  </Dropdown>
  );
 };

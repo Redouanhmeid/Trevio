@@ -25,7 +25,7 @@ import { useTranslation } from '../../../context/TranslationContext';
 const { Content } = Layout;
 const { Title } = Typography;
 
-const Step1NameAddresse = ({ next, handleFormData, values }) => {
+const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
@@ -51,17 +51,17 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
   {
    label: t('type.house'),
    value: 'house',
-   icon: <i className="Radioicon fa-light fa-house"></i>,
+   icon: <i className="Radioicon fa-regular fa-house"></i>,
   },
   {
    label: t('type.apartment'),
    value: 'apartment',
-   icon: <i className="Radioicon fa-light fa-building"></i>,
+   icon: <i className="Radioicon fa-regular fa-building"></i>,
   },
   {
    label: t('type.guesthouse'),
    value: 'guesthouse',
-   icon: <i className="Radioicon fa-light fa-house-user"></i>,
+   icon: <i className="Radioicon fa-regular fa-house-user"></i>,
   },
  ];
 
@@ -101,7 +101,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
     latitude: mapValues.latitude,
     longitude: mapValues.longitude,
     placeName: mapValues.placeName,
-    propertyManagerId: userData.id,
+    userId: userData.id,
    };
 
    // Create the property
@@ -127,7 +127,8 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
   <Layout className="contentStyle">
    <Head />
    <Layout>
-    <Content className="container">
+    <Content className="container-form">
+     <ProgressSteps />
      <Form
       form={form}
       name="step1"
@@ -135,12 +136,13 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
       onFinish={submitFormData}
       size="large"
      >
-      <Title level={3}>{t('property.basic.title')}</Title>
+      <Title level={2}>{t('property.basic.title')}</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
         <Form.Item
          label={t('type.select')}
          name="type"
+         className="hide-required-mark"
          rules={[
           {
            required: true,
@@ -175,6 +177,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
         <Form.Item
          label={t('property.basic.name')}
          name="name"
+         className="hide-required-mark"
          rules={[
           {
            required: true,
@@ -190,6 +193,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
         <Form.Item
          label={t('property.basic.description')}
          name="description"
+         className="hide-required-mark"
          rules={[
           {
            required: true,
@@ -250,6 +254,7 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
         <Form.Item
          label={t('property.basic.selectLocation')}
          required
+         className="hide-required-mark"
          rules={[
           {
            validator: (_, value) => {
@@ -270,10 +275,10 @@ const Step1NameAddresse = ({ next, handleFormData, values }) => {
        </Col>
       </Row>
       <br />
-      <Row justify="end">
-       <Col xs={{ span: 12, offset: 12 }} md={{ span: 4, offset: 20 }}>
+      <Row justify="center">
+       <Col xs={12} md={12}>
         <Form.Item>
-         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+         <Button type="primary" htmlType="submit" block>
           {t('button.continue')} {<ArrowRightOutlined />}
          </Button>
         </Form.Item>

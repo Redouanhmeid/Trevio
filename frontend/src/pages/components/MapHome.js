@@ -28,7 +28,7 @@ const MapHome = React.memo(
   range,
   roomValue,
   paxValue,
-  checkedbasicAmenities,
+  checkedbasicEquipements,
  }) => {
   const { t } = useTranslation();
   const [mapCenter, setMapCenter] = useState(FALLBACK_CENTER);
@@ -59,8 +59,8 @@ const MapHome = React.memo(
    setSelectedPlace(null);
   };
 
-  const display = (id) => {
-   navigate(`/propertydetails?id=${id}`);
+  const display = (hashId) => {
+   navigate(`/propertydetails?hash=${hashId}`);
   };
 
   const onMapIdle = useCallback(() => {
@@ -94,12 +94,12 @@ const MapHome = React.memo(
       range,
       roomValue,
       paxValue,
-      checkedbasicAmenities
+      checkedbasicEquipements
      )
     );
    }
    console.log(filteredProperties);
-  }, [data, checkedTypes, range, roomValue, paxValue, checkedbasicAmenities]);
+  }, [data, checkedTypes, range, roomValue, paxValue, checkedbasicEquipements]);
 
   useEffect(() => {
    const fetchLocation = async () => {
@@ -171,7 +171,7 @@ const MapHome = React.memo(
         }}
        >
         <Link
-         href={`/propertydetails?id=${selectedPlace.id}`}
+         href={`/propertydetails?hash=${selectedPlace.hashId}`}
          style={{
           fontWeight: 'bold',
           fontSize: '16px',
@@ -184,7 +184,7 @@ const MapHome = React.memo(
         <Button
          size="small"
          icon={<RightOutlined />}
-         onClick={() => display(selectedPlace.id)}
+         onClick={() => display(selectedPlace.hashId)}
          style={{
           backgroundColor: '#2b2c32',
           color: '#faf6f1',

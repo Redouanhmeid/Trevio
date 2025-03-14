@@ -50,13 +50,8 @@ const RevTasksDashboard = () => {
  const [selectedProperty, setSelectedProperty] = useState(null);
  const [chartData, setChartData] = useState([]);
 
- const {
-  getPropertyManagerTasks,
-  fetchPropertiesbypm,
-  loading,
-  error,
-  properties,
- } = useProperty();
+ const { getUserTasks, fetchPropertiesbyClient, loading, error, properties } =
+  useProperty();
  const { getAnnualRevenue } = useRevenue();
 
  const currentYear = new Date().getFullYear();
@@ -69,7 +64,7 @@ const RevTasksDashboard = () => {
 
  const fetchTasks = async () => {
   try {
-   const fetchedTasks = await getPropertyManagerTasks(userId);
+   const fetchedTasks = await getUserTasks(userId);
    setTasks(fetchedTasks || []);
   } catch (err) {
    console.error(t('error.tasksFetch'), err);
@@ -96,7 +91,7 @@ const RevTasksDashboard = () => {
  useEffect(() => {
   if (userId) {
    fetchTasks();
-   fetchPropertiesbypm(userId);
+   fetchPropertiesbyClient(userId);
   }
  }, [userId]);
 
@@ -161,7 +156,7 @@ const RevTasksDashboard = () => {
   <Layout className="contentStyle">
    <Head onUserData={handleUserData} />
    <Content className="container">
-    {/* Tasks Overview */}
+    {/* Overview */}
     <Row gutter={[16, 16]}>
      <Col xs={24} md={8}>
       <Card>
@@ -224,7 +219,7 @@ const RevTasksDashboard = () => {
      />
     </Card>
 
-    {/* Logements Section */}
+    {/* Revenus Section */}
     <Card
      title={<Title level={4}>{t('revenue.title')}</Title>}
      style={{ marginTop: 24 }}

@@ -1,16 +1,5 @@
 import { Space } from 'antd';
-import {
- FR,
- US,
- ES,
- DE,
- IT,
- PT,
- RU,
- CN,
- JP,
- KR,
-} from 'country-flag-icons/react/3x2';
+import { FR, US } from 'country-flag-icons/react/3x2';
 
 const flagStyle = {
  width: 16,
@@ -19,27 +8,33 @@ const flagStyle = {
  top: 2,
 };
 
-const createOption = (value, label, FlagComponent) => ({
+const LanguageOption = ({ value, label, FlagComponent, isActive }) => (
+ <Space
+  style={{
+   color: isActive ? '#6D5FFA' : 'inherit',
+   fontWeight: isActive ? 600 : 500,
+  }}
+ >
+  <FlagComponent style={flagStyle} />
+  {label}
+ </Space>
+);
+
+const createOption = (value, label, FlagComponent, currentLanguage) => ({
  value,
  label: (
-  <Space>
-   <FlagComponent style={flagStyle} />
-   {label}
-  </Space>
+  <LanguageOption
+   value={value}
+   label={label}
+   FlagComponent={FlagComponent}
+   isActive={currentLanguage === value}
+  />
  ),
 });
 
-const languages = [
- createOption('fr', 'Français', FR),
- createOption('en', 'English', US),
- /* createOption('es', 'Español', ES),
- createOption('de', 'Deutsch', DE),
- createOption('it', 'Italiano', IT),
- createOption('pt', 'Português', PT),
- createOption('ru', 'Русский', RU),
- createOption('zh', '中文', CN),
- createOption('ja', '日本語', JP),
- createOption('ko', '한국어', KR), */
+const getLanguages = (currentLanguage) => [
+ createOption('fr', 'Français', FR, currentLanguage),
+ createOption('en', 'English', US, currentLanguage),
 ];
 
-export default languages;
+export default getLanguages;

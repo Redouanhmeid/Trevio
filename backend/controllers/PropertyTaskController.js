@@ -151,16 +151,16 @@ const updateTaskStatus = async (req, res) => {
  }
 };
 
-const getPropertyManagerTasks = async (req, res) => {
+const getUserTasks = async (req, res) => {
  try {
-  const propertyManagerId = req.params.managerId;
+  const userId = req.params.userId;
 
   const tasks = await PropertyTask.findAll({
    include: [
     {
      model: Property,
      as: 'property',
-     where: { propertyManagerId },
+     where: { userId },
      attributes: ['name', 'id'],
     },
    ],
@@ -173,7 +173,7 @@ const getPropertyManagerTasks = async (req, res) => {
   res.status(200).json(tasks);
  } catch (error) {
   console.error(error);
-  res.status(500).json({ error: 'Failed to fetch property manager tasks' });
+  res.status(500).json({ error: 'Failed to fetch user tasks' });
  }
 };
 
@@ -184,5 +184,5 @@ module.exports = {
  getTask,
  deleteTask,
  updateTaskStatus,
- getPropertyManagerTasks,
+ getUserTasks,
 };

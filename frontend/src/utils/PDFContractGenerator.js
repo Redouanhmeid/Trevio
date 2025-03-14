@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { Button } from 'antd';
 import Logo from '../assets/logo.png';
 
-const PDFContractGenerator = ({ formData, signature, filelist, t }) => {
+const PDFContractGenerator = ({ formData, signature, t }) => {
  const [isGenerating, setIsGenerating] = useState(false);
 
  const A4_WIDTH_MM = 210;
@@ -25,19 +25,6 @@ const PDFContractGenerator = ({ formData, signature, filelist, t }) => {
   container.style.top = '0';
   container.innerHTML = content;
   return container;
- };
-
- const calculateDimensions = (contentWidth, contentHeight) => {
-  // Calculate the scaling factor to fit content within A4
-  const widthRatio = (A4_WIDTH_MM - 2 * CONTENT_PADDING_MM) / contentWidth;
-  const heightRatio = (A4_HEIGHT_MM - 2 * CONTENT_PADDING_MM) / contentHeight;
-  const scale = Math.min(widthRatio, heightRatio);
-
-  return {
-   width: contentWidth * scale,
-   height: contentHeight * scale,
-   scale,
-  };
  };
 
  const renderToCanvas = async (content) => {
@@ -82,17 +69,6 @@ const PDFContractGenerator = ({ formData, signature, filelist, t }) => {
  const generatePDF = async () => {
   try {
    setIsGenerating(true);
-
-   let identityImageData = '';
-   if (filelist && filelist.length > 0) {
-    const file = filelist[0].originFileObj;
-    const reader = new FileReader();
-    identityImageData = await new Promise((resolve, reject) => {
-     reader.onload = () => resolve(reader.result);
-     reader.onerror = reject;
-     reader.readAsDataURL(file);
-    });
-   }
 
    let signatureImageData = '';
    if (signature && !signature.isEmpty()) {
@@ -223,14 +199,6 @@ const PDFContractGenerator = ({ formData, signature, filelist, t }) => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Identity Document Image Section -->
-          <div id="identity-doc-section" style="margin-top: 25px;">
-            <h2 style="color: #aa7e42; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
-              ${t('contracts.identity')}
-            </h2>
-            <img src="${identityImageData}" style="width: auto; height: 420px;">
           </div>
         </div>
       `;

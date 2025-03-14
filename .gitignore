@@ -23,3 +23,5 @@ backend/server.js
 backend/identities/
 backend/signatures/
 frontend/node_modules/
+backend/equipements/
+vps/

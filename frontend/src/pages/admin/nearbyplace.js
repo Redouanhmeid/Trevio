@@ -145,7 +145,7 @@ const NearbyPlace = () => {
      </Form.Item>
 
      <Form.Item
-      label={t('manager.verified')}
+      label={t('user.verified')}
       name="isVerified"
       valuePropName="checked"
      >

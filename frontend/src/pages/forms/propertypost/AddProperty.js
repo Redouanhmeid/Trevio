@@ -30,6 +30,42 @@ const AddProperty = () => {
   }));
  };
 
+ // Progress steps component
+ const ProgressSteps = () => (
+  <div
+   style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 48,
+    paddingTop: 24,
+   }}
+  >
+   {[1, 2, 3, 4, 5].map((step, index) => (
+    <React.Fragment key={step}>
+     <div
+      style={{
+       width: 12,
+       height: 12,
+       borderRadius: '50%',
+       backgroundColor: step === 1 ? '#6D5FFA' : '#f0f0f0',
+      }}
+     />
+     {index < 4 && (
+      <div
+       style={{
+        flex: 1,
+        height: 2,
+        backgroundColor: step < current ? '#6D5FFA' : '#f0f0f0',
+        margin: '0 8px',
+       }}
+      />
+     )}
+    </React.Fragment>
+   ))}
+  </div>
+ );
+
  switch (current) {
   // Name Adrresse & Map Picker
   case 1:
@@ -38,20 +74,48 @@ const AddProperty = () => {
      next={next}
      handleFormData={handleInputData}
      values={formData}
+     ProgressSteps={ProgressSteps}
     />
    );
   // CheckIn and ChekOut
   case 2:
-   return <Step2CheckInOut next={next} prev={prev} values={formData} />;
+   return (
+    <Step2CheckInOut
+     next={next}
+     prev={prev}
+     values={formData}
+     ProgressSteps={ProgressSteps}
+    />
+   );
   // Equipments
   case 3:
-   return <Step3Equipements next={next} prev={prev} values={formData} />;
+   return (
+    <Step3Equipements
+     next={next}
+     prev={prev}
+     values={formData}
+     ProgressSteps={ProgressSteps}
+    />
+   );
   // Photos
   case 4:
-   return <Step4Photos next={next} prev={prev} values={formData} />;
+   return (
+    <Step4Photos
+     next={next}
+     prev={prev}
+     values={formData}
+     ProgressSteps={ProgressSteps}
+    />
+   );
   // HouseManual
   case 5:
-   return <Step5HouseManual prev={prev} values={formData} />;
+   return (
+    <Step5HouseManual
+     prev={prev}
+     values={formData}
+     ProgressSteps={ProgressSteps}
+    />
+   );
   default:
    return null;
  }

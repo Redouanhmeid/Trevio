@@ -1,5 +1,5 @@
 module.exports = (db, type) => {
- let propertymanagerverification = db.define('propertymanagerverification', {
+ let userVerification = db.define('userverification', {
   id: {
    type: type.INTEGER,
    autoIncrement: true,
@@ -25,19 +25,19 @@ module.exports = (db, type) => {
   },
  });
 
- propertymanagerverification.Create = async function (
+ userVerification.Create = async function (
   email,
   uniqueString,
   createdAt,
   expiresAt
  ) {
-  const propertyManagerVerification = await propertymanagerverification.create({
+  const verification = await userVerification.create({
    email,
    uniqueString,
    createdAt,
    expiresAt,
   });
-  return propertyManagerVerification;
+  return verification;
  };
- return propertymanagerverification;
+ return userVerification;
 };

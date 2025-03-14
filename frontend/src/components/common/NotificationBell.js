@@ -1,4 +1,3 @@
-// components/NotificationBell.js
 import React, { useEffect, useState } from 'react';
 import { Badge, Dropdown, Typography, Space, Empty } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +10,11 @@ const NotificationBell = ({ userId }) => {
  const { t } = useTranslation();
  const [notifications, setNotifications] = useState([]);
  const [unreadCount, setUnreadCount] = useState(0);
- const { getManagerNotifications, markAsRead, getUnreadCount } =
-  useNotification();
+ const { getUserNotifications, markAsRead, getUnreadCount } = useNotification();
  const navigate = useNavigate();
 
  const fetchNotifications = async () => {
-  const data = await getManagerNotifications(userId);
+  const data = await getUserNotifications(userId);
   if (data) {
    setNotifications(data);
   }
@@ -97,7 +95,7 @@ const NotificationBell = ({ userId }) => {
 
  // Create menu items for the dropdown
  const dropdownRender = (menu) => (
-  <div style={{ maxHeight: '400px', overflow: 'auto' }}>{menu}</div>
+  <div className="NotificationRender">{menu}</div>
  );
 
  const menuItems = {
@@ -108,16 +106,20 @@ const NotificationBell = ({ userId }) => {
        label: (
         <div
          style={{
-          backgroundColor: item.read ? '#fff' : '#faf6f1',
-          padding: '12px',
-          width: '350px',
+          backgroundColor: item.read ? '#fdfdfd' : '#e8e7f9',
+          padding: '2%',
+          width: '96%',
          }}
         >
          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-          <span style={{ fontSize: '20px' }}>{getTypeIcon(item.type)}</span>
+          <span style={{ fontSize: '14px' }}>{getTypeIcon(item.type)}</span>
           <div style={{ flex: 1 }}>
-           <Text strong>{item.title}</Text>
-           <div style={{ margin: '4px 0' }}>{item.message}</div>
+           <Text strong style={{ fontSize: '14px' }}>
+            {item.title}
+           </Text>
+           <div style={{ margin: '4px 0', fontSize: '13px' }}>
+            {item.message}
+           </div>
            <Text type="secondary" style={{ fontSize: '12px' }}>
             {getNotificationTime(item.createdAt)}
            </Text>
@@ -139,7 +141,7 @@ const NotificationBell = ({ userId }) => {
         ),
        },
       ],
-  style: { maxHeight: '400px', overflow: 'auto' },
+  style: { maxHeight: '500px', overflow: 'auto' },
  };
 
  return (
@@ -147,12 +149,11 @@ const NotificationBell = ({ userId }) => {
    menu={menuItems}
    trigger={['click']}
    placement="bottomRight"
-   arrow
    dropdownRender={dropdownRender}
   >
    <Space style={{ cursor: 'pointer', padding: '1px 4px' }}>
-    <Badge count={unreadCount} size="small" overflowCount={9} offset={[3, -2]}>
-     <i className="fa-light fa-bell fa-xl" />
+    <Badge count={unreadCount} size="small" overflowCount={9} offset={[10, -3]}>
+     <i className="PrimaryColor fa-light fa-bell fa-2xl" />
     </Badge>
    </Space>
   </Dropdown>

@@ -1,123 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Verified</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      color: #fff;
-      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
-        sans-serif;
-      height: 100vh;
-      display: flex;
-    }
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verified</title>
+    <!-- Import Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+        }
 
-    div {
-      display: flex;
-      flex-direction: column;
-      margin: 0 auto;
-      width: 50%;
-      align-items: center;
-      padding-bottom: 25px;
-      padding-top: 10px;
-      align-self: center;
-    }
+        div {
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            width: 50%;
+            align-items: center;
+            padding-bottom: 25px;
+            padding-top: 10px;
+            align-self: center;
+            border-radius: 12px;
+        }
 
-    .animated {
-      background-repeat: no-repeat;
-      background-position: left top;
-      -webkit-animation-duration: 10s;
-      animation-duration: 10s;
-      -webkit-animation-fill-mode: both;
-      animation-fill-mode: both;
-    }
+        .animated {
+            background-repeat: no-repeat;
+            background-position: left top;
+            -webkit-animation-duration: 10s;
+            animation-duration: 10s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
 
-    h2 {
-      text-align: center;
-      padding: 10px;
-      width: 80%;
-    }
+        h2 {
+            text-align: center;
+            padding: 10px;
+            width: 80%;
+            font-weight: 600;
+        }
 
-    @keyframes swing {
-      20% {
-        transform: rotate(15deg);
-      }
+        h3 {
+            font-weight: 500;
+        }
 
-      40% {
-        transform: rotate(-10deg);
-      }
+        p {
+            font-weight: 400;
+        }
 
-      60% {
-        transform: rotate(5deg);
-      }
+        .login-button {
+            background-color: #ffffff;
+            color: #6D5FFA;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
-      80% {
-        transform: rotate(-5deg);
-      }
+        .login-button:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
 
-      100% {
-        transform: rotate(0deg);
-      }
-    }
+        @keyframes swing {
+            20% {
+                transform: rotate(15deg);
+            }
+            40% {
+                transform: rotate(-10deg);
+            }
+            60% {
+                transform: rotate(5deg);
+            }
+            80% {
+                transform: rotate(-5deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
 
-    .swing {
-      -webkit-transform-origin: top center;
-      transform-origin: top center;
-      -webkit-animation-name: swing;
-      animation-name: swing;
-    }
-  </style>
+        .swing {
+            -webkit-transform-origin: top center;
+            transform-origin: top center;
+            -webkit-animation-name: swing;
+            animation-name: swing;
+        }
+    </style>
 </head>
 
-<body></body>
+<body>
 <script>
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const error = urlParams.get("error");
-  const message = urlParams.get("message");
+    const frontendUrl = "https://app.trevio.ma";
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const error = urlParams.get("error");
+    const message = urlParams.get("message");
 
-  const bodyContent = !error
-    ? `<div style="background-color: #aa7e42">
-      <h2>L'email a été vérifié</h2>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="85"
-        height="85"
-        fill="currentColor"
-        class="bi bi-check-circle-fill animated swing"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
-        />
-      </svg>
-      <h3>Vous pouvez désormais vous connecter</h3>
+    const bodyContent = !error
+        ? `<div style="background-color: #6D5FFA">
+            <h2>L'email a été vérifié</h2>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="85"
+                height="85"
+                fill="currentColor"
+                class="bi bi-check-circle-fill animated swing"
+                viewBox="0 0 16 16"
+            >
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+                />
+            </svg>
+            <h3>Vous pouvez désormais vous connecter</h3>
+            <a href="${frontendUrl}/login" class="login-button">
+                Se connecter
+            </a>
+            <p>Trevio</p>
+        </div>`
+        : `<div style="background-color: #6D5FFA">
+            <h2>L'email n'a pas été vérifié</h2>
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="85" height="85" 
+                fill="currentColor" 
+                class="bi bi-x-circle-fill animated swing" 
+                viewBox="0 0 16 16"
+            >
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+            </svg>
+            <h3>Veuillez réessayer!</h3>
+            <a href="${frontendUrl}" class="login-button">
+                Retour à l'accueil
+            </a>
+            <p>Trevio</p>
+        </div>`;
 
-      <p>Concierge Stay</p>
-    </div>`
-    : `<div style="background-color: #ddc7a8">
-      <h2>L'email n'a pas été vérifié</h2>
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="85" height="85" 
-        fill="currentColor" 
-        class="bi bi-x-circle-fill animated swing" 
-        viewBox="0 0 16 16"
-      >
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-      </svg>
-      <h3>Veuillez réessayer!</h3>
-
-      <p>Concierge Stay</p>
-    </div>`;
-
-  document.body.style.backgroundColor = error ? "#faf6f1" : "#ddc7a8";
-  document.body.innerHTML = bodyContent;
+    document.body.style.backgroundColor = error ? "#f5f5f5" : "#F8F7FE";
+    document.body.innerHTML = bodyContent;
 </script>
-
+</body>
 </html>

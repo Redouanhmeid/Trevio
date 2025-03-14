@@ -39,10 +39,18 @@ module.exports = (db, type) => {
   createdBy: {
    type: type.INTEGER,
    allowNull: false,
+   references: {
+    model: 'users', // Reference the users table
+    key: 'id',
+   },
   },
   assignedTo: {
    type: type.INTEGER,
    allowNull: true,
+   references: {
+    model: 'users', // Reference the users table
+    key: 'id',
+   },
   },
  });
 

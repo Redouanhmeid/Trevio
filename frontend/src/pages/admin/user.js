@@ -23,54 +23,48 @@ import { useTranslation } from '../../context/TranslationContext';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-const Manager = () => {
+const User = () => {
  const location = useLocation();
  const searchParams = new URLSearchParams(location.search);
- const managerId = searchParams.get('id'); // Extract the 'id' from the query params
+ const userId = searchParams.get('id'); // Extract the 'id' from the query params
  const { t } = useTranslation();
 
  const navigate = useNavigate();
- const {
-  isLoading,
-  userData,
-  fetchManagerById,
-  verifyManager,
-  error,
-  errorMsg,
- } = useUserData();
+ const { isLoading, userData, fetchUserById, verifyUser, error, errorMsg } =
+  useUserData();
  const {
   properties = [],
   loading: propertiesLoading,
   fetchAllProperties,
  } = useProperty();
 
- const [manager, setManager] = useState(null);
+ const [user, setUser] = useState(null);
  const [loading, setLoading] = useState(true);
 
- const fetchManagerData = async () => {
-  if (managerId) {
+ const fetchUserData = async () => {
+  if (userId) {
    try {
-    const managerData = await fetchManagerById(managerId);
-    setManager(managerData);
+    const userData = await fetchUserById(userId);
+    setUser(userData);
    } catch (error) {
-    console.error('Error fetching manager data:', error);
+    console.error('Error fetching user data:', error);
    } finally {
     setLoading(false);
    }
   }
  };
  useEffect(() => {
-  fetchManagerData();
-  fetchAllProperties(); // Fetch all properties
+  fetchUserData();
+  fetchAllProperties();
  }, [loading]);
 
  const handleVerify = async () => {
   try {
-   await verifyManager(managerId);
-   message.success(t('manager.verifySuccess'));
-   fetchManagerData();
+   await verifyUser(userId);
+   message.success(t('user.verifySuccess'));
+   fetchUserData();
   } catch (err) {
-   message.error(errorMsg || t('manager.verifyError'));
+   message.error(errorMsg || t('user.verifyError'));
   }
  };
 
@@ -82,8 +76,8 @@ const Manager = () => {
   );
  }
 
- const managerProperties = properties.filter(
-  (property) => property.propertyManagerId === Number(managerId)
+ const userProperties = properties.filter(
+  (property) => property.userId === Number(userId)
  );
 
  const columns = [
@@ -101,7 +95,9 @@ const Manager = () => {
    dataIndex: 'name',
    key: 'name',
    render: (text, record) => (
-    <a onClick={() => navigate(`/propertydetails?id=${record.id}`)}>{text}</a>
+    <a onClick={() => navigate(`/propertydetails?hash=${record.hashId}`)}>
+     {text}
+    </a>
    ),
   },
   {
@@ -143,7 +139,7 @@ const Manager = () => {
    key: 'placeName',
   },
   {
-   title: t('manager.createdAt'),
+   title: t('user.createdAt'),
    dataIndex: 'createdAt',
    key: 'createdAt',
    render: (createdAt) => new Date(createdAt).toLocaleString(),
@@ -166,35 +162,34 @@ const Manager = () => {
      <Col xs={24} md={8}>
       <Space direction="vertical">
        <br />
-       <Avatar size={164} src={manager?.avatar} />
-       <Title level={3}>{`${manager?.firstname} ${manager?.lastname}`}</Title>
+       <Avatar size={164} src={user?.avatar} />
+       <Title level={3}>{`${user?.firstname} ${user?.lastname}`}</Title>
        <Text>
-        {t('common.email')}: {manager?.email}
+        {t('common.email')}: {user?.email}
        </Text>
        <Text>
-        {t('common.phone')}: {manager?.phone}
+        {t('common.phone')}: {user?.phone}
        </Text>
        <Text>
-        {t('manager.role')}: {manager?.role}
+        {t('user.role')}: {user?.role}
        </Text>
        <Text>
-        {t('manager.verified')}:{' '}
-        {manager?.isVerified ? t('common.yes') : t('common.no')}
+        {t('user.verified')}:{' '}
+        {user?.isVerified ? t('common.yes') : t('common.no')}
        </Text>
-       {!manager?.isVerified && (
+       {!user?.isVerified && (
         <Button type="primary" loading={!isLoading} onClick={handleVerify}>
-         {t('manager.verifyButton')}
+         {t('user.verifyButton')}
         </Button>
        )}
        <Text>
-        {t('manager.createdAt')}:{' '}
-        {new Date(manager?.createdAt).toLocaleDateString()}
+        {t('user.createdAt')}: {new Date(user?.createdAt).toLocaleDateString()}
        </Text>
       </Space>
      </Col>
      <Col xs={24} md={16}>
-      <Title level={4}>{t('manager.managedProperties')}</Title>
-      <Table columns={columns} dataSource={managerProperties} rowKey="id" />
+      <Title level={4}>{t('user.managedProperties')}</Title>
+      <Table columns={columns} dataSource={userProperties} rowKey="id" />
      </Col>
     </Row>
    </Content>
@@ -203,4 +198,4 @@ const Manager = () => {
  );
 };
 
-export default Manager;
+export default User;

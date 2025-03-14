@@ -1,5 +1,5 @@
 // controllers/NotificationController.js
-const { Notification, PropertyManager, Property } = require('../models');
+const { Notification, User, Property } = require('../models');
 const nodemailer = require('nodemailer');
 const sendNotificationMail = require('../helpers/notificationMail');
 
@@ -28,13 +28,11 @@ const createNotification = async (req, res) => {
   // Send email if channel is email
   if (notification.channel === 'email') {
    try {
-    const propertyManager = await PropertyManager.findByPk(
-     notification.propertyManagerId
-    );
+    const user = await User.findByPk(notification.userId);
 
-    if (propertyManager && propertyManager.email) {
+    if (user && user.email) {
      await sendNotificationMail({
-      email: propertyManager.email,
+      email: user.email,
       subject: notification.title,
       html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -68,12 +66,12 @@ const createNotification = async (req, res) => {
  }
 };
 
-// Get all notifications for a property manager
-const getManagerNotifications = async (req, res) => {
+// Get all notifications for a user
+const getUserNotifications = async (req, res) => {
  try {
-  const { propertyManagerId } = req.params;
+  const { userId } = req.params;
   const notifications = await Notification.findAll({
-   where: { propertyManagerId },
+   where: { userId },
    order: [['createdAt', 'DESC']],
    include: [
     {
@@ -99,8 +97,8 @@ const getPropertyNotifications = async (req, res) => {
    order: [['createdAt', 'DESC']],
    include: [
     {
-     model: PropertyManager,
-     as: 'propertyManager',
+     model: User,
+     as: 'user',
      attributes: ['id', 'firstname', 'lastname'],
     },
    ],
@@ -152,13 +150,13 @@ const deleteNotification = async (req, res) => {
  }
 };
 
-// Get unread notifications count for a property manager
+// Get unread notifications count for a user
 const getUnreadCount = async (req, res) => {
  try {
-  const { propertyManagerId } = req.params;
+  const { userId } = req.params;
   const count = await Notification.count({
    where: {
-    propertyManagerId,
+    userId,
     read: false,
    },
   });
@@ -172,7 +170,7 @@ const getUnreadCount = async (req, res) => {
 // Bulk mark notifications as read
 const bulkMarkAsRead = async (req, res) => {
  try {
-  const { propertyManagerId } = req.params;
+  const { userId } = req.params;
   await Notification.update(
    {
     read: true,
@@ -180,7 +178,7 @@ const bulkMarkAsRead = async (req, res) => {
    },
    {
     where: {
-     propertyManagerId,
+     userId,
      read: false,
     },
    }
@@ -194,7 +192,7 @@ const bulkMarkAsRead = async (req, res) => {
 
 module.exports = {
  createNotification,
- getManagerNotifications,
+ getUserNotifications,
  getPropertyNotifications,
  markAsRead,
  deleteNotification,
