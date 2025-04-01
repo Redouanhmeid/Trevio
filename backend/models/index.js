@@ -16,6 +16,7 @@ const EquipmentModel = require('./EquipmentModel');
 const NearbyPlaceModel = require('./NearbyPlaceModel');
 const PasswordResetModel = require('./PasswordResetModel');
 const ManagerInvitationModel = require('./ManagerInvitationModel');
+const ServiceWorkerModel = require('./ServiceWorkerModel');
 
 // create models
 const User = UserModel(db, Sequelize);
@@ -31,6 +32,7 @@ const Equipment = EquipmentModel(db, Sequelize);
 const NearbyPlace = NearbyPlaceModel(db, Sequelize);
 const PasswordReset = PasswordResetModel(db, Sequelize);
 const ManagerInvitation = ManagerInvitationModel(db, Sequelize);
+const ServiceWorker = ServiceWorkerModel(db, Sequelize);
 
 // Define relationships
 // User - Property relationship (ownership)
@@ -228,6 +230,17 @@ ManagerInvitation.belongsTo(User, {
  as: 'client',
 });
 
+// ServiceWorker relationship with Property
+Property.hasMany(ServiceWorker, {
+ foreignKey: 'propertyId',
+ as: 'serviceWorkers',
+ onDelete: 'CASCADE',
+});
+
+ServiceWorker.belongsTo(Property, {
+ foreignKey: 'propertyId',
+});
+
 // generate tables in DB
 db.sync({ alter: false }).then(() => {
  console.log('Tables Altered and Synced!');
@@ -247,4 +260,5 @@ module.exports = {
  NearbyPlace,
  PasswordReset,
  ManagerInvitation,
+ ServiceWorker,
 };

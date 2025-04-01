@@ -220,7 +220,7 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 }
 
 @media only screen and (max-width: 576px) {
@@ -264,6 +264,7 @@ body {
   .header-actions {
     justify-content: flex-end;
     padding-right: 8px;
+    gap: 12px;
   }
   .ant-transfer-list {
     width: 100% !important;
@@ -480,14 +481,14 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 32px;
+  padding: 12px 18px;
   background-color: #F8F7FE;
   border-radius: 8px;
   transition: all 0.3s;
 }
 
 .dash-anchor-item i {
-  font-size: 24px;
+  font-size: 20px;
   color: #6D5FFA;
 }
 
@@ -531,12 +532,12 @@ body {
 }
 
 .ant-switch {
-  background-color: #6D5FFA !important;
+  background-color: #8E8E8E !important;
   border: none;
 }
 
 .ant-switch-checked {
-  background-color: #303342 !important;
+  background-color: #6D5FFA !important;
 }
 
 .custom-tag {
@@ -1102,7 +1103,7 @@ body {
   background-color: #F8F7FE;
   padding: 16px 10px;
   border-radius: 16px;
-  height: 424px;
+  height: 474px;
 }
 .digital-tabs .ant-tabs-tab-btn {
   font-size: 16px;
@@ -1268,4 +1269,26 @@ body {
   .container {
     padding-left: 56px !important;
   }
+}
+
+/* Custom Switch Styling */
+.custom-switch-purple.ant-switch {
+  width: 40px;
+  height: 26px;
+  border-radius: 15px;
+}
+
+.custom-switch-purple.ant-switch .ant-switch-handle {
+  width: 22px;
+  height: 22px;
+  top: 2px;
+}
+
+.custom-switch-purple.ant-switch .ant-switch-handle::before {
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.custom-switch-purple.ant-switch-checked .ant-switch-handle {
+  inset-inline-start: calc(100% - 24px);
 }

@@ -186,8 +186,10 @@ const CreateReservationForm = () => {
      ? values.electronicLockCode
      : null,
    };
+   console.log(reservationData);
 
    const data = await createReservation(reservationData);
+   console.log(data);
 
    if (data) {
     message.success(t('reservation.createSuccess'));
@@ -204,6 +206,7 @@ const CreateReservationForm = () => {
       startDate: values.dateRange[0].format('YYYY-MM-DD'),
       endDate: values.dateRange[1].format('YYYY-MM-DD'),
      };
+     console.log(revenueData);
 
      const revenueResult = await createRevenueFromReservation(
       data.id,

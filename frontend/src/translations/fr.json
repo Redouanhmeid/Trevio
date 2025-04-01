@@ -329,12 +329,14 @@
         "avatar": "Avatar",
         "share": "Partager",
         "edit": "Modifier",
+        "update": "Mettre à jour",
         "delete": "Supprimer",
         "cancel": "Annuler",
         "view": "Voir",
         "viewAll": "Voir tout",
         "language": "Langue",
-        "FAQs": "FAQ"
+        "FAQs": "FAQ",
+        "copy": "Copier"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -1138,5 +1140,41 @@
             "enableLock": "Activer la serrure électronique pour cette réservation",
             "code": "Code de Serrure Électronique (6 chiffres)"
         }
+    },
+    "serviceWorker": {
+        "title": "Prestataires de services",
+        "categories": {
+            "plumber": "Plombier",
+            "technician": "Technicien",
+            "housekeeper": "Femme de ménage",
+            "concierge": "Concierge de résidence",
+            "electrician": "Électricien",
+            "tv_technician": "Technicien TV",
+            "grocery": "Épicerie",
+            "other": "Autre"
+        },
+        "addButton": "Ajouter un prestataire",
+        "editButton": "Modifier le prestataire",
+        "name": "Nom",
+        "category": "Catégorie",
+        "phone": "Numéro de téléphone",
+        "email": "Email (Optionnel)",
+        "notes": "Notes (Optionnel)",
+        "notesforGuest": "Notes",
+        "isVisibleToGuests": "Visible pour les invités",
+        "noServiceWorkersFound": "Aucun prestataire trouvé",
+        "selectCategory": "Sélectionnez une catégorie",
+        "needHelp": "Besoin d'aide ?",
+        "contactMessage": "Contactez les prestataires de services suivants pour assistance :",
+        "callButton": "Appeler",
+        "messageButton": "Envoyer un message",
+        "emailButton": "Envoyer un email",
+        "createSuccess": "Prestataire ajouté avec succès",
+        "updateSuccess": "Prestataire mis à jour avec succès",
+        "deleteSuccess": "Prestataire supprimé avec succès",
+        "createError": "Échec de l'ajout du prestataire",
+        "updateError": "Échec de la mise à jour du prestataire",
+        "deleteError": "Échec de la suppression du prestataire",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce prestataire ?"
     }
 }

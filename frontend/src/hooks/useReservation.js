@@ -231,6 +231,8 @@ export const useReservation = () => {
    });
    const data = await response.json();
 
+   console.log(response);
+
    if (!response.ok) {
     throw new Error(data.error || 'Failed to create reservation');
    }

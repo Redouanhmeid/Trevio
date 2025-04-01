@@ -291,6 +291,7 @@ const PropertyTaskRouter = require('./routes/propertytask');
 const NotificationRouter = require('./routes/notification');
 const managerInvitationRoutes = require('./routes/managerinvitation');
 const conciergeRoutes = require('./routes/concierge');
+const ServiceWorkerRouter = require('./routes/serviceworker');
 
 // Routes
 // All of our routes will be prefixed with /api/v1/
@@ -305,6 +306,7 @@ app.use('/api/v1/propertytask', PropertyTaskRouter);
 app.use('/api/v1/notifications', NotificationRouter);
 app.use('/api/v1/manager-invitations', managerInvitationRoutes);
 app.use('/api/v1/concierges', conciergeRoutes);
+app.use('/api/v1/serviceworkers', ServiceWorkerRouter);
 
 // Serve static files from the React app
 const REACT_APP_PATH =

@@ -152,7 +152,7 @@ const NotificationBell = ({ userId }) => {
    dropdownRender={dropdownRender}
   >
    <Space style={{ cursor: 'pointer', padding: '1px 4px' }}>
-    <Badge count={unreadCount} size="small" overflowCount={9} offset={[10, -3]}>
+    <Badge count={unreadCount} size="small" overflowCount={9} offset={[6, -3]}>
      <i className="PrimaryColor fa-light fa-bell fa-2xl" />
     </Badge>
    </Space>

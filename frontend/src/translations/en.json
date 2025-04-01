@@ -329,12 +329,14 @@
         "avatar": "Avatar",
         "share": "Share",
         "edit": "Edit",
+        "update": "Update",
         "delete": "Delete",
         "cancel": "Cancel",
         "view": "View",
         "viewAll": "View all",
         "language": "Language",
-        "FAQs": "FAQs"
+        "FAQs": "FAQs",
+        "copy": "Copy"
     },
     "timePicker": {
         "defaultCheckIn": "Default time: 11:00",
@@ -1138,5 +1140,41 @@
             "enableLock": "Enable electronic lock for this reservation",
             "code": "Electronic Lock Code (6 digits)"
         }
+    },
+    "serviceWorker": {
+        "title": "Service Providers",
+        "categories": {
+            "plumber": "Plumber",
+            "technician": "Technician",
+            "housekeeper": "Housekeeper",
+            "concierge": "Residence Concierge",
+            "electrician": "Electrician",
+            "tv_technician": "TV Technician",
+            "grocery": "Grocery Store",
+            "other": "Other"
+        },
+        "addButton": "Add Service Provider",
+        "editButton": "Edit Service Provider",
+        "name": "Name",
+        "category": "Category",
+        "phone": "Phone Number",
+        "email": "Email (Optional)",
+        "notes": "Notes (Optional)",
+        "notesforGuest": "Notes",
+        "isVisibleToGuests": "Visible to Guests",
+        "noServiceWorkersFound": "No service providers found",
+        "selectCategory": "Select a category",
+        "needHelp": "Need help?",
+        "contactMessage": "Contact the following service providers for assistance:",
+        "callButton": "Call",
+        "messageButton": "Send Message",
+        "emailButton": "Email",
+        "createSuccess": "Service provider added successfully",
+        "updateSuccess": "Service provider updated successfully",
+        "deleteSuccess": "Service provider deleted successfully",
+        "createError": "Failed to add service provider",
+        "updateError": "Failed to update service provider",
+        "deleteError": "Failed to delete service provider",
+        "confirmDelete": "Are you sure you want to delete this service provider?"
     }
 }

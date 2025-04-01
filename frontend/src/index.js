@@ -59,6 +59,7 @@ import CreateReservationForm from './pages/forms/reservation/CreateReservationFo
 import ReservationsList from './pages/forms/reservation/ReservationsList';
 import GenerateContract from './pages/forms/reservation/GenerateContract';
 import GuestReservationView from './pages/guest/GuestReservationView';
+import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
 
 const router = createBrowserRouter([
  { path: '/', element: <Login />, errorElement: <NotFoundPage /> },
@@ -329,7 +330,14 @@ const router = createBrowserRouter([
   path: '/guest/reservation/:hashId',
   element: <GuestReservationView />,
  },
- ,
+ {
+  path: '/service-workers',
+  element: (
+   <ProtectedRoute>
+    <ManageServiceWorkers />
+   </ProtectedRoute>
+  ),
+ },
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

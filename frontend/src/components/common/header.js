@@ -203,7 +203,7 @@ const Head = ({ onUserData = () => {} }) => {
         sm={{ span: 8, offset: 4, order: 2 }}
         md={{ span: 2, offset: 16, order: 2 }}
        >
-        <Space size={[8, 16]} className="header-actions" wrap size="large">
+        <Space className="header-actions" wrap size="large">
          <LanguageSelector />
          <NotificationBell userId={userData.id} />
         </Space>

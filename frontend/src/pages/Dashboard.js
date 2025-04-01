@@ -212,6 +212,16 @@ const Dashboard = () => {
         }}
         items={[
          {
+          key: 'reservations',
+          href: '#reservations',
+          title: (
+           <div className="dash-anchor-item">
+            <i className="fa-light fa-calendar-days" />
+            <span>{t('reservation.title')}</span>
+           </div>
+          ),
+         },
+         {
           key: 'tasks',
           href: '#tasks',
           title: (

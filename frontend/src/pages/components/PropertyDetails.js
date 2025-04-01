@@ -48,6 +48,7 @@ import ReactPlayer from 'react-player';
 import airbnb from '../../assets/airbnb.png';
 import booking from '../../assets/booking.png';
 import { PropertyGallery } from './PropertyGallery';
+import ServiceWorkerManagement from '../forms/ServiceWorkerManagement';
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
@@ -768,6 +769,26 @@ const PropertyDetails = () => {
         longitude={parsedProperty.longitude}
        />
       </Col>
+      <Divider id="serviceWorkers" />
+      {isOwner && (
+       <Col xs={24} sm={24}>
+        <Title level={3}>
+         {t('serviceWorker.title')}{' '}
+         <i className="PrimaryColor fa-regular fa-phone" />
+        </Title>
+        <ServiceWorkerManagement propertyId={id} isOwner={isOwner} />
+       </Col>
+      )}
+      {isOwner && (
+       <Button
+        type="primary"
+        icon={<i className="fa-regular fa-users-gear" />}
+        onClick={() => navigate(`/service-workers?hash=${hash}`)}
+        style={{ marginTop: 16 }}
+       >
+        {t('serviceWorker.title')}
+       </Button>
+      )}
      </Row>
      <div style={{ marginBottom: 100 }} />
     </Content>

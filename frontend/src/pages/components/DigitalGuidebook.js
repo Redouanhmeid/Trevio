@@ -41,6 +41,7 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import { useUserData } from '../../hooks/useUserData';
 import ShareModal from '../../components/common/ShareModal';
 import HouseManual from './HouseManual';
+import ServiceWorkerGuest from './ServiceWorkerGuest';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -387,6 +388,16 @@ const generateTabs = (
      longitude={property.longitude}
      type="Centre commercial"
     />
+   </div>
+  ),
+ },
+ {
+  key: '8',
+  icon: <i className="fa-regular fa-phone"></i>,
+  tab: t('serviceWorker.title'),
+  content: (
+   <div>
+    <ServiceWorkerGuest propertyId={property.id} />
    </div>
   ),
  },
