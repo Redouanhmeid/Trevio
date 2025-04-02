@@ -37,12 +37,6 @@ export const PropertiesSection = withPropertiesGuard(
  ({ properties, onToggleEnable, onDeleteProperty }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
-  const [pageUrl, setPageUrl] = useState();
-
-  const hideShareModal = () => {
-   setIsShareModalVisible(false);
-  };
 
   const IconText = ({ icon, text, onClick }) => (
    <Button type="text" onClick={onClick} icon={icon} size="small">
@@ -50,24 +44,49 @@ export const PropertiesSection = withPropertiesGuard(
    </Button>
   );
 
-  const showShareModal = (id) => {
-   setPageUrl(`${window.location.origin}/propertydetails?id=${id}`);
-   setIsShareModalVisible(true);
-  };
-
   const renderPropertyItem = (property) => {
    const actions = [
     <div
-     key="display"
+     key={`display-${property.id}`}
      onClick={() => navigate(`/propertydetails?hash=${property.hashId}`)}
     >
-     <i className="Dashicon Pointer fa-regular fa-eye" />
+     <i className="Dashicon Pointer fa-light fa-eye" />
     </div>,
-    <div key="share" onClick={() => showShareModal(property.id)}>
-     <i className="Dashicon Pointer fa-regular fa-share-nodes" />
-    </div>,
+    <Button
+     key={`task-${property.id}`}
+     icon={
+      <i
+       className="Dashicon fa-light fa-list-check"
+       style={{ color: '#2b2c32' }}
+       key="task"
+      />
+     }
+     onClick={() =>
+      navigate(`/propertytaskdashboard?id=${property.id}&name=${property.name}`)
+     }
+     type="link"
+     shape="circle"
+    />,
+    <Button
+     key={`revenue-${property.id}`}
+     icon={
+      <i
+       className="Dashicon fa-light fa-dollar-sign"
+       style={{ color: '#389e0d' }}
+       key="revenue"
+      />
+     }
+     onClick={() =>
+      navigate(
+       `/propertyrevenuedashboard?id=${property.id}&name=${property.name}`
+      )
+     }
+     type="link"
+     shape="circle"
+    />,
+
     <Popconfirm
-     key="lock"
+     key={`toggle-${property.id}`}
      title={
       property.status === 'enable'
        ? t('property.disable')
@@ -80,12 +99,12 @@ export const PropertiesSection = withPropertiesGuard(
      icon={
       property.status === 'enable' ? (
        <i
-        className="Dashicon Pointer fa-regular fa-lock"
+        className="Dashicon Pointer fa-light fa-lock"
         style={{ color: '#F5222D', marginRight: 6 }}
        />
       ) : (
        <i
-        className="Dashicon fa-regular fa-lock-open"
+        className="Dashicon Pointer fa-light fa-lock-open"
         style={{ color: '#52C41A', marginRight: 6 }}
        />
       )
@@ -93,15 +112,15 @@ export const PropertiesSection = withPropertiesGuard(
     >
      {property.status === 'enable' ? (
       <i
-       className="Dashicon fa-regular fa-lock-open"
+       className="Dashicon Pointer fa-light fa-lock-open"
        style={{ color: '#52C41A' }}
       />
      ) : (
-      <i className="Dashicon fa-regular fa-lock" style={{ color: '#F5222D' }} />
+      <i className="Dashicon fa-light fa-lock" style={{ color: '#F5222D' }} />
      )}
     </Popconfirm>,
     <Popconfirm
-     key="delete"
+     key={`delete-${property.id}`}
      title={t('messages.deleteConfirm')}
      onConfirm={() => onDeleteProperty(property.id)}
      okText={t('common.yes')}
@@ -110,7 +129,7 @@ export const PropertiesSection = withPropertiesGuard(
      <Button
       danger
       icon={
-       <i className="Dashicon fa-regular fa-trash" style={{ color: 'red' }} />
+       <i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />
       }
       type="link"
       shape="circle"
@@ -141,7 +160,7 @@ export const PropertiesSection = withPropertiesGuard(
       <Image
        width={272}
        height={180}
-       alt={property.name}
+       key={property.id}
        src={property?.photos[0] || fallback}
        style={{
         borderRadius: '16px',
@@ -248,12 +267,6 @@ export const PropertiesSection = withPropertiesGuard(
       </Col>
      ))}
     </Row>
-
-    <ShareModal
-     isVisible={isShareModalVisible}
-     onClose={hideShareModal}
-     pageUrl={pageUrl}
-    />
    </div>
   );
  }

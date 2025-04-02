@@ -153,14 +153,14 @@ const updateTaskStatus = async (req, res) => {
 
 const getUserTasks = async (req, res) => {
  try {
-  const userId = req.params.userId;
+  const clientId = req.params.clientId;
 
   const tasks = await PropertyTask.findAll({
    include: [
     {
      model: Property,
      as: 'property',
-     where: { userId },
+     where: { clientId },
      attributes: ['name', 'id'],
     },
    ],

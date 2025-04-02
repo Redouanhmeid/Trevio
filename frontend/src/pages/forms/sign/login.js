@@ -96,7 +96,13 @@ const Login = () => {
  };
 
  const handleGoogleLogin = async () => {
-  await googleLogin();
+  console.log('Google login button clicked');
+  try {
+   await googleLogin();
+  } catch (err) {
+   console.error('Google login error in login component:', err);
+   setLoginError(`Error: ${err.message}`);
+  }
  };
 
  return (
@@ -221,7 +227,7 @@ const Login = () => {
           block
           size="large"
           icon={<GoogleOutlined />}
-          onClick={googleLogin}
+          onClick={handleGoogleLogin}
           disabled={isLoading}
          >
           {t('auth.loginWithGoogle')}

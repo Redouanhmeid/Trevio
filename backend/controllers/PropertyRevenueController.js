@@ -118,21 +118,29 @@ const getPropertyRevenue = async (req, res) => {
  }
 };
 
+// In PropertyRevenueController.js
 const getAnnualRevenue = async (req, res) => {
  try {
   const { propertyId } = req.params;
   const { year } = req.params;
 
-  // Calculate date range for the specified year
-  const startOfYear = new Date(parseInt(year), 0, 1);
-  const endOfYear = new Date(parseInt(year), 11, 31);
+  // Parse year as integer
+  const yearInt = parseInt(year);
 
+  // Calculate date range for the specified year
+  const startOfYear = new Date(yearInt, 0, 1);
+  const endOfYear = new Date(yearInt, 11, 31);
+
+  // Find reservations that overlap with the specified year
   const revenues = await PropertyRevenue.findAll({
    where: {
     propertyId,
     [Op.or]: [
+     // Starts in this year
      { startDate: { [Op.between]: [startOfYear, endOfYear] } },
+     // Ends in this year
      { endDate: { [Op.between]: [startOfYear, endOfYear] } },
+     // Spans the entire year
      {
       [Op.and]: [
        { startDate: { [Op.lte]: startOfYear } },
@@ -141,11 +149,10 @@ const getAnnualRevenue = async (req, res) => {
      },
     ],
    },
-   order: [['startDate', 'ASC']],
-   attributes: ['startDate', 'endDate', 'amount', 'notes'],
+   attributes: ['id', 'startDate', 'endDate', 'amount', 'notes'],
   });
 
-  // Group revenues by month for the annual report
+  // Initialize monthly revenue structure
   const monthlyRevenues = Array(12)
    .fill(0)
    .map((_, i) => ({
@@ -154,38 +161,65 @@ const getAnnualRevenue = async (req, res) => {
     notes: '',
    }));
 
-  // Distribute revenue across months proportionally if it spans multiple months
+  // Process each revenue entry
   revenues.forEach((revenue) => {
-   const start = new Date(Math.max(revenue.startDate, startOfYear));
-   const end = new Date(Math.min(revenue.endDate, endOfYear));
+   // Convert to JS objects to avoid Sequelize issues
+   const revenueObj = {
+    id: revenue.id,
+    startDate: new Date(revenue.startDate),
+    endDate: new Date(revenue.endDate),
+    amount: parseFloat(revenue.amount),
+    notes: revenue.notes,
+   };
 
-   const totalDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
-   const amount = parseFloat(revenue.amount);
+   // Ensure dates are within this year
+   const effectiveStartDate = new Date(
+    Math.max(revenueObj.startDate, startOfYear)
+   );
+   const effectiveEndDate = new Date(Math.min(revenueObj.endDate, endOfYear));
 
-   // Create a map of days per month in this revenue period
+   // Calculate total days in the reservation
+   const totalDays =
+    Math.round(
+     (revenueObj.endDate - revenueObj.startDate) / (1000 * 60 * 60 * 24)
+    ) + 1;
+   // Calculate days in this year
+   const daysInYear =
+    Math.round(
+     (effectiveEndDate - effectiveStartDate) / (1000 * 60 * 60 * 24)
+    ) + 1;
+
+   // Daily revenue rate
+   const dailyRate = revenueObj.amount / totalDays;
+
+   // Create a map of days per month
    const monthDays = {};
-   let currentDate = new Date(start);
+   let currentDate = new Date(effectiveStartDate);
 
-   while (currentDate <= end) {
-    const month = currentDate.getMonth();
+   // Count days in each month
+   while (currentDate <= effectiveEndDate) {
+    const month = currentDate.getMonth(); // 0-11
     monthDays[month] = (monthDays[month] || 0) + 1;
 
     // Move to next day
     currentDate.setDate(currentDate.getDate() + 1);
    }
 
-   // Distribute revenue proportionally based on days in each month
+   // Distribute revenue to months
    Object.entries(monthDays).forEach(([month, days]) => {
     const monthIndex = parseInt(month);
     const proportion = days / totalDays;
-    monthlyRevenues[monthIndex].amount += amount * proportion;
+    const monthAmount = revenueObj.amount * proportion;
+
+    // Add to monthly revenue
+    monthlyRevenues[monthIndex].amount += monthAmount;
 
     // Add note if there's any
-    if (revenue.notes) {
+    if (revenueObj.notes) {
      if (monthlyRevenues[monthIndex].notes) {
       monthlyRevenues[monthIndex].notes += '; ';
      }
-     monthlyRevenues[monthIndex].notes += revenue.notes;
+     monthlyRevenues[monthIndex].notes += `${revenue.notes} (${days} days)`;
     }
    });
   });
@@ -206,8 +240,11 @@ const getAnnualRevenue = async (req, res) => {
    totalRevenue: Math.round(totalRevenue * 100) / 100,
   });
  } catch (error) {
-  console.error(error);
-  res.status(500).json({ error: 'Échec de la récupération du revenu annuel' });
+  console.error('Error in getAnnualRevenue:', error);
+  res.status(500).json({
+   error: 'Failed to retrieve annual revenue',
+   details: error.message,
+  });
  }
 };
 

@@ -46,6 +46,7 @@ const { Content } = Layout;
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 const PropertyRevenueDashboard = () => {
  const { t } = useTranslation();
@@ -74,7 +75,7 @@ const PropertyRevenueDashboard = () => {
   loading,
   error: ERROR,
   getPropertyRevenue,
-  addMonthlyRevenue,
+  addRevenue,
   updateRevenue,
   deleteRevenue,
  } = useRevenue();
@@ -97,10 +98,13 @@ const PropertyRevenueDashboard = () => {
   let filteredData = data;
 
   if (year) {
-   filteredData = data.filter((item) => item.year === year);
+   filteredData = data.filter(
+    (item) => new Date(item.startDate).getFullYear() === year
+   );
   }
-  // Sort by month from 1 to 12
-  filteredData.sort((a, b) => a.month - b.month);
+
+  // Sort by startDate (newest first)
+  filteredData.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
 
   setFilteredRevenueData(filteredData);
   calculateStatistics(filteredData);
@@ -118,17 +122,25 @@ const PropertyRevenueDashboard = () => {
   const total = data.reduce((sum, item) => sum + Number(item.amount || 0), 0);
   setYearlyTotal(total);
 
-  // Calculate monthly average
-  const average = total / data.length;
+  // Calculate monthly average - group by month first
+  const monthlyTotals = data.reduce((acc, item) => {
+   const month = new Date(item.startDate).getMonth();
+   if (!acc[month]) acc[month] = 0;
+   acc[month] += Number(item.amount || 0);
+   return acc;
+  }, {});
+
+  const monthCount = Object.keys(monthlyTotals).length || 1;
+  const average = total / monthCount;
   setMonthlyAverage(average);
 
-  // Calculate percentage change from last month
+  // Calculate percentage change from last period
   if (data.length >= 2) {
-   const lastMonth = Number(data[data.length - 1].amount || 0);
-   const previousMonth = Number(data[data.length - 2].amount || 0);
+   const lastAmount = Number(data[0].amount || 0);
+   const previousAmount = Number(data[1].amount || 0);
    const change =
-    previousMonth !== 0
-     ? ((lastMonth - previousMonth) / previousMonth) * 100
+    previousAmount !== 0
+     ? ((lastAmount - previousAmount) / previousAmount) * 100
      : 0;
    setPercentageChange(change);
   }
@@ -144,24 +156,27 @@ const PropertyRevenueDashboard = () => {
   }
  }, [yearFilter, revenueData]);
 
+ const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  // Format as "DD MMM" (e.g., "15 Jan")
+  return date.toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
+ };
+
  const columns = [
   {
-   title: t('revenue.year'),
-   dataIndex: 'year',
-   key: 'year',
-   render: (year) => String(year),
-  },
-  {
-   title: t('revenue.month'),
-   dataIndex: 'month',
-   key: 'month',
-   render: (month) => String(month),
+   title: t('reservation.dates'),
+   key: 'dates',
+   render: (_, record) =>
+    `${formatDate(record.startDate)} - ${formatDate(record.endDate)}`,
+   sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
   },
   {
    title: t('revenue.amount'),
    dataIndex: 'amount',
    key: 'amount',
-   render: (amount) => `${Number(amount || 0).toLocaleString()} DHs`,
+   render: (amount) =>
+    `${Number(amount || 0).toLocaleString()} ${t('revenue.currency')}`,
+   sorter: (a, b) => a.amount - b.amount,
   },
   {
    title: t('revenue.notes'),
@@ -202,10 +217,9 @@ const PropertyRevenueDashboard = () => {
  };
 
  const handleEdit = (record) => {
-  const month = String(record.month).padStart(2, '0');
   form.setFieldsValue({
    ...record,
-   date: record.month ? dayjs(`${record.year}/${month}`, 'YYYY/MM') : undefined,
+   dateRange: [dayjs(record.startDate), dayjs(record.endDate)],
   });
   setIsModalVisible(true);
  };
@@ -221,23 +235,24 @@ const PropertyRevenueDashboard = () => {
  const handleModalOk = async () => {
   try {
    const values = await form.validateFields();
-   const month = values.date.month() + 1;
-   const year = values.date.year();
 
    const revenueData = {
     propertyId: Number(propertyId, 10),
     amount: parseInt(values.amount),
-    month,
-    year,
+    startDate: values.dateRange[0].format('YYYY-MM-DD'),
+    endDate: values.dateRange[1].format('YYYY-MM-DD'),
     notes: values.notes,
     createdBy: Number(userId),
    };
 
    const result = values.id
     ? await updateRevenue(values.id, revenueData)
-    : await addMonthlyRevenue(revenueData);
+    : await addRevenue(revenueData);
 
    if (result) {
+    const month = values.dateRange[0].month() + 1;
+    const year = values.dateRange[0].year();
+
     const notification = await createRevenueUpdateNotification(
      Number(userId), // userId
      Number(propertyId, 10), // propertyId
@@ -260,18 +275,29 @@ const PropertyRevenueDashboard = () => {
   }
  };
 
- const chartData = (filteredRevenueData || [])
-  .sort((a, b) => a.month - b.month)
-  .map((item) => ({
-   month: new Date(item.year, (item.month || 1) - 1).toLocaleString('default', {
-    month: 'short',
-   }),
-   revenue: Number(item.amount || 0),
-  }));
+ // Prepare chart data with formatted date labels
+ const chartData = useMemo(() => {
+  return filteredRevenueData
+   .map((item) => ({
+    dateRange: `${formatDate(item.startDate)} - ${formatDate(item.endDate)}`,
+    revenue: Number(item.amount || 0),
+   }))
+   .sort((a, b) => {
+    // Sort by start date (ascending) for the chart
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
+    return dateA - dateB;
+   })
+   .slice(0, 12); // Limit to 12 periods for better readability
+ }, [filteredRevenueData]);
 
- // Modify the initial availableYears logic
+ // Get available years from the data
  const availableYears = useMemo(() => {
-  const years = [...new Set(revenueData.map((item) => item.year))].sort();
+  const years = [
+   ...new Set(
+    revenueData.map((item) => new Date(item.startDate).getFullYear())
+   ),
+  ].sort();
 
   // If current year is not in the list, add it
   if (!years.includes(currentYear)) {
@@ -279,7 +305,7 @@ const PropertyRevenueDashboard = () => {
   }
 
   return years;
- }, [revenueData]);
+ }, [revenueData, currentYear]);
 
  return (
   <Layout className="contentStyle">
@@ -356,7 +382,7 @@ const PropertyRevenueDashboard = () => {
        <ResponsiveContainer width="100%" height={275}>
         <LineChart data={chartData}>
          <CartesianGrid strokeDasharray="3 3" />
-         <XAxis dataKey="month" />
+         <XAxis dataKey="dateRange" />
          <YAxis />
          <Tooltip />
          <Legend />
@@ -417,13 +443,13 @@ const PropertyRevenueDashboard = () => {
       </Form.Item>
 
       <Form.Item
-       name="date"
-       label={t('revenue.month')}
+       name="dateRange"
+       label={t('reservation.dates')}
        rules={[
-        { required: true, message: t('revenue.validation.selectMonth') },
+        { required: true, message: t('reservation.validation.datesRequired') },
        ]}
       >
-       <DatePicker picker="month" />
+       <RangePicker format="DD MMM YYYY" style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
@@ -444,6 +470,7 @@ const PropertyRevenueDashboard = () => {
      </Form>
     </Modal>
    </Content>
+   <Foot />
   </Layout>
  );
 };

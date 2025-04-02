@@ -55,70 +55,13 @@ export const useLogin = () => {
    setIsLoading(true);
    const result = await signInWithPopup(auth, provider);
    const user = result.user;
-
-   // Check if the user already exists in your backend
-   const response = await fetch(`/api/v1/users/email/${user.email}`);
-   const userData = await response.json();
-
-   if (response.ok && userData) {
-    // If user exists, get their token through login
-    const loginResponse = await fetch('/api/v1/users/login', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({
-      email: user.email,
-      // You might need to handle this differently based on your backend
-      password: user.uid,
-     }),
-    });
-    const loginData = await loginResponse.json();
-
-    if (loginResponse.ok) {
-     const { token, ...userInfo } = loginData;
-     localStorage.setItem('user', JSON.stringify(userInfo));
-     localStorage.setItem('token', token);
-     dispatch({ type: 'LOGIN', payload: { ...userInfo, token } });
-    }
-   } else {
-    // If user doesn't exist, sign them up
-    const dummyPassword = Math.random().toString(36).slice(-8);
-
-    const newUser = {
-     email: user.email,
-     password: dummyPassword,
-     firstname: user.displayName.split(' ')[0],
-     lastname: user.displayName.split(' ').slice(1).join(' '),
-     phone: user.phoneNumber || 'N/A',
-     avatar: user.photoURL || '/avatars/default.png',
-     isVerified: true,
-    };
-
-    const signupResponse = await fetch('/api/v1/users', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify(newUser),
-    });
-
-    const newUserData = await signupResponse.json();
-
-    if (signupResponse.ok) {
-     const { token, ...userData } = newUserData;
-     localStorage.setItem('user', JSON.stringify(userData));
-     localStorage.setItem('token', token);
-     dispatch({ type: 'LOGIN', payload: { ...userData, token } });
-    } else {
-     throw new Error(newUserData.error || 'Sign-up failed');
-    }
-   }
-
+   // Optionally send user information to your backend if needed
+   dispatch({ type: 'LOGIN', payload: user });
+   localStorage.setItem('user', JSON.stringify(user));
    setIsLoading(false);
    navigate('/');
   } catch (error) {
-   if (error.code === 'auth/popup-closed-by-user') {
-    setError('Vous avez fermé la fenêtre de connexion. Veuillez réessayer.');
-   } else {
-    setError(error.message);
-   }
+   setError(error.message);
    setIsLoading(false);
   }
  };

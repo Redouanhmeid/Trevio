@@ -33,6 +33,7 @@ export const TasksSection = React.memo(
   const screens = useBreakpoint();
   const { updateTaskStatus } = useTask();
   const [loadingStates, setLoadingStates] = useState({});
+  console.log(tasks);
 
   const getPriorityTag = (priority) => {
    const colors = {

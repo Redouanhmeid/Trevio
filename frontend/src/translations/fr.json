@@ -441,6 +441,9 @@
         "createNow": "Créer une entrée de revenu maintenant",
         "createWarning": "Réservation créée mais il y a eu un problème lors de la création de l'entrée de revenu",
         "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce revenu",
+        "noData": "Aucune donnée",
+        "noDataFound": "Aucune donnée trouvée",
+        "tryAnotherYear": "Réessayer une autre année",
         "validation": {
             "selectMonth": "Veuillez sélectionner un mois",
             "enterAmount": "Veuillez saisir le montant",

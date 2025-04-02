@@ -441,6 +441,9 @@
         "createNow": "Create revenue entry now",
         "createWarning": "Reservation created but there was an issue creating the revenue entry",
         "notesPlaceholder": "Add any additional notes about this revenue",
+        "noData": "No Data",
+        "noDataFound": "No Data Found",
+        "tryAnotherYear": "Try Another Year",
         "validation": {
             "selectMonth": "Please select a month",
             "enterAmount": "Please enter the amount",

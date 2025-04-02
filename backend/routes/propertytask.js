@@ -17,6 +17,6 @@ router.get('/property/:propertyId/tasks', getPropertyTasks);
 router.get('/tasks/:id', getTask);
 router.delete('/tasks/:id', deleteTask);
 router.patch('/tasks/:id/status', updateTaskStatus);
-router.get('/user/:userId/tasks', getUserTasks);
+router.get('/user/:clientId/tasks', getUserTasks);
 
 module.exports = router;

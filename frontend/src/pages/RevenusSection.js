@@ -69,29 +69,6 @@ export const RevenusSection = withPropertiesGuard(({ properties }) => {
   return years;
  };
 
- const fetchAllPropertyRevenues = async () => {
-  const revenues = {};
-
-  const fetchPromises = properties.map(async (property) => {
-   try {
-    const revenue = await getAnnualRevenue(property.id, selectedYear);
-    revenues[property.id] = revenue?.totalRevenue || 0;
-   } catch (err) {
-    console.error(t('error.revenueFetch', { id: property.id }), err);
-    revenues[property.id] = 0;
-   }
-  });
-
-  await Promise.all(fetchPromises);
-  setPropertyRevenues(revenues);
- };
-
- const filteredLogements = properties.filter((property) => {
-  const propertyRevenue = propertyRevenues[property.id] || 0;
-
-  return propertyRevenue;
- });
-
  const showRevenueChart = async (property) => {
   setSelectedProperty(property);
   try {
@@ -110,6 +87,40 @@ export const RevenusSection = withPropertiesGuard(({ properties }) => {
  };
 
  useEffect(() => {
+  const fetchAllPropertyRevenues = async () => {
+   const revenues = {};
+
+   if (!properties || properties.length === 0) {
+    return;
+   }
+
+   try {
+    const fetchPromises = properties.map(async (property) => {
+     try {
+      const revenue = await getAnnualRevenue(property.id, selectedYear);
+      // Check if the revenue data exists and has the expected structure
+      if (revenue && typeof revenue.totalRevenue !== 'undefined') {
+       revenues[property.id] = revenue.totalRevenue;
+      } else {
+       console.log(
+        `Revenue data for property ${property.id} is not in expected format:`,
+        revenue
+       );
+       revenues[property.id] = 0;
+      }
+     } catch (err) {
+      console.error(`Error fetching revenue for property ${property.id}:`, err);
+      revenues[property.id] = 0;
+     }
+    });
+
+    await Promise.all(fetchPromises);
+    setPropertyRevenues(revenues);
+   } catch (error) {
+    console.error('Error in fetchAllPropertyRevenues:', error);
+   }
+  };
+
   if (properties.length > 0) {
    fetchAllPropertyRevenues();
   }
@@ -145,47 +156,57 @@ export const RevenusSection = withPropertiesGuard(({ properties }) => {
       </Flex>
      }
     >
-     <List
-      itemLayout="horizontal"
-      dataSource={filteredLogements}
-      renderItem={(logement) => (
-       <List.Item
-        extra={
-         <Button
-          type="primary"
-          icon={<BarChartOutlined />}
-          onClick={() => showRevenueChart(logement)}
-         >
-          {t('revenue.viewChart')}
-         </Button>
-        }
-       >
-        <List.Item.Meta
-         avatar={
-          <Image
-           src={logement.frontPhoto || logement.photos?.[0]}
-           alt={logement.name}
-           fallback={fallback}
-           placeholder={
-            <div className="image-placeholder">{t('common.loading')}</div>
-           }
-           width={94}
-          />
+     {Object.keys(propertyRevenues).length === 0 && properties.length > 0 ? (
+      <Alert
+       message={t('revenue.noDataFound')}
+       description={t('revenue.tryAnotherYear')}
+       type="info"
+       showIcon
+      />
+     ) : (
+      <List
+       itemLayout="horizontal"
+       dataSource={properties || []}
+       locale={{ emptyText: t('revenue.noData') }}
+       renderItem={(logement) => (
+        <List.Item
+         extra={
+          <Button
+           type="primary"
+           icon={<BarChartOutlined />}
+           onClick={() => showRevenueChart(logement)}
+          >
+           {t('revenue.viewChart')}
+          </Button>
          }
-         title={
-          <Text style={{ fontSize: '14px' }} strong>
-           {logement.name}
-          </Text>
-         }
-         description={
-          <Title level={2} className="PrimaryColor">
-           {propertyRevenues[logement.id] || 0} Dhs
-          </Title>
-         }
-        />
-       </List.Item>
-      )}
-     />
+        >
+         <List.Item.Meta
+          avatar={
+           <Image
+            src={logement.frontPhoto || (logement.photos && logement.photos[0])}
+            alt={logement.name}
+            fallback={fallback}
+            placeholder={
+             <div className="image-placeholder">{t('common.loading')}</div>
+            }
+            width={94}
+           />
+          }
+          title={
+           <Text style={{ fontSize: '14px' }} strong>
+            {logement.name}
+           </Text>
+          }
+          description={
+           <Title level={2} className="PrimaryColor">
+            {propertyRevenues[logement.id] || 0} Dhs
+           </Title>
+          }
+         />
+        </List.Item>
+       )}
+      />
+     )}
     </Card>
    </Col>
 
