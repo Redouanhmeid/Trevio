@@ -21,7 +21,6 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from '../context/TranslationContext';
 import useTask from '../hooks/useTask';
-import useProperty from '../hooks/useProperty';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -33,7 +32,6 @@ export const TasksSection = React.memo(
   const screens = useBreakpoint();
   const { updateTaskStatus } = useTask();
   const [loadingStates, setLoadingStates] = useState({});
-  console.log(tasks);
 
   const getPriorityTag = (priority) => {
    const colors = {

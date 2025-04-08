@@ -31,6 +31,7 @@ import AddPropertyCard from './components/AddPropertyCard';
 import useTask from '../hooks/useTask';
 import ManagedPropertiesSection from './ManagedPropertiesSection';
 import ReservationsSection from './ReservationsSection';
+import DashboardHeader from '../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -50,7 +51,7 @@ const Dashboard = () => {
  } = useProperty();
  const { getAnnualRevenue } = useRevenue();
  const { getClientConcierges, getConciergeProperties } = useConcierge();
- const { getUserTasks } = useTask();
+ const { getUserPropertyTasks } = useTask();
  const [concierges, setConcierges] = useState([]);
  const [userAssignedProperties, setUserAssignedProperties] = useState([]);
 
@@ -77,7 +78,7 @@ const Dashboard = () => {
 
  const fetchTasks = async () => {
   try {
-   const fetchedTasks = await getUserTasks(userId);
+   const fetchedTasks = await getUserPropertyTasks(userId);
    setTasks(fetchedTasks || []);
   } catch (err) {
    console.error(t('error.tasksFetch'), err);
@@ -176,7 +177,8 @@ const Dashboard = () => {
  }
  return (
   <Layout className="contentStyle">
-   <Head onUserData={handleUserData} />
+   <Head onUserData={handleUserData} /> <br />
+   <DashboardHeader />
    <Content className="container">
     <Flex justify="flex-end">
      <Button

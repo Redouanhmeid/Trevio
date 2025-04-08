@@ -336,7 +336,10 @@
         "viewAll": "Voir tout",
         "language": "Langue",
         "FAQs": "FAQ",
-        "copy": "Copier"
+        "copy": "Copier",
+        "accessDenied": "Accès refusé",
+        "noPermissionToView": "Aucune autorisation de visualisation",
+        "accessCheckError": "Erreur de vérification d'accès"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -380,6 +383,8 @@
         "edit": "Modifier",
         "delete": "Supprimer",
         "pending": "Tâches en attente",
+        "assignConcierge": "Attribuer à un concierge",
+        "createSuccess": "The task was successfully created",
         "confirmDelete": {
             "title": "Confirmer la suppression",
             "content": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
@@ -764,12 +769,20 @@
         "identity": "Identité",
         "signature": "Signature",
         "status": "Status",
+        "guestInformation": "Informations de l'invité",
+        "email": "E-mail",
+        "phone": "Téléphone",
         "statuses": {
             "draft": "BROUILLON",
             "sent": "ENVOYÉ",
             "signed": "SIGNÉ",
             "rejected": "REJECTÉ",
-            "completed": "COMPLÉTÉ"
+            "completed": "COMPLÉTÉ",
+            "DRAFT": "BROUILLON",
+            "SENT": "ENVOYÉ",
+            "SIGNED": "SIGNÉ",
+            "REJECTED": "REJECTÉ",
+            "COMPLETED": "COMPLÉTÉ"
         },
         "actions": {
             "actions": "Actions",
@@ -779,6 +792,7 @@
             "complete": "Complète"
         },
         "details": {
+            "residenceInfo": "Informations sur la résidence",
             "nationality": "Nationalité",
             "address": "Adresse",
             "postalCode": "Code postal",
@@ -793,7 +807,8 @@
             "contractCreated": "Contrat créé le",
             "contractUpdated": "Dernière mise à jour",
             "residenceAddress": "Adresse de résidence",
-            "viewReservation": "Voir la réservation"
+            "viewReservation": "Voir la réservation",
+            "signature": "Signature"
         },
         "error": {
             "fetch": "Impossible de récupérer les contrats",
@@ -1060,7 +1075,10 @@
             "markComplete": "Marquer comme terminé",
             "completeSuccess": "Contrat marqué comme terminé avec succès",
             "completeError": "Échec du marquage du contrat comme terminé",
-            "completionDescription": "Le client a signé le contrat. Vous pouvez maintenant le marquer comme terminé."
+            "completionDescription": "Le client a signé le contrat. Vous pouvez maintenant le marquer comme terminé.",
+            "markRejected": "Marquer comme rejeté",
+            "rejectSuccess": "Le contrat a été rejeté avec succès",
+            "rejectError": "Échec du rejet du contrat. Veuillez réessayer."
         },
         "revenue": {
             "create": {

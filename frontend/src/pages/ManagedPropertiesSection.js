@@ -306,7 +306,7 @@ const ManagedPropertiesSection = ({ userId, onNavigate, t }) => {
        }
        onClick={() =>
         onNavigate(
-         `/propertytaskdashboard?id=${record.id}&name=${record.property.name}`
+         `/propertytaskdashboard?id=${record.property.id}&name=${record.property.name}`
         )
        }
        type="link"
@@ -322,7 +322,7 @@ const ManagedPropertiesSection = ({ userId, onNavigate, t }) => {
        }
        onClick={() =>
         onNavigate(
-         `/propertyrevenuedashboard?id=${record.id}&name=${record.property.name}`
+         `/propertyrevenuedashboard?id=${record.property.id}&name=${record.property.name}`
         )
        }
        type="link"

@@ -15,10 +15,7 @@ export const LanguageSelector = () => {
 
  return (
   <Dropdown menu={menuItems} trigger={['click']} placement="bottomRight">
-   <i
-    className="PrimaryColor fa-light fa-globe fa-2xl"
-    style={{ cursor: 'pointer' }}
-   />
+   <i className="language-selector fa-light fa-globe" />
   </Dropdown>
  );
 };

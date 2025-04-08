@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
  Layout,
+ Result,
  Typography,
  Table,
  Tag,
@@ -14,6 +15,8 @@ import {
  Row,
  Col,
  Statistic,
+ message,
+ Spin,
 } from 'antd';
 import {
  ArrowLeftOutlined,
@@ -29,6 +32,7 @@ import useTask from '../../hooks/useTask';
 import useNotification from '../../hooks/useNotification';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -37,19 +41,6 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const statusColors = {
- 'Not Started': 'default',
- 'In Progress': 'processing',
- 'On Hold': 'warning',
- Completed: 'success',
-};
-
-const priorityColors = {
- High: 'red',
- Medium: 'orange',
- Low: 'green',
-};
-
 const PropertyTaskDashboard = () => {
  const location = useLocation();
  const searchParams = new URLSearchParams(location.search);
@@ -57,20 +48,22 @@ const PropertyTaskDashboard = () => {
  const navigate = useNavigate();
  const propertyId = searchParams.get('id');
  const propertyName = searchParams.get('name');
+ const { user } = useAuthContext();
 
  const [tasks, setTasks] = useState([]);
  const [modalVisible, setModalVisible] = useState(false);
  const [modalType, setModalType] = useState('create');
  const [selectedTask, setSelectedTask] = useState(null);
-
  const [userId, setUserId] = useState(null);
+ const [isLoading, setIsLoading] = useState(true);
 
  const [form] = Form.useForm();
 
  const {
-  loading,
+  loading: taskLoading,
   error,
   getPropertyTasks,
+  getUserPropertyTasks,
   createTask,
   updateTask,
   deleteTask,
@@ -84,12 +77,43 @@ const PropertyTaskDashboard = () => {
  };
 
  useEffect(() => {
-  fetchTasks();
- }, [propertyId]);
+  if (userId) {
+   if (propertyId) {
+    // If propertyId is provided, fetch tasks for that specific property
+    fetchPropertyTasks();
+   } else {
+    // Otherwise, fetch all tasks for properties owned or managed by the user
+    fetchAllUserPropertyTasks();
+   }
+  }
+ }, [userId, propertyId]);
 
- const fetchTasks = async () => {
-  const data = await getPropertyTasks(propertyId);
-  setTasks(data);
+ const fetchPropertyTasks = async () => {
+  if (!propertyId) return;
+
+  try {
+   const data = await getPropertyTasks(propertyId);
+   setTasks(data || []);
+   setIsLoading(false);
+  } catch (err) {
+   console.error('Error fetching tasks:', err);
+   message.error(t('tasks.fetchError'));
+   setIsLoading(false);
+  }
+ };
+
+ const fetchAllUserPropertyTasks = async () => {
+  if (!userId) return;
+
+  try {
+   const data = await getUserPropertyTasks(userId);
+   setTasks(data || []);
+   setIsLoading(false);
+  } catch (err) {
+   console.error('Error fetching all property tasks:', err);
+   message.error(t('tasks.fetchError'));
+   setIsLoading(false);
+  }
  };
 
  const handleCreate = () => {
@@ -118,62 +142,96 @@ const PropertyTaskDashboard = () => {
    okType: 'danger',
    cancelText: t('tasks.confirmDelete.cancel'),
    onOk: async () => {
-    await deleteTask(id);
-    fetchTasks();
+    try {
+     await deleteTask(id);
+     message.success(t('tasks.deleteSuccess'));
+     if (propertyId) {
+      fetchPropertyTasks();
+     } else {
+      fetchAllUserPropertyTasks();
+     }
+    } catch (err) {
+     message.error(t('tasks.deleteError'));
+    }
    },
   });
  };
 
  const handleStatusChange = async (id, status) => {
-  let mappedStatus;
-  switch (status) {
-   case 'Not Started':
-    mappedStatus = 'pending';
-    break;
-   case 'In Progress':
-    mappedStatus = 'in_progress';
-    break;
-   case 'Completed':
-    mappedStatus = 'completed';
-    break;
-   default:
-    mappedStatus = 'pending';
+  try {
+   await updateTaskStatus(id, status);
+   message.success(t('tasks.message.statusUpdateSuccess'));
+   if (propertyId) {
+    fetchPropertyTasks();
+   } else {
+    fetchAllUserPropertyTasks();
+   }
+  } catch (err) {
+   message.error(t('tasks.message.statusUpdateError'));
   }
-  await updateTaskStatus(id, mappedStatus);
-  fetchTasks();
  };
 
  const handleSubmit = async (values) => {
-  const taskData = {
-   ...values,
-   propertyId,
-   dueDate: values.dueDate.format('YYYY-MM-DD'),
-   assignedTo: values.assignedTo,
-   createdBy: userId,
-  };
+  try {
+   const taskData = {
+    ...values,
+    propertyId: propertyId, // This will be undefined when not in single property view
+    dueDate: values.dueDate.format('YYYY-MM-DD'),
+    createdBy: userId,
+   };
 
-  let result;
+   console.log(taskData);
 
-  if (modalType === 'create') {
-   result = await createTask(taskData);
-  } else {
-   result = await updateTask(selectedTask.id, taskData);
-  }
+   let result;
 
-  if (result) {
-   const notification = await createTaskUpdateNotification(
-    Number(userId),
-    Number(propertyId, 10),
-    values.title,
-    values.priority
+   if (modalType === 'create') {
+    if (!propertyId) {
+     message.error(t('tasks.error.noPropertySelected'));
+     return;
+    }
+    result = await createTask(taskData);
+    message.success(t('tasks.createSuccess'));
+   } else {
+    result = await updateTask(selectedTask.id, taskData);
+    message.success(t('tasks.updateSuccess'));
+   }
+
+   if (result) {
+    // Send notification for task updates
+    await createTaskUpdateNotification(
+     Number(userId),
+     Number(propertyId || selectedTask.propertyId),
+     values.title,
+     values.priority
+    );
+   }
+
+   setModalVisible(false);
+   if (propertyId) {
+    fetchPropertyTasks();
+   } else {
+    fetchAllUserPropertyTasks();
+   }
+  } catch (err) {
+   console.error('Error submitting task:', err);
+   message.error(
+    modalType === 'create' ? t('tasks.createError') : t('tasks.updateError')
    );
   }
-
-  setModalVisible(false);
-  fetchTasks();
  };
 
  const columns = [
+  {
+   title: t('property.title'),
+   dataIndex: ['property', 'name'],
+   key: 'property',
+   render: (text, record) => record.property?.name || '-',
+   sorter: (a, b) => {
+    const nameA = a.property?.name || '';
+    const nameB = b.property?.name || '';
+    return nameA.localeCompare(nameB);
+   },
+  },
   {
    title: t('tasks.title'),
    dataIndex: 'title',
@@ -183,37 +241,49 @@ const PropertyTaskDashboard = () => {
    title: t('tasks.notes'),
    dataIndex: 'notes',
    key: 'notes',
+   ellipsis: true,
   },
   {
    title: t('tasks.priority.title'),
    dataIndex: 'priority',
    key: 'priority',
    render: (priority) => {
-    const colors = {
-     high: 'red',
-     medium: 'orange',
-     low: 'green',
-     default: 'gray',
-    };
+    let color;
+    let label;
 
-    const priorityInFrench = {
-     high: 'URGENT',
-     medium: 'MOYENNE',
-     low: 'FAIBLE',
-     default: '-',
-    };
-
-    const color = colors[priority] || colors.default;
-    const label = priorityInFrench[priority] || priorityInFrench.default;
+    switch (priority) {
+     case 'high':
+      color = 'red';
+      label = t('tasks.priority.high');
+      break;
+     case 'medium':
+      color = 'orange';
+      label = t('tasks.priority.medium');
+      break;
+     case 'low':
+      color = 'green';
+      label = t('tasks.priority.low');
+      break;
+     default:
+      color = 'gray';
+      label = priority;
+    }
 
     return <Tag color={color}>{label}</Tag>;
    },
+   filters: [
+    { text: t('tasks.priority.high'), value: 'high' },
+    { text: t('tasks.priority.medium'), value: 'medium' },
+    { text: t('tasks.priority.low'), value: 'low' },
+   ],
+   onFilter: (value, record) => record.priority === value,
   },
   {
    title: t('tasks.dueDate'),
    dataIndex: 'dueDate',
    key: 'dueDate',
    render: (date) => dayjs(date).format('YYYY-MM-DD'),
+   sorter: (a, b) => new Date(a.dueDate) - new Date(b.dueDate),
   },
   {
    title: t('tasks.status.title'),
@@ -223,6 +293,7 @@ const PropertyTaskDashboard = () => {
     <Select
      value={status}
      onChange={(value) => handleStatusChange(record.id, value)}
+     style={{ width: '100%' }}
     >
      <Option value="pending">
       <ClockCircleOutlined /> {t('tasks.status.pending')}
@@ -235,6 +306,12 @@ const PropertyTaskDashboard = () => {
      </Option>
     </Select>
    ),
+   filters: [
+    { text: t('tasks.status.pending'), value: 'pending' },
+    { text: t('tasks.status.inProgress'), value: 'in_progress' },
+    { text: t('tasks.status.completed'), value: 'completed' },
+   ],
+   onFilter: (value, record) => record.status === value,
   },
   {
    title: t('tasks.actions'),
@@ -252,23 +329,45 @@ const PropertyTaskDashboard = () => {
   },
  ];
 
+ if (isLoading) {
+  return (
+   <Layout>
+    <Head onUserData={handleUserData} />
+    <Content className="container">
+     <div
+      style={{
+       display: 'flex',
+       justifyContent: 'center',
+       alignItems: 'center',
+       height: '50vh',
+      }}
+     >
+      <Spin size="large" />
+     </div>
+    </Content>
+    <Foot />
+   </Layout>
+  );
+ }
+
  return (
-  <Layout>
+  <Layout className="contentStyle">
    <Head onUserData={handleUserData} />
    <Content className="container">
     <Button
-     type="default"
-     shape="round"
+     type="text"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
     >
      {t('button.back')}
     </Button>
     <Title level={2}>
-     {t('tasks.management')} {propertyName}
+     {propertyId
+      ? `${t('tasks.management')} ${propertyName}`
+      : t('tasks.allPropertiesManagement')}
     </Title>
 
-    <Row gutter={16}>
+    <Row gutter={16} style={{ marginBottom: 24 }}>
      <Col span={6}>
       <Statistic
        title={t('tasks.statistics.totalTasks')}
@@ -278,13 +377,13 @@ const PropertyTaskDashboard = () => {
      <Col span={6}>
       <Statistic
        title={t('tasks.statistics.completedTasks')}
-       value={tasks.filter((t) => t.status === 'Completed').length}
+       value={tasks.filter((t) => t.status === 'completed').length}
       />
      </Col>
      <Col span={6}>
       <Statistic
        title={t('tasks.statistics.activeTasks')}
-       value={tasks.filter((t) => t.status !== 'Completed').length}
+       value={tasks.filter((t) => t.status !== 'completed').length}
       />
      </Col>
      <Col span={6}>
@@ -294,18 +393,27 @@ const PropertyTaskDashboard = () => {
       />
      </Col>
     </Row>
-    <br />
 
-    <Button
-     type="primary"
-     icon={<PlusOutlined />}
-     onClick={handleCreate}
-     style={{ marginBottom: 16 }}
-    >
-     {t('tasks.createTask')}
-    </Button>
+    {propertyId && (
+     <Button
+      type="primary"
+      icon={<PlusOutlined />}
+      onClick={handleCreate}
+      style={{ marginBottom: 16 }}
+     >
+      {t('tasks.createTask')}
+     </Button>
+    )}
 
-    <Table columns={columns} dataSource={tasks} rowKey="id" loading={loading} />
+    <Table
+     columns={
+      propertyId ? columns.filter((col) => col.key !== 'property') : columns
+     }
+     dataSource={tasks}
+     rowKey="id"
+     loading={taskLoading}
+     pagination={{ pageSize: 10 }}
+    />
 
     <Modal
      title={
@@ -315,10 +423,10 @@ const PropertyTaskDashboard = () => {
      onCancel={() => setModalVisible(false)}
      footer={[
       <Button key="cancel" onClick={() => setModalVisible(false)}>
-       {t('tasks.confirmDelete.cancel')}
+       {t('common.cancel')}
       </Button>,
       <Button key="submit" type="primary" onClick={() => form.submit()}>
-       {modalType === 'create' ? t('tasks.createTask') : t('tasks.edit')}
+       {modalType === 'create' ? t('tasks.createTask') : t('tasks.updateTask')}
       </Button>,
      ]}
     >
@@ -340,9 +448,9 @@ const PropertyTaskDashboard = () => {
        ]}
       >
        <Select>
-        <Option value="High">{t('tasks.priority.high')}</Option>
-        <Option value="Medium">{t('tasks.priority.medium')}</Option>
-        <Option value="Low">{t('tasks.priority.low')}</Option>
+        <Option value="high">{t('tasks.priority.high')}</Option>
+        <Option value="medium">{t('tasks.priority.medium')}</Option>
+        <Option value="low">{t('tasks.priority.low')}</Option>
        </Select>
       </Form.Item>
       <Form.Item
@@ -352,12 +460,12 @@ const PropertyTaskDashboard = () => {
         { required: true, message: t('tasks.validation.dueDateRequired') },
        ]}
       >
-       <DatePicker format="YYYY-MM-DD" />
+       <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item name="notes" label={t('tasks.notes')}>
        <TextArea rows={4} />
       </Form.Item>
-      {error && <p>{error.message}</p>}
+      {error && <p style={{ color: 'red' }}>{error.message}</p>}
      </Form>
     </Modal>
    </Content>

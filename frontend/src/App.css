@@ -1292,3 +1292,248 @@ body {
 .custom-switch-purple.ant-switch-checked .ant-switch-handle {
   inset-inline-start: calc(100% - 24px);
 }
+
+/* DashboardHeader.css */
+.dashboard-header {
+  background-color: #6D5FFA;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 80px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  z-index: 1000;
+}
+
+.dashboard-header .logo-container {
+  margin-right: 48px;
+  line-height: 0;
+}
+
+.dashboard-header .logo {
+  height: 48px;
+}
+
+.dashboard-header .nav-menu {
+  background: transparent;
+  border-bottom: none;
+  color: white;
+  flex: 1;
+  line-height: 80px;
+}
+
+.dashboard-header .ant-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+  padding: 0 20px;
+  margin: 0 4px;
+}
+
+.dashboard-header .ant-menu-item:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-header .ant-menu-item-selected {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: 500;
+}
+
+.dashboard-header .ant-menu-title-content {
+  color: white;
+}
+
+.dashboard-header .ant-menu-item-selected::after {
+  border-bottom: 4px solid white !important;
+}
+
+.dashboard-header .ant-menu-item .anticon,
+.dashboard-header .ant-menu-item i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.dashboard-header .right-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
+
+.dashboard-header .language-selector,
+.dashboard-header .notification-bell {
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.dashboard-header .mobile-menu-button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-header .mobile-menu-button:hover,
+.dashboard-header .mobile-menu-button:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.dashboard-header .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 24px;
+  transition: background-color 0.3s;
+}
+
+.dashboard-header .user-profile:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-header .user-avatar {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-header .user-name {
+  color: white;
+  font-weight: 500;
+}
+
+/* Drawer styling */
+.ant-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.ant-drawer .ant-list-item {
+  padding: 16px 24px;
+}
+
+.ant-drawer .ant-menu {
+  border-right: none;
+}
+
+.ant-drawer .ant-menu-item {
+  padding: 0 24px;
+  height: 50px;
+  line-height: 50px;
+  margin: 0;
+}
+
+.ant-drawer .HeaderIcon {
+  margin-right: 12px;
+  color: #6D5FFA;
+}
+
+.ant-drawer .PrimaryColor {
+  color: #6D5FFA;
+}
+
+/* Dropdown menu styling */
+.ant-dropdown .ant-dropdown-menu {
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.ant-dropdown .ant-dropdown-menu-item {
+  padding: 10px 16px;
+  border-radius: 4px;
+}
+
+.ant-dropdown .ant-dropdown-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.ant-dropdown .ant-dropdown-menu-item i {
+  margin-right: 8px;
+  color: #6D5FFA;
+}
+
+/* Notification styling */
+.NotificationRender {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #E9EAEB;
+  border-radius: 8px;
+  padding: 0;
+  width: 350px;
+}
+
+@media only screen and (max-width: 576px) {
+  .NotificationRender {
+    max-width: 100%;
+    width: calc(100vw - 32px);
+    transform: translateX(-50%);
+    left: 50%;
+    position: fixed;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 0 16px;
+  }
+  
+  .dashboard-header .logo-container {
+    margin-right: 0;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .dashboard-header .user-name {
+    display: none;
+  }
+  
+  .dashboard-header .right-section {
+    gap: 16px;
+  }
+
+  /* Hide NotificationBell text on mobile */
+  .notification-bell span {
+    display: none;
+  }
+
+  /* Make the language selector smaller on mobile */
+  .language-selector {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header {
+    padding: 0 12px;
+  }
+  
+  .dashboard-header .logo {
+    height: 32px;
+  }
+  
+  .dashboard-header .right-section {
+    gap: 12px;
+  }
+}
+
+.dashboard-header .avatar-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
+.dashboard-header .HeaderAvatar {
+  color: #fff;
+  background: #ffffff14;
+  border-radius: 16px;
+  height: 60px;
+}

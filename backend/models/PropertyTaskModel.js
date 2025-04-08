@@ -44,14 +44,6 @@ module.exports = (db, type) => {
     key: 'id',
    },
   },
-  assignedTo: {
-   type: type.INTEGER,
-   allowNull: true,
-   references: {
-    model: 'users', // Reference the users table
-    key: 'id',
-   },
-  },
  });
 
  return propertyTask;

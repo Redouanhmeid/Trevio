@@ -62,7 +62,7 @@ import GuestReservationView from './pages/guest/GuestReservationView';
 import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
 
 const router = createBrowserRouter([
- { path: '/', element: <Login />, errorElement: <NotFoundPage /> },
+ { path: '/', element: <ReservationsList />, errorElement: <NotFoundPage /> },
  {
   path: '/dashboard',
   element: (

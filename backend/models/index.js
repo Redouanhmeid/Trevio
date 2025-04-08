@@ -162,17 +162,9 @@ User.hasMany(PropertyTask, {
  foreignKey: 'createdBy',
  as: 'createdTasks',
 });
-User.hasMany(PropertyTask, {
- foreignKey: 'assignedTo',
- as: 'assignedTasks',
-});
 PropertyTask.belongsTo(User, {
  foreignKey: 'createdBy',
  as: 'creator',
-});
-PropertyTask.belongsTo(User, {
- foreignKey: 'assignedTo',
- as: 'assignee',
 });
 
 // Notification relationships

@@ -176,8 +176,8 @@ const updateContractStatus = async (req, res) => {
   // Validate status transition
   const validTransitions = {
    DRAFT: ['SENT'],
-   SENT: ['SIGNED', 'REJECTED'],
-   SIGNED: ['COMPLETED'],
+   SENT: ['SIGNED'],
+   SIGNED: ['COMPLETED', 'REJECTED'],
    REJECTED: [],
    COMPLETED: [],
   };

@@ -34,6 +34,7 @@ import { useConcierge } from '../../../hooks/useConcierge';
 import dayjs from 'dayjs';
 import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -338,16 +339,8 @@ const ReservationsList = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head onUserData={handleUserData} />
+   <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
-    <Button
-     type="link"
-     icon={<ArrowLeftOutlined />}
-     onClick={() => navigate(-1)}
-    >
-     {t('button.back')}
-    </Button>
-
     <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
      <Title level={2}>{t('reservation.list.title')}</Title>
      <Button
