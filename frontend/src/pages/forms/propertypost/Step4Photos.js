@@ -29,7 +29,7 @@ import {
  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import {
  ArrowLeftOutlined,
@@ -292,7 +292,7 @@ const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container-form">
      <ProgressSteps />

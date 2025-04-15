@@ -13,7 +13,7 @@ import {
  message,
 } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useUpdatePropertyCapacity from '../../../hooks/useUpdateProperty';
@@ -108,7 +108,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container-form">
      <ProgressSteps />

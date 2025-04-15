@@ -24,7 +24,6 @@ import {
  ArrowUpOutlined,
  ArrowDownOutlined,
 } from '@ant-design/icons';
-import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import {
  LineChart,
@@ -41,6 +40,7 @@ import useRevenue from '../../hooks/useRevenue';
 import useNotification from '../../hooks/useNotification';
 import { useTranslation } from '../../context/TranslationContext';
 import dayjs from 'dayjs';
+import DashboardHeader from '../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -309,7 +309,7 @@ const PropertyRevenueDashboard = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head onUserData={handleUserData} />
+   <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
     <Button
      type="text"
@@ -399,14 +399,7 @@ const PropertyRevenueDashboard = () => {
 
      <Col xs={24} md={12}>
       {/* Revenue Table */}
-      <Card
-       title={t('revenue.entries')}
-       extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-         {t('revenue.addRevenue')}
-        </Button>
-       }
-      >
+      <Card title={t('revenue.entries')}>
        <Table
         columns={columns}
         dataSource={filteredRevenueData}

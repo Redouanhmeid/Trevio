@@ -14,6 +14,8 @@ const {
  getConciergeReservations,
  generateRevenue,
  generateContract,
+ updateElectronicLock,
+ checkAvailability,
 } = require('../controllers/ReservationController');
 
 // Get all reservations
@@ -53,5 +55,11 @@ router.get('/concierge/:conciergeId', getConciergeReservations);
 
 // Generate contract for reservation
 router.post('/:id/generate-contract', generateContract);
+
+// Electronic lock management
+router.patch('/:reservationId/electronic-lock', updateElectronicLock);
+
+// Check availability for a property's date range
+router.get('/property/:propertyId/check-availability', checkAvailability);
 
 module.exports = router;

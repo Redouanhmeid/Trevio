@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
  Layout,
  Typography,
@@ -25,8 +25,13 @@ import { useReservation } from '../../../hooks/useReservation';
 import useRevenue from '../../../hooks/useRevenue';
 import useNotification from '../../../hooks/useNotification';
 import dayjs from 'dayjs';
-import Head from '../../../components/common/header';
+// Import the isBetween plugin
+import isBetweenPlugin from 'dayjs/plugin/isBetween';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
+
+// Extend dayjs with the isBetween plugin
+dayjs.extend(isBetweenPlugin);
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -48,6 +53,7 @@ const CreateReservationForm = () => {
   createReservation,
   loading: reservationLoading,
   error: reservationError,
+  checkAvailability,
  } = useReservation();
  const { createRevenueFromReservation, loading: revenueLoading } = useRevenue();
  const { createNotification } = useNotification();
@@ -62,6 +68,11 @@ const CreateReservationForm = () => {
  const [userId, setUserId] = useState(null);
  const [totalNights, setTotalNights] = useState(0);
  const [suggestedTotalPrice, setSuggestedTotalPrice] = useState(0);
+
+ // state for handling reserved dates
+ const [reservedDates, setReservedDates] = useState([]);
+ const [checkingAvailability, setCheckingAvailability] = useState(false);
+ const [availabilityError, setAvailabilityError] = useState(null);
 
  // Get propertyId from query params if available
  const queryParams = new URLSearchParams(location.search);
@@ -122,6 +133,9 @@ const CreateReservationForm = () => {
    if (property) {
     form.setFieldsValue({ propertyId: property.id });
     setSelectedProperty(property);
+
+    // Fetch reserved dates for this property
+    fetchReservedDates(property.id);
    }
   }
  }, [hashId, allProperties, form]);
@@ -143,9 +157,55 @@ const CreateReservationForm = () => {
   }
  }, [dateRange, selectedProperty, form]);
 
+ const fetchReservedDates = useCallback(
+  async (propertyId) => {
+   if (!propertyId) return;
+
+   try {
+    setCheckingAvailability(true);
+    setAvailabilityError(null);
+
+    // We'll make a request that covers the next year to get all upcoming reservations
+    const startDate = dayjs().format('YYYY-MM-DD');
+    const endDate = dayjs().add(1, 'year').format('YYYY-MM-DD');
+
+    const result = await checkAvailability(propertyId, startDate, endDate);
+
+    if (
+     result &&
+     result.conflictingReservations &&
+     result.conflictingReservations.length > 0
+    ) {
+     // Transform conflicting reservations to disable date ranges
+     const reservedDateRanges = result.conflictingReservations.map(
+      (reservation) => ({
+       startDate: dayjs(reservation.startDate),
+       endDate: dayjs(reservation.endDate),
+      })
+     );
+
+     setReservedDates(reservedDateRanges);
+    } else {
+     setReservedDates([]);
+    }
+   } catch (error) {
+    console.error('Error fetching reserved dates:', error);
+    setAvailabilityError(error.message);
+   } finally {
+    setCheckingAvailability(false);
+   }
+  },
+  [checkAvailability]
+ );
+
  const handlePropertyChange = (propertyId) => {
   const property = allProperties.find((p) => p.id === propertyId);
   setSelectedProperty(property);
+
+  form.setFieldsValue({ dateRange: null });
+  setDateRange(null);
+
+  fetchReservedDates(propertyId);
 
   // Recalculate total price if date range exists
   if (dateRange && dateRange.length === 2 && property) {
@@ -157,17 +217,87 @@ const CreateReservationForm = () => {
 
  const disabledDate = (current) => {
   // Can't select days before today
-  return current && current < dayjs().startOf('day');
+  if (current && current < dayjs().startOf('day')) {
+   return true;
+  }
+
+  // Only check reserved dates if we have a selected property and reserved dates
+  if (selectedProperty && reservedDates.length > 0) {
+   return reservedDates.some((reservation) => {
+    return current.isBetween(
+     reservation.startDate.startOf('day'),
+     reservation.endDate.endOf('day'),
+     null,
+     '[]' // inclusive
+    );
+   });
+  }
+
+  return false;
  };
 
  const handleDateRangeChange = (dates) => {
   setDateRange(dates);
+
+  // Check availability as the user selects dates
+  if (dates && dates.length === 2 && selectedProperty) {
+   validateDateRangeAvailability(selectedProperty.id, dates[0], dates[1]);
+  }
+ };
+
+ const validateDateRangeAvailability = async (
+  propertyId,
+  startDate,
+  endDate
+ ) => {
+  if (!propertyId || !startDate || !endDate) return;
+
+  try {
+   setCheckingAvailability(true);
+   setAvailabilityError(null);
+
+   const result = await checkAvailability(
+    propertyId,
+    startDate.format('YYYY-MM-DD'),
+    endDate.format('YYYY-MM-DD')
+   );
+
+   if (result && !result.available) {
+    setAvailabilityError(t('guestForm.validation.datesNotAvailable'));
+    // Optionally show conflicting bookings information
+    if (
+     result.conflictingReservations &&
+     result.conflictingReservations.length > 0
+    ) {
+     console.log('Conflicting reservations:', result.conflictingReservations);
+    }
+   }
+  } catch (error) {
+   console.error('Error checking date availability:', error);
+   setAvailabilityError(error.message);
+  } finally {
+   setCheckingAvailability(false);
+  }
  };
 
  const handleSubmit = async (values) => {
   setFormError(null);
 
   try {
+   // Validate date range availability first
+   if (values.propertyId && values.dateRange && values.dateRange.length === 2) {
+    const availabilityResult = await checkAvailability(
+     values.propertyId,
+     values.dateRange[0].format('YYYY-MM-DD'),
+     values.dateRange[1].format('YYYY-MM-DD')
+    );
+
+    if (availabilityResult && !availabilityResult.available) {
+     setFormError(t('validation.datesNotAvailable'));
+     return;
+    }
+   }
+
    // Calculate price per night from total price and nights
    const nights = dayjs(values.dateRange[1]).diff(
     dayjs(values.dateRange[0]),
@@ -186,13 +316,10 @@ const CreateReservationForm = () => {
      ? values.electronicLockCode
      : null,
    };
-   console.log(reservationData);
 
    const data = await createReservation(reservationData);
-   console.log(data);
 
    if (data) {
-    message.success(t('reservation.createSuccess'));
     try {
      const property = allProperties.find((p) => p.id === values.propertyId);
      const propertyName = property ? property.name : 'Property';
@@ -206,7 +333,6 @@ const CreateReservationForm = () => {
       startDate: values.dateRange[0].format('YYYY-MM-DD'),
       endDate: values.dateRange[1].format('YYYY-MM-DD'),
      };
-     console.log(revenueData);
 
      const revenueResult = await createRevenueFromReservation(
       data.id,
@@ -255,11 +381,12 @@ const CreateReservationForm = () => {
   ownedPropertiesLoading ||
   conciergePropertiesLoading ||
   reservationLoading ||
-  revenueLoading;
+  revenueLoading ||
+  checkingAvailability;
 
  return (
   <Layout className="contentStyle">
-   <Head onUserData={handleUserData} />
+   <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
     <Button
      type="link"
@@ -324,6 +451,10 @@ const CreateReservationForm = () => {
         rules={[
          { required: true, message: t('reservation.create.datesRequired') },
         ]}
+        help={
+         availabilityError && <Text type="danger">{availabilityError}</Text>
+        }
+        validateStatus={availabilityError ? 'error' : ''}
        >
         <RangePicker
          style={{ width: '100%' }}
@@ -391,12 +522,15 @@ const CreateReservationForm = () => {
             );
            }
 
-           if (
-            value &&
-            (!/^\d+$/.test(value) || value.toString().length !== 6)
-           ) {
+           if (value && !/^\d+$/.test(value)) {
             return Promise.reject(
-             new Error(t('reservation.lock.codeValidation'))
+             new Error('The code must contain only digits')
+            );
+           }
+
+           if (value && value.toString().length > 10) {
+            return Promise.reject(
+             new Error('The code cannot exceed 10 digits')
             );
            }
 
@@ -405,19 +539,18 @@ const CreateReservationForm = () => {
          }),
         ]}
        >
-        <InputNumber
+        <Input
          disabled={!Form.useWatch('electronicLockEnabled', form)}
-         placeholder="123456"
+         placeholder="Enter code (max 10 digits)"
          style={{ width: '100%' }}
-         min={100000}
-         max={999999}
+         maxLength={10}
         />
        </Form.Item>
 
-       {error && (
+       {formError && (
         <Alert
          message={t('reservation.create.error')}
-         description={error}
+         description={formError}
          type="error"
          showIcon
          style={{ marginBottom: 24 }}
@@ -432,7 +565,12 @@ const CreateReservationForm = () => {
          style={{ display: 'flex', justifyContent: 'flex-end' }}
         >
          <Button onClick={() => navigate(-1)}>{t('common.cancel')}</Button>
-         <Button type="primary" htmlType="submit" loading={isLoading}>
+         <Button
+          type="primary"
+          htmlType="submit"
+          loading={isLoading}
+          disabled={availabilityError ? true : false}
+         >
           {t('reservation.create.submit')}
          </Button>
         </Space>

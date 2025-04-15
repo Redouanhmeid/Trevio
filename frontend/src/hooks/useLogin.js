@@ -1,9 +1,8 @@
-// useLogin.js
 import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
 import { useNavigate } from 'react-router-dom';
-import { auth, provider } from '../services/firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export const useLogin = () => {
  const [error, setError] = useState(null);
@@ -51,18 +50,27 @@ export const useLogin = () => {
  };
 
  const googleLogin = async () => {
+  setIsLoading(true);
+  setError(null);
+
   try {
-   setIsLoading(true);
+   const provider = new GoogleAuthProvider();
+   // Configure additional scopes
+   provider.addScope('profile');
+   provider.addScope('email');
+
    const result = await signInWithPopup(auth, provider);
    const user = result.user;
+
    // Optionally send user information to your backend if needed
    dispatch({ type: 'LOGIN', payload: user });
    localStorage.setItem('user', JSON.stringify(user));
+
    setIsLoading(false);
    navigate('/');
   } catch (error) {
-   setError(error.message);
    setIsLoading(false);
+   setError(error.message);
   }
  };
 

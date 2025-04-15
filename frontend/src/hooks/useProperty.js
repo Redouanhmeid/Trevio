@@ -85,6 +85,7 @@ const useProperty = () => {
   try {
    const response = await axios.get(`${apiBase}/byclient/${userId}`);
    setProperties(response.data);
+   return response.data;
   } catch (error) {
    console.error('Error fetching properties:', error);
   } finally {

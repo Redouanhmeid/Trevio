@@ -13,9 +13,9 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
 import useManager from '../../../hooks/useManager';
-import Head from '../../../components/common/header';
 import Foot from '../../../components/common/footer';
 import { useUserData } from '../../../hooks/useUserData';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -48,7 +48,7 @@ const AddConciergeForm = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Title level={2}>{t('managers.addTitle')}</Title>
 
@@ -81,7 +81,7 @@ const AddConciergeForm = () => {
        <div
         style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}
        >
-        <Button onClick={() => navigate('/dashboard')}>
+        <Button onClick={() => navigate('/concierges')}>
          {t('common.cancel')}
         </Button>
         <Button type="primary" htmlType="submit">

@@ -14,7 +14,7 @@ import {
  Spin,
  message,
 } from 'antd';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import { ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import ReactPlayer from 'react-player';
@@ -188,7 +188,7 @@ const Step2CheckInOut = ({ next, values, ProgressSteps }) => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container-form">
      <ProgressSteps />

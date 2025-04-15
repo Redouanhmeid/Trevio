@@ -77,7 +77,7 @@ const Login = () => {
     localStorage.removeItem('user');
     return;
    } */
-   navigate('/dashboard');
+   navigate('/');
   } catch (err) {
    // Error handling is already done in the hooks
    console.error('Login error:', err);
@@ -96,12 +96,14 @@ const Login = () => {
  };
 
  const handleGoogleLogin = async () => {
-  console.log('Google login button clicked');
   try {
-   await googleLogin();
+   const result = await googleLogin();
+   if (result) {
+    navigate('/');
+   }
   } catch (err) {
-   console.error('Google login error in login component:', err);
-   setLoginError(`Error: ${err.message}`);
+   console.error('Google login error:', err);
+   setLoginError(err.message || 'Google login failed');
   }
  };
 

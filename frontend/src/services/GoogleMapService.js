@@ -1,5 +1,3 @@
-// services/GoogleMapsService.js
-
 import { useJsApiLoader } from '@react-google-maps/api';
 import MapConfig from '../mapconfig';
 
@@ -10,6 +8,7 @@ export const useGoogleMapsLoader = () => {
   id: MapConfig.MAP_ID,
   googleMapsApiKey: MapConfig.REACT_APP_GOOGLE_MAP_API_KEY,
   libraries: libraries,
+  version: 'beta',
  });
 
  return isLoaded;

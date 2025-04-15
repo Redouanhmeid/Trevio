@@ -1537,3 +1537,6 @@ body {
   border-radius: 16px;
   height: 60px;
 }
+.dashboard-header .HeaderAvatar :hover {
+background: #e8e7f92e;
+}

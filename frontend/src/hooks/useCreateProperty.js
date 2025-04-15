@@ -16,7 +16,7 @@ const useCreateProperty = () => {
     latitude: firstStepData.latitude,
     longitude: firstStepData.longitude,
     placeName: firstStepData.placeName,
-    userId: firstStepData.userId,
+    clientId: firstStepData.clientId,
     // Optional fields from step 1
     airbnbUrl: firstStepData.airbnbUrl,
     bookingUrl: firstStepData.bookingUrl,

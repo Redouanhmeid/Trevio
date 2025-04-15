@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { message } from 'antd';
+import axios from 'axios';
 import { useTranslation } from '../context/TranslationContext';
 
 export const useReservation = () => {
@@ -231,8 +232,6 @@ export const useReservation = () => {
    });
    const data = await response.json();
 
-   console.log(response);
-
    if (!response.ok) {
     throw new Error(data.error || 'Failed to create reservation');
    }
@@ -462,27 +461,34 @@ export const useReservation = () => {
  };
 
  // Check dates availability
- const checkAvailability = async (propertyId, startDate, endDate) => {
+ const checkAvailability = async (
+  propertyId,
+  startDate,
+  endDate,
+  excludeReservationId = null
+ ) => {
   setLoading(true);
   setError(null);
   try {
-   const response = await fetch('/api/v1/reservations/check-availability', {
-    method: 'POST',
-    headers: {
-     'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ propertyId, startDate, endDate }),
-   });
+   // Use the new endpoint in the ReservationController
+   const response = await axios.get(
+    `/api/v1/reservations/property/${propertyId}/check-availability`,
+    {
+     params: {
+      startDate,
+      endDate,
+      excludeReservationId,
+     },
+    }
+   );
 
-   const data = await response.json();
-
-   if (!response.ok) {
-    throw new Error(data.error || 'Failed to check availability');
+   if (!response.data) {
+    throw new Error('Invalid response from server');
    }
 
-   return data;
+   return response.data;
   } catch (error) {
-   setError(error.message);
+   setError(error.message || 'Failed to check availability');
    message.error(t('guestForm.error.checkAvailability'));
    return { available: false, error: error.message };
   } finally {
@@ -547,6 +553,44 @@ export const useReservation = () => {
   }
  };
 
+ const updateElectronicLock = async (reservationId, lockEnabled, lockCode) => {
+  setLoading(true);
+  setError(null);
+  try {
+   const response = await axios.patch(
+    `/api/v1/reservations/${reservationId}/electronic-lock`,
+    {
+     electronicLockEnabled: lockEnabled,
+     electronicLockCode: lockEnabled ? lockCode : null,
+    }
+   );
+
+   const data = await response.data;
+
+   if (!response.ok && !response.status.toString().startsWith('2')) {
+    throw new Error(data.error || 'Failed to update electronic lock settings');
+   }
+
+   // Refresh the reservation data to get the updated lock settings
+   if (reservation && reservation.id === reservationId) {
+    await fetchReservation(reservationId);
+   }
+
+   message.success(
+    lockEnabled
+     ? t('reservation.lock.enableSuccess')
+     : t('reservation.lock.disableSuccess')
+   );
+   return data;
+  } catch (error) {
+   setError(error.message);
+   message.error(t('reservation.lock.updateError'));
+   return null;
+  } finally {
+   setLoading(false);
+  }
+ };
+
  return {
   loading,
   error,
@@ -569,6 +613,7 @@ export const useReservation = () => {
   checkAvailability,
   checkReservationContract,
   generateRevenue,
+  updateElectronicLock,
  };
 };
 

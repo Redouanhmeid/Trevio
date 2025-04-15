@@ -11,7 +11,7 @@ import {
  Spin,
  message,
 } from 'antd';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { useAuthContext } from '../../../hooks/useAuthContext';
@@ -101,8 +101,10 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
     latitude: mapValues.latitude,
     longitude: mapValues.longitude,
     placeName: mapValues.placeName,
-    userId: userData.id,
+    clientId: userData.id,
    };
+
+   console.log(completeFormData);
 
    // Create the property
    const newProperty = await createProperty(completeFormData);
@@ -125,7 +127,7 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container-form">
      <ProgressSteps />

@@ -3,6 +3,7 @@ import {
  Layout,
  Result,
  Typography,
+ Flex,
  Table,
  Tag,
  Button,
@@ -26,13 +27,15 @@ import {
  SyncOutlined,
  ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import useTask from '../../hooks/useTask';
 import useNotification from '../../hooks/useNotification';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import useProperty from '../../hooks/useProperty';
+import { useConcierge } from '../../hooks/useConcierge';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -56,6 +59,10 @@ const PropertyTaskDashboard = () => {
  const [selectedTask, setSelectedTask] = useState(null);
  const [userId, setUserId] = useState(null);
  const [isLoading, setIsLoading] = useState(true);
+ const [properties, setProperties] = useState([]);
+ const [selectedPropertyId, setSelectedPropertyId] = useState(
+  propertyId || null
+ );
 
  const [form] = Form.useForm();
 
@@ -69,11 +76,57 @@ const PropertyTaskDashboard = () => {
   deleteTask,
   updateTaskStatus,
  } = useTask();
+ const { fetchPropertiesbyClient, loading: propertyLoading } = useProperty();
+ const { getConciergeProperties } = useConcierge();
 
  const { createTaskUpdateNotification } = useNotification();
 
  const handleUserData = (userData) => {
   setUserId(userData);
+ };
+
+ // Fetch user properties (owned and managed)
+ const fetchUserProperties = async () => {
+  try {
+   // Fetch owned properties
+   const ownedProperties = await fetchPropertiesbyClient(userId);
+
+   // Fetch managed properties
+   const assignedProperties = await getConciergeProperties(userId);
+
+   // Extract actual property details from the assignments
+   const managedPropertyDetails = assignedProperties
+    .filter((assignment) => assignment.status === 'active')
+    .map((assignment) => ({
+     ...assignment.property,
+     propertyType: 'managed',
+    }));
+
+   // Mark owned properties
+   const ownedPropertyDetails = (ownedProperties || []).map((property) => ({
+    ...property,
+    propertyType: 'owned',
+   }));
+
+   // Combine and deduplicate properties
+   const combinedProperties = [
+    ...ownedPropertyDetails,
+    ...managedPropertyDetails.filter(
+     (managedProp) =>
+      !ownedPropertyDetails.some((ownedProp) => ownedProp.id === managedProp.id)
+    ),
+   ];
+
+   setProperties(combinedProperties);
+
+   // If propertyId is not set but we have properties, we can set the first one as default
+   if (!propertyId && combinedProperties.length > 0 && !selectedPropertyId) {
+    setSelectedPropertyId(combinedProperties[0].id.toString());
+   }
+  } catch (error) {
+   console.error('Error fetching properties:', error);
+   setProperties([]);
+  }
  };
 
  useEffect(() => {
@@ -85,6 +138,8 @@ const PropertyTaskDashboard = () => {
     // Otherwise, fetch all tasks for properties owned or managed by the user
     fetchAllUserPropertyTasks();
    }
+   // Fetch properties for dropdown selector
+   fetchUserProperties();
   }
  }, [userId, propertyId]);
 
@@ -120,6 +175,15 @@ const PropertyTaskDashboard = () => {
   setModalType('create');
   setSelectedTask(null);
   form.resetFields();
+  if (propertyId) {
+   form.setFieldsValue({
+    propertyId: parseInt(propertyId),
+   });
+  } else if (selectedPropertyId) {
+   form.setFieldsValue({
+    propertyId: parseInt(selectedPropertyId),
+   });
+  }
   setModalVisible(true);
  };
 
@@ -129,6 +193,7 @@ const PropertyTaskDashboard = () => {
   form.setFieldsValue({
    ...task,
    dueDate: dayjs(task.dueDate),
+   propertyId: task.propertyId,
   });
   setModalVisible(true);
  };
@@ -173,9 +238,17 @@ const PropertyTaskDashboard = () => {
 
  const handleSubmit = async (values) => {
   try {
+   // Use the selected property ID from form if available, otherwise fallback to the URL propertyId
+   const taskPropertyId = values.propertyId || propertyId;
+
+   if (!taskPropertyId) {
+    message.error(t('tasks.error.noPropertySelected'));
+    return;
+   }
+
    const taskData = {
     ...values,
-    propertyId: propertyId, // This will be undefined when not in single property view
+    propertyId: taskPropertyId,
     dueDate: values.dueDate.format('YYYY-MM-DD'),
     createdBy: userId,
    };
@@ -185,10 +258,6 @@ const PropertyTaskDashboard = () => {
    let result;
 
    if (modalType === 'create') {
-    if (!propertyId) {
-     message.error(t('tasks.error.noPropertySelected'));
-     return;
-    }
     result = await createTask(taskData);
     message.success(t('tasks.createSuccess'));
    } else {
@@ -200,7 +269,7 @@ const PropertyTaskDashboard = () => {
     // Send notification for task updates
     await createTaskUpdateNotification(
      Number(userId),
-     Number(propertyId || selectedTask.propertyId),
+     Number(taskPropertyId),
      values.title,
      values.priority
     );
@@ -318,12 +387,20 @@ const PropertyTaskDashboard = () => {
    key: 'action',
    render: (_, record) => (
     <Space size="middle">
-     <Button type="link" onClick={() => handleEdit(record)}>
-      {t('tasks.edit')}
-     </Button>
-     <Button type="link" danger onClick={() => handleDelete(record.id)}>
-      {t('tasks.delete')}
-     </Button>
+     <Button
+      type="link"
+      onClick={() => handleEdit(record)}
+      icon={<i className="Dashicon fa-light fa-pen-to-square" />}
+     />
+
+     <Button
+      type="link"
+      danger
+      onClick={() => handleDelete(record.id)}
+      icon={
+       <i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />
+      }
+     />
     </Space>
    ),
   },
@@ -332,7 +409,7 @@ const PropertyTaskDashboard = () => {
  if (isLoading) {
   return (
    <Layout>
-    <Head onUserData={handleUserData} />
+    <DashboardHeader onUserData={handleUserData} />
     <Content className="container">
      <div
       style={{
@@ -352,20 +429,18 @@ const PropertyTaskDashboard = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head onUserData={handleUserData} />
+   <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
-    <Button
-     type="text"
-     icon={<ArrowLeftOutlined />}
-     onClick={() => navigate(-1)}
-    >
-     {t('button.back')}
-    </Button>
-    <Title level={2}>
-     {propertyId
-      ? `${t('tasks.management')} ${propertyName}`
-      : t('tasks.allPropertiesManagement')}
-    </Title>
+    <Flex justify="space-between" align="center">
+     <Title level={2}>
+      {propertyId
+       ? `${t('tasks.management')} ${propertyName}`
+       : t('tasks.title')}
+     </Title>
+     <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+      {t('tasks.createTask')}
+     </Button>
+    </Flex>
 
     <Row gutter={16} style={{ marginBottom: 24 }}>
      <Col span={6}>
@@ -426,11 +501,33 @@ const PropertyTaskDashboard = () => {
        {t('common.cancel')}
       </Button>,
       <Button key="submit" type="primary" onClick={() => form.submit()}>
-       {modalType === 'create' ? t('tasks.createTask') : t('tasks.updateTask')}
+       {modalType === 'create' ? t('tasks.createTask') : t('tasks.edit')}
       </Button>,
      ]}
     >
      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+      {/* Property selection dropdown (only shown when no propertyId in URL) */}
+      {!propertyId && (
+       <Form.Item
+        name="propertyId"
+        label={t('property.title')}
+        rules={[
+         { required: true, message: t('tasks.validation.propertyRequired') },
+        ]}
+       >
+        <Select
+         placeholder={t('tasks.selectProperty')}
+         onChange={(value) => setSelectedPropertyId(value)}
+         loading={propertyLoading}
+        >
+         {properties.map((property) => (
+          <Option key={property.id} value={property.id}>
+           {property.name}
+          </Option>
+         ))}
+        </Select>
+       </Form.Item>
+      )}
       <Form.Item
        name="title"
        label={t('tasks.title')}

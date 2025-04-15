@@ -9,7 +9,7 @@ import {
  Button,
  message,
 } from 'antd';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import useUpdateProperty from '../../../hooks/useUpdateProperty';
@@ -66,7 +66,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container-form">
      <ProgressSteps />

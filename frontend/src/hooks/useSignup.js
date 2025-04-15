@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
 import { auth, provider } from '../services/firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export const useSignup = () => {
  const [error, setError] = useState(null);
@@ -38,6 +38,7 @@ export const useSignup = () => {
  const googleSignup = async () => {
   try {
    setIsLoading(true);
+   const provider = new GoogleAuthProvider();
    const result = await signInWithPopup(auth, provider);
    const user = result.user;
 

@@ -11,10 +11,10 @@ import {
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
-import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import { useConcierge } from '../../hooks/useConcierge';
 import fallback from '../../assets/fallback.png';
+import DashboardHeader from '../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -126,7 +126,7 @@ const ConciergeProperties = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"

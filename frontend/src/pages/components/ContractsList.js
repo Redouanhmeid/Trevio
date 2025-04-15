@@ -18,10 +18,10 @@ import useReservationContract from '../../hooks/useReservationContract';
 import { useTranslation } from '../../context/TranslationContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
-import Head from '../../components/common/header';
 import Foot from '../../components/common/footer';
 import ShareModal from '../../components/common/ShareModal';
 import useProperty from '../../hooks/useProperty';
+import DashboardHeader from '../../components/common/DashboardHeader';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -200,7 +200,7 @@ const ContractsList = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"

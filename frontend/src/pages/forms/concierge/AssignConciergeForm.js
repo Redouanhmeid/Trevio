@@ -17,7 +17,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
 import { useConcierge } from '../../../hooks/useConcierge';
 import useProperty from '../../../hooks/useProperty';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 
 const { Content } = Layout;
@@ -199,15 +199,8 @@ const AssignConciergeForm = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
-    <Button
-     type="link"
-     icon={<ArrowLeftOutlined />}
-     onClick={() => navigate(-1)}
-    >
-     {t('button.back')}
-    </Button>
     <Title level={2}>{t('managers.assignProperties')}</Title>
 
     <Spin spinning={isLoading}>
@@ -216,10 +209,7 @@ const AssignConciergeForm = () => {
        <Text>
         {availableProperties.length === 0
          ? t('managers.noAvailableProperties')
-         : t('managers.availablePropertiesCount', {
-            count: availableProperties.length,
-            total: allProperties.length,
-           })}
+         : `${availableProperties.length} available properties out of ${allProperties.length} total properties`}
        </Text>
       </div>
      )}
@@ -290,7 +280,7 @@ const AssignConciergeForm = () => {
       {/* Action Buttons */}
       <Form.Item>
        <Flex justify="flex-end" gap={16}>
-        <Button onClick={() => navigate('/dashboard')}>
+        <Button onClick={() => navigate('/concierges')}>
          {t('common.cancel')}
         </Button>
         <Button type="primary" htmlType="submit">

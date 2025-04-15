@@ -4,18 +4,17 @@ import {
  Layout,
  Menu,
  Avatar,
- Dropdown,
  Typography,
  Button,
- Flex,
  Space,
  Drawer,
  List,
  Divider,
- Spin,
+ message,
 } from 'antd';
 import { useTranslation } from '../../context/TranslationContext';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useLogout } from '../../hooks/useLogout';
 import { useUserData } from '../../hooks/useUserData';
 import { LanguageSelector } from '../../utils/LanguageSelector';
 import NotificationBell from './NotificationBell';
@@ -29,11 +28,11 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  const { t } = useTranslation();
  const location = useLocation();
  const navigate = useNavigate();
- const { logout } = useAuthContext();
+ const { logout } = useLogout();
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData, isLoading } = useUserData();
- const [selectedKey, setSelectedKey] = useState('dashboard');
+ const [selectedKey, setSelectedKey] = useState('reservations');
  const [open, setOpen] = useState(false);
  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
 
@@ -48,45 +47,57 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  const menuItems = [
   {
    key: 'reservations',
-   label: t('Réservations'),
+   label: t('reservation.title'),
    path: '/reservations',
+   pathPatterns: [
+    '/reservations',
+    '/create-reservation',
+    '/generate-contract',
+    '/contractslist',
+   ],
+  },
+  {
+   key: 'properties',
+   label: t('property.title'),
+   path: '/propertiesdashboard',
+   pathPatterns: ['/propertiesdashboard', '/addproperty'],
   },
   {
    key: 'tasks',
-   label: t('Tâche à faire'),
+   label: t('tasks.title'),
    path: '/propertytaskdashboard',
   },
   {
    key: 'revenue',
-   label: t('Revenue'),
-   path: '/propertyrevenuedashboard',
-  },
-  {
-   key: 'properties',
-   label: t('Propriétés'),
-   path: '/properties',
+   label: t('revenue.title'),
+   path: '/revenues',
+   pathPatterns: ['/propertyrevenuedashboard'],
   },
   {
    key: 'concierges',
-   label: t('Concierges'),
+   label: t('managers.title'),
    path: '/concierges',
+   pathPatterns: ['/add-concierge', '/assign-concierge', '/concierges'],
   },
  ];
 
- // Update selected key based on current path
  useEffect(() => {
-  const pathSegments = location.pathname.split('/');
-  const currentPath = pathSegments[1] || 'reservations';
+  const currentPath = location.pathname;
 
-  // Find matching menu item
-  const matchingItem = menuItems.find(
-   (item) =>
-    item.path.includes(currentPath) ||
-    (currentPath === '' && item.key === 'reservations')
-  );
+  // Find matching menu item based on pathPatterns
+  const matchingItem = menuItems.find((item) => {
+   // Make sure pathPatterns exists before calling .some()
+   if (item.pathPatterns && Array.isArray(item.pathPatterns)) {
+    return item.pathPatterns.some((pattern) => currentPath.includes(pattern));
+   }
+   // Fallback to simple path matching if pathPatterns is not defined
+   return currentPath.includes(item.path);
+  });
 
   if (matchingItem) {
    setSelectedKey(matchingItem.key);
+  } else if (currentPath === '/') {
+   setSelectedKey('reservations');
   }
  }, [location.pathname]);
 
@@ -101,6 +112,12 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
 
  const onClick = () => {
   onClose();
+ };
+
+ const handleReferFriend = async (t) => {
+  const referralLink = `${window.location.origin}/signup?referralCode=${userData.id}`;
+  navigator.clipboard.writeText(referralLink);
+  message.success(t('messages.refereFriend'));
  };
 
  // User menu items for dropdown and drawer
@@ -118,48 +135,21 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
     navigate('/account');
    },
   },
-  // Dashboard - different routes for managers and clients
-  userData?.role === 'manager'
-   ? {
-      key: 'manager-dashboard',
-      label: (
-       <Link to="/manager/dashboard">
-        <Text strong>{t('header.dashboard')}</Text>
-       </Link>
-      ),
-      icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt"></i>,
-      onClick: () => {
-       onClick();
-       navigate('/manager/dashboard');
-      },
-     }
-   : {
-      key: 'dashboard',
-      label: (
-       <Link to="/dashboard">
-        <Text strong>{t('header.dashboard')}</Text>
-       </Link>
-      ),
-      icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt"></i>,
-      onClick: () => {
-       onClick();
-       navigate('/dashboard');
-      },
-     },
   {
-   type: 'divider',
-  },
-  {
-   key: 'rev-task-dashboard',
+   key: 'adminpanel',
    label: (
-    <Link to="/revtaskdashboard">
-     <Text strong>{t('header.Revandtasks')}</Text>
+    <Link to="/adminpanel">
+     <Text strong>{t('header.dashboard')}</Text>
     </Link>
    ),
-   icon: <i className="PrimaryColor HeaderIcon fa-light fa-chart-line"></i>,
+   icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt" />,
+  },
+  {
+   key: 'referral',
+   label: <Text strong>{t('header.referral')}</Text>,
+   icon: <i className="PrimaryColor HeaderIcon fa-light fa-user-plus" />,
    onClick: () => {
-    onClick();
-    navigate('/revtaskdashboard');
+    handleReferFriend(t);
    },
   },
   {
@@ -220,7 +210,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    <Header className="dashboard-header">
     {/* Logo */}
     <div className="logo-container">
-     <Link to="/dashboard">
+     <Link to="/reservations">
       <img
        src={isMobile ? MobileLogo : Logo}
        alt="Trevio Logo"
@@ -272,7 +262,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
     </div>
    </Header>
 
-   {/* Mobile Drawer */}
+   {/* Avatar Drawer */}
    <Drawer title={null} onClose={onClose} open={open}>
     <List
      dataSource={[{ id: 1, name: userData?.firstname || 'User' }]}

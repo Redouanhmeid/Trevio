@@ -47,7 +47,7 @@ import Profile from './pages/components/Profile';
 import ContractsList from './pages/components/ContractsList';
 import RevTasksDashboard from './pages/RevTasksDashboard';
 import PropertyRevenueDashboard from './pages/admin/PropertyRevenueDashboard';
-import PropertyTaskDashboard from './pages/admin/PropertyTaskDashboard';
+import PropertyTaskDashboard from './pages/dashboard/PropertyTaskDashboard';
 import AddConciergeForm from './pages/forms/concierge/AddConciergeForm';
 import ConciergeProperties from './pages/manager/ConciergeProperties';
 import AssignConciergeForm from './pages/forms/concierge/AssignConciergeForm';
@@ -60,14 +60,16 @@ import ReservationsList from './pages/forms/reservation/ReservationsList';
 import GenerateContract from './pages/forms/reservation/GenerateContract';
 import GuestReservationView from './pages/guest/GuestReservationView';
 import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
-
+import RevenueDashboard from './pages/dashboard/RevenueDashboard';
+import PropertiesDashboard from './pages/dashboard/PropertiesDashboard';
+import ConciergesDashboard from './pages/dashboard/ConciergesDashboard';
 const router = createBrowserRouter([
  { path: '/', element: <ReservationsList />, errorElement: <NotFoundPage /> },
  {
   path: '/dashboard',
   element: (
    <ProtectedRoute>
-    <Dashboard />
+    <ReservationsList />
    </ProtectedRoute>
   ),
  },
@@ -82,6 +84,31 @@ const router = createBrowserRouter([
  {
   path: '/propertytaskdashboard',
   element: <PropertyTaskDashboard />,
+ },
+ {
+  path: '/revenues',
+  element: (
+   <ProtectedRoute>
+    <RevenueDashboard />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/propertiesdashboard',
+  element: (
+   <ProtectedRoute>
+    <PropertiesDashboard />
+   </ProtectedRoute>
+  ),
+ },
+
+ {
+  path: '/concierges',
+  element: (
+   <ProtectedRoute>
+    <ConciergesDashboard />
+   </ProtectedRoute>
+  ),
  },
  {
   path: '/add-concierge',

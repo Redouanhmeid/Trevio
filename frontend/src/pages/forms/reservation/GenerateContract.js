@@ -36,9 +36,10 @@ import { useTranslation } from '../../../context/TranslationContext';
 import { useReservation } from '../../../hooks/useReservation';
 import ShareModal from '../../../components/common/ShareModal';
 import dayjs from 'dayjs';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import useReservationContract from '../../../hooks/useReservationContract';
+import ElectronicLockCodeManager from './ElectronicLockCodeManager';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -50,18 +51,19 @@ const GenerateContract = () => {
  const {
   reservation,
   contract,
-  loading,
   error,
   fetchReservation,
   getReservationContract,
   generateContract,
   sendToGuest,
  } = useReservation();
- const { updateContractStatus } = useReservationContract();
+ const { loading, updateContractStatus } = useReservationContract();
 
  const [currentStep, setCurrentStep] = useState(0);
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [shareUrl, setShareUrl] = useState('');
+
+ const [lockSettingsChanged, setLockSettingsChanged] = useState(false);
 
  useEffect(() => {
   const fetchData = async () => {
@@ -93,7 +95,7 @@ const GenerateContract = () => {
   if (id) {
    fetchData();
   }
- }, [id]);
+ }, [id, lockSettingsChanged]);
 
  const handleGenerateContract = async () => {
   try {
@@ -165,22 +167,32 @@ const GenerateContract = () => {
   }
  };
 
+ const handleLockSettingsChange = () => {
+  setLockSettingsChanged(!lockSettingsChanged); // Toggle to trigger re-fetch
+ };
+
  const handleContinue = () => {
-  navigate('/dashboard');
+  navigate('/reservations');
  };
 
  if (loading) {
   return (
-   <div className="loading">
-    <Spin size="large" />
-   </div>
+   <Layout className="contentStyle">
+    <DashboardHeader />
+    <Content className="container">
+     <div className="loading">
+      <Spin size="large" />
+     </div>
+    </Content>
+    <Foot />
+   </Layout>
   );
  }
 
  if (error) {
   return (
    <Layout className="contentStyle">
-    <Head />
+    <DashboardHeader />
     <Content className="container">
      <Button
       type="link"
@@ -208,7 +220,7 @@ const GenerateContract = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"
@@ -277,7 +289,7 @@ const GenerateContract = () => {
          {t(`reservation.statuses.${reservation.status}`)}
         </Descriptions.Item>
        </Descriptions>
-       <Card
+       {/* <Card
         title={
          <Space>
           <LockOutlined />
@@ -326,7 +338,16 @@ const GenerateContract = () => {
           image={Empty.PRESENTED_IMAGE_SIMPLE}
          />
         )}
-       </Card>
+       </Card> */}
+       <br />
+       {reservation && (
+        <ElectronicLockCodeManager
+         reservationId={reservation.id}
+         initialLockEnabled={reservation.electronicLockEnabled || false}
+         initialLockCode={reservation.electronicLockCode}
+         onSettingsChange={handleLockSettingsChange}
+        />
+       )}
        <Divider />
 
        {currentStep === 0 && !contract && (

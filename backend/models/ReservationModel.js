@@ -42,7 +42,7 @@ module.exports = (db, type) => {
     allowNull: true,
    },
    status: {
-    type: type.ENUM('draft', 'sent', 'confirmed', 'cancelled'),
+    type: type.ENUM('draft', 'sent', 'signed', 'confirmed', 'cancelled'),
     defaultValue: 'draft',
     allowNull: false,
    },
@@ -52,7 +52,7 @@ module.exports = (db, type) => {
     allowNull: false,
    },
    electronicLockCode: {
-    type: type.INTEGER,
+    type: type.STRING(10),
     allowNull: true,
    },
    electronicLockEnabled: {

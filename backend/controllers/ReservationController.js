@@ -298,14 +298,14 @@ const updateReservationStatus = async (req, res) => {
    return res.status(404).json({ message: 'Reservation not found' });
   }
 
-  if (!['draft', 'sent', 'confirmed', 'cancelled'].includes(status)) {
+  if (!['draft', 'sent', 'signed', 'confirmed', 'cancelled'].includes(status)) {
    return res.status(400).json({ message: 'Invalid status' });
   }
 
   // Only check availability when moving from draft to sent/confirmed
   if (
    reservation.status === 'draft' &&
-   (status === 'sent' || status === 'confirmed')
+   (status === 'sent' || status === 'confirmed' || status === 'signed')
   ) {
    // Check for overlapping reservations
    const { available, conflictingReservations } =
@@ -534,6 +534,124 @@ const generateContract = async (req, res) => {
  }
 };
 
+const updateElectronicLock = async (req, res) => {
+ try {
+  const { reservationId } = req.params;
+  const { electronicLockEnabled } = req.body;
+  let { electronicLockCode } = req.body;
+
+  // Find the reservation
+  const reservation = await Reservation.findByPk(reservationId);
+
+  if (!reservation) {
+   return res.status(404).json({ error: 'Reservation not found' });
+  }
+
+  // Validate the lock code if it's being set
+  if (
+   electronicLockEnabled &&
+   electronicLockCode !== null &&
+   electronicLockCode !== undefined
+  ) {
+   // Convert to string if it's not already
+   const codeString = String(electronicLockCode);
+
+   // Check if the code contains only digits and is no more than 10 digits
+   if (!/^\d+$/.test(codeString)) {
+    return res.status(400).json({
+     error: 'Electronic lock code must contain only digits',
+    });
+   }
+
+   if (codeString.length > 10) {
+    return res.status(400).json({
+     error: 'Electronic lock code must not exceed 10 digits',
+    });
+   }
+
+   // Assign the string representation to be saved
+   electronicLockCode = codeString;
+  }
+
+  // Update the reservation
+  await reservation.update({
+   electronicLockEnabled:
+    electronicLockEnabled !== undefined
+     ? electronicLockEnabled
+     : reservation.electronicLockEnabled,
+   electronicLockCode: electronicLockEnabled ? electronicLockCode : null,
+  });
+
+  res.status(200).json({
+   success: true,
+   message: 'Electronic lock settings updated successfully',
+   data: {
+    electronicLockEnabled: reservation.electronicLockEnabled,
+    electronicLockCode: reservation.electronicLockEnabled
+     ? reservation.electronicLockCode
+     : null,
+   },
+  });
+ } catch (error) {
+  console.error('Error updating electronic lock settings:', error);
+  res.status(500).json({
+   error: 'Failed to update electronic lock settings',
+   details: error.message,
+  });
+ }
+};
+
+const checkAvailability = async (req, res) => {
+ const { propertyId } = req.params;
+ const { startDate, endDate, excludeReservationId } = req.query;
+
+ try {
+  if (!propertyId || !startDate || !endDate) {
+   return res.status(400).json({
+    error: 'Missing required parameters',
+    details: 'propertyId, startDate and endDate are required',
+   });
+  }
+
+  // Convert the excludeReservationId to a number if it exists
+  const excludeId = excludeReservationId
+   ? parseInt(excludeReservationId, 10)
+   : null;
+
+  // Use the model's static method to check availability
+  const result = await Reservation.checkAvailability(
+   propertyId,
+   startDate,
+   endDate,
+   excludeId
+  );
+
+  // Format the response to include dates for easier consumption by the frontend
+  const formattedResult = {
+   ...result,
+   propertyId,
+   startDate,
+   endDate,
+   conflictingReservations: result.conflictingReservations.map(
+    (reservation) => ({
+     id: reservation.id,
+     startDate: reservation.startDate,
+     endDate: reservation.endDate,
+     status: reservation.status,
+    })
+   ),
+  };
+
+  res.status(200).json(formattedResult);
+ } catch (error) {
+  console.error('Error checking availability:', error);
+  res.status(500).json({
+   error: 'Failed to check availability',
+   details: error.message,
+  });
+ }
+};
+
 module.exports = {
  getReservation,
  getReservations,
@@ -548,4 +666,6 @@ module.exports = {
  getClientReservations,
  getConciergeReservations,
  generateContract,
+ updateElectronicLock,
+ checkAvailability,
 };

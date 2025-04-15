@@ -198,6 +198,20 @@ const updateContractStatus = async (req, res) => {
   };
 
   await contract.update(updateData);
+
+  // Find the associated reservation
+  const reservation = await Reservation.findByPk(contract.reservationId);
+  if (reservation) {
+   // Update reservation status based on contract status
+   if (status === 'SIGNED') {
+    // When contract is signed, reservation becomes 'signed'
+    await reservation.update({ status: 'signed' });
+   } else if (status === 'COMPLETED') {
+    // When contract is completed, reservation becomes 'confirmed'
+    await reservation.update({ status: 'confirmed' });
+   }
+  }
+
   res.status(200).json(contract);
  } catch (error) {
   console.error('Error updating contract status:', error);

@@ -214,7 +214,7 @@ const Guestform = () => {
 
    // Also update the reservation status to confirmed if needed
    if (reservation?.id) {
-    await updateReservationStatus(reservation.id, 'confirmed');
+    await updateReservationStatus(reservation.id, 'signed');
    }
 
    setIsSuccessModalOpen(true);
@@ -656,19 +656,13 @@ const Guestform = () => {
      }
      extra={[
       <Space align="center">
-       <PDFContractGenerator
-        key="pdf"
-        formData={formValues}
-        signature={sign}
-        t={t}
-       />
        <Button
         type="primary"
         key="home"
-        onClick={() => navigate('/')}
+        onClick={() => navigate(-1)}
         size="large"
        >
-        {t('guestForm.backHome')}
+        {t('guestForm.backCheckIn')}
        </Button>
       </Space>,
      ]}

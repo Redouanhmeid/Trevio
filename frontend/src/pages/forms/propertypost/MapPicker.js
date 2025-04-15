@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import MapConfig from '../../../mapconfig';
 import { Spin } from 'antd';
 import {
@@ -7,11 +7,8 @@ import {
  AdvancedMarker,
  Pin,
 } from '@vis.gl/react-google-maps';
-import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 import { useGoogleMapsLoader } from '../../../services/GoogleMapService';
 import { useTranslation } from '../../../context/TranslationContext';
-
-const libraries = ['places'];
 
 const MapPicker = React.memo(({ onPlaceSelected }) => {
  const isLoaded = useGoogleMapsLoader();
@@ -23,30 +20,91 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
  const [placePhotos, setPlacePhotos] = useState([]);
  const [placeTypes, setPlaceTypes] = useState([]);
  const { t } = useTranslation();
-
  const [touched, setTouched] = useState(false);
- const inputRef = useRef(null);
-
  const autocompleteRef = useRef(null);
+ const inputRef = useRef(null);
+ const autocompleteContainerRef = useRef(null);
+
+ // Initialize Google Places Autocomplete
+ useEffect(() => {
+  if (isLoaded && window.google && autocompleteContainerRef.current) {
+   try {
+    // Clear any existing content
+    if (autocompleteContainerRef.current.firstChild) {
+     autocompleteContainerRef.current.innerHTML = '';
+    }
+
+    // Create input element
+    const input = document.createElement('input');
+    input.placeholder = 'Indiquer une place *';
+    input.className = 'autocomplete';
+    input.style.width = '100%';
+    input.style.padding = '0.8rem';
+    input.style.borderRadius = '8px';
+    input.style.marginBottom = '20px';
+    input.style.border =
+     touched && !placeName ? '1px solid #ff4d4f' : '1px solid #d9d9d9';
+
+    // Add event listener for focus
+    input.addEventListener('focus', () => setTouched(true));
+
+    // Append to container
+    autocompleteContainerRef.current.appendChild(input);
+    inputRef.current = input;
+
+    // Initialize Google Places Autocomplete with strict country restriction
+    const autocomplete = new window.google.maps.places.Autocomplete(input, {
+     componentRestrictions: { country: 'ma' }, // Explicitly restrict to Morocco
+     fields: [
+      'geometry',
+      'name',
+      'formatted_address',
+      'url',
+      'rating',
+      'photos',
+      'types',
+     ],
+     strictBounds: false, // Don't restrict to viewport
+     types: ['geocode', 'establishment'], // Allow both locations and businesses
+    });
+
+    // Store reference
+    autocompleteRef.current = autocomplete;
+
+    // Add place_changed listener
+    autocomplete.addListener('place_changed', () => {
+     const place = autocomplete.getPlace();
+     if (place && place.geometry) {
+      handlePlaceSelect(place);
+      setTouched(true);
+     }
+    });
+   } catch (error) {
+    console.error('Error initializing Places Autocomplete:', error);
+   }
+  }
+ }, [isLoaded, touched, placeName]);
 
  const handlePlaceSelect = (place) => {
   if (!place || !place.geometry || !place.geometry.location) {
    console.error(
     'Selected place is invalid or missing necessary location data.'
    );
-   return; // Exit the function if no valid place data is available
+   return;
   }
+
   // Extract location coordinates
   const latitude = place.geometry.location.lat();
   const longitude = place.geometry.location.lng();
 
-  // Update the position and marker key
+  // Update position and marker
   setPosition({ lat: latitude, lng: longitude });
   setPlaceName(place.name || 'Name not available');
   setPlaceURL(place.url || '');
   setPlaceAddress(place.formatted_address || 'Address not available');
   setPlaceRating(place.rating || 0);
-  // Handle photos: get up to 10 photo URLs
+
+  // Handle photos
   const photoUrls = place.photos
    ? place.photos.slice(0, 8).map((photo) => photo.getUrl())
    : [];
@@ -64,6 +122,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
    placePhotos: photoUrls,
    placeTypes: place.types || [],
   };
+
   // Trigger the callback with the selected place data
   onPlaceSelected(selectedPlace);
  };
@@ -95,8 +154,8 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
     setPlaceName(placeName);
     setPlaceAddress(place.formatted_address || 'Address not available');
     setPlaceURL(place.url || '');
-    setPlaceRating(0); // Optional, depends on geocoding result
-    setPlacePhotos([]); // Optional, depends on your requirements
+    setPlaceRating(0);
+    setPlacePhotos([]);
     setPlaceTypes(place.types || []);
 
     // Trigger the callback with the updated data
@@ -106,8 +165,8 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      placeName: placeName,
      placeAddress: place.formatted_address || 'Address not available',
      placeURL: '',
-     placeRating: 0, // Optional
-     placePhotos: [], // Optional
+     placeRating: 0,
+     placePhotos: [],
      placeTypes: place.types || [],
     });
    } else {
@@ -118,14 +177,6 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
   });
  };
 
- const inputStyle = {
-  width: '100%',
-  padding: '0.8rem',
-  borderRadius: '8px',
-  marginBottom: '20px',
-  border: touched && !placeName ? '1px solid #ff4d4f' : '1px solid #d9d9d9',
- };
-
  if (!isLoaded) {
   return (
    <div className="loading">
@@ -133,6 +184,7 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
    </div>
   );
  }
+
  return (
   <APIProvider>
    <div
@@ -143,40 +195,22 @@ const MapPicker = React.memo(({ onPlaceSelected }) => {
      overflow: 'hidden',
     }}
    >
-    <Autocomplete
-     onLoad={(autocomplete) => {
-      autocompleteRef.current = autocomplete;
+    {/* Autocomplete Container */}
+    <div
+     ref={autocompleteContainerRef}
+     style={{
+      width: '100%',
+      marginBottom: '20px',
      }}
-     onPlaceChanged={() => {
-      if (autocompleteRef.current !== null) {
-       const place = autocompleteRef.current.getPlace();
-       handlePlaceSelect(place);
-       setTouched(true);
-      }
-     }}
-     options={{
-      componentRestrictions: { country: 'ma' }, // Restrict search to Morocco
-     }}
-    >
-     <input
-      ref={inputRef}
-      placeholder="Indiquer une place *"
-      className="autocomplete"
-      onFocus={() => setTouched(true)}
-     />
-    </Autocomplete>
+    />
+
     {touched && !placeName && (
-     <div style={{ color: '#ff4d4f', marginTop: '4px' }}>
+     <div style={{ color: '#ff4d4f', marginTop: '4px', marginBottom: '10px' }}>
       {t('validation.selectLocation')}
      </div>
     )}
-    <Map
-     // key={position.lat + position.lng}
-     center={position}
-     defaultZoom={14}
-     // defaultCenter={position}
-     mapId={MapConfig.MAP_ID}
-    >
+
+    <Map center={position} defaultZoom={14} mapId={MapConfig.MAP_ID}>
      <AdvancedMarker
       position={position}
       draggable

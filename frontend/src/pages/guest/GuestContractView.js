@@ -32,6 +32,7 @@ import { useTranslation } from '../../context/TranslationContext';
 import { Helmet } from 'react-helmet';
 import Sidebar from '../../components/common/sidebar';
 import fallback from '../../assets/fallback.png';
+import ElectronicLockDisplay from './ElectronicLockDisplay';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -282,27 +283,14 @@ const GuestContractView = () => {
           </div>
          </Card>
 
+         <br />
+
          {contract.reservation &&
           contract.reservation.electronicLockEnabled &&
           contract.reservation.electronicLockCode && (
-           <Card
-            style={{ marginTop: 16, background: '#F6FFED', borderRadius: 16 }}
-           >
-            <Space>
-             <KeyOutlined style={{ color: '#52C41A', fontSize: '24px' }} />
-             <div>
-              <Text strong>{t('contract.electronicLock.title')}</Text>
-              <br />
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-               {contract.reservation.electronicLockCode.toString()}
-              </Text>
-             </div>
-            </Space>
-            <Divider />
-            <Text type="secondary">
-             {t('contract.electronicLock.instructions')}
-            </Text>
-           </Card>
+           <ElectronicLockDisplay
+            lockCode={contract.reservation.electronicLockCode}
+           />
           )}
         </Col>
        )}

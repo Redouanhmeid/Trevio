@@ -196,10 +196,11 @@ const ReservationsList = () => {
 
  const getStatusTag = (status) => {
   const statusColors = {
-   draft: 'default',
-   sent: 'processing',
-   confirmed: 'success',
-   cancelled: 'error',
+   draft: '#A8ADC6',
+   sent: '#9DE3F2',
+   signed: '#6D5FFA',
+   confirmed: '#17B26A',
+   cancelled: '#F04438',
   };
 
   return (
@@ -372,6 +373,7 @@ const ReservationsList = () => {
       >
        <Option value="draft">{t('reservation.statuses.draft')}</Option>
        <Option value="sent">{t('reservation.statuses.sent')}</Option>
+       <Option value="signed">{t('reservation.statuses.signed')}</Option>
        <Option value="confirmed">{t('reservation.statuses.confirmed')}</Option>
        <Option value="cancelled">{t('reservation.statuses.cancelled')}</Option>
       </Select>
