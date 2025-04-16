@@ -26,15 +26,15 @@ import {
  DollarOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from '../../../context/TranslationContext';
-import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useReservation } from '../../../hooks/useReservation';
-import useProperty from '../../../hooks/useProperty';
-import { useConcierge } from '../../../hooks/useConcierge';
+import { useTranslation } from '../../context/TranslationContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useReservation } from '../../hooks/useReservation';
+import useProperty from '../../hooks/useProperty';
+import { useConcierge } from '../../hooks/useConcierge';
 import dayjs from 'dayjs';
-import Head from '../../../components/common/header';
-import Foot from '../../../components/common/footer';
-import DashboardHeader from '../../../components/common/DashboardHeader';
+import Head from '../../components/common/header';
+import Foot from '../../components/common/footer';
+import DashboardHeader from '../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -108,7 +108,7 @@ const ReservationsList = () => {
     }
    } catch (error) {
     console.error('Error fetching properties:', error);
-    message.error(t('property.fetchError'));
+    message.error(t('property.messages.fetchError'));
    } finally {
     setFetchingProperties(false);
    }

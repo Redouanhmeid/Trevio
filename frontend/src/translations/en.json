@@ -81,7 +81,8 @@
         },
         "messages": {
             "success": "Property deleted successfully.",
-            "error": "Error deleting property: "
+            "error": "Error deleting property: ",
+            "fetchError": "Error fetching properties"
         },
         "verify": "Verify",
         "verifySuccess": "The property has been verified!",

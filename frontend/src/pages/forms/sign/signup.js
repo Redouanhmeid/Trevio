@@ -22,7 +22,7 @@ import {
  UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Head from '../../../components/common/header';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import Logo from '../../../assets/Trevio-10.png';
 import LoginSignup from '../../../assets/treviologinsignup.png';
@@ -90,7 +90,7 @@ const Signup = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout className="container">
     <Row justify="center" align="middle" gutter={48} className="TrevioBg">
      <Col xs={24} md={10}>

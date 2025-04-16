@@ -67,7 +67,7 @@
         "accommodationLocated": "Où se situe le logement",
         "actions": {
             "actions": "Actions",
-            "guidebook": "Accéder au guidebook digital",
+            "guidebook": "Accéder au Guidebook Digital",
             "guestForm": "Formulaire de réservation",
             "contracts": "Gérer les contrats de réservation",
             "enable": "Activer la propriété",
@@ -81,7 +81,8 @@
         },
         "messages": {
             "success": "Propriété supprimée avec succès.",
-            "error": "Erreur lors de la suppression de la propriété: "
+            "error": "Erreur lors de la suppression de la propriété: ",
+            "fetchError": "Erreur lors de la récupération des propriétés"
         },
         "verify": "Vérifier",
         "verifySuccess": "La propriété a été vérifiée!",

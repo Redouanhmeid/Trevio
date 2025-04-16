@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
  Layout,
+ Flex,
  Menu,
  Avatar,
  Typography,
@@ -21,6 +22,7 @@ import NotificationBell from './NotificationBell';
 import Logo from '../../assets/Trevio-11.png';
 import MobileLogo from '../../assets/MobileLogo.png';
 import { Helmet } from 'react-helmet';
+import MobileNavigationBar from './MobileNavigationBar';
 
 const { Header } = Layout;
 
@@ -71,7 +73,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    key: 'revenue',
    label: t('revenue.title'),
    path: '/revenues',
-   pathPatterns: ['/propertyrevenuedashboard'],
+   pathPatterns: ['/revenues', '/propertyrevenuedashboard'],
   },
   {
    key: 'concierges',
@@ -173,6 +175,9 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
   logout();
   navigate('/login');
  };
+ const handleLogin = () => {
+  navigate('/login');
+ };
 
  // Memoize the getUserData call
  const fetchUserData = useCallback(() => {
@@ -198,6 +203,9 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  // Import Typography for drawer items
  const { Text } = Typography;
 
+ // Check if user exists
+ const userExists = User && userData && Object.keys(userData).length > 0;
+
  return (
   <>
    <Helmet>
@@ -206,61 +214,91 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
      href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css"
     />
    </Helmet>
-
-   <Header className="dashboard-header">
-    {/* Logo */}
-    <div className="logo-container">
-     <Link to="/reservations">
-      <img
-       src={isMobile ? MobileLogo : Logo}
-       alt="Trevio Logo"
-       className="logo"
-      />
-     </Link>
-    </div>
-
-    {/* Navigation Menu - Only show on non-mobile */}
-    {!isMobile && (
-     <Menu
-      mode="horizontal"
-      selectedKeys={[selectedKey]}
-      className="nav-menu"
-      items={menuItems.map((item) => ({
-       key: item.key,
-       label: (
-        <Link to={item.path}>
+   {userExists && (
+    <Header className="dashboard-header">
+     {/* Mobile top navigation section */}
+     {isMobile ? (
+      <Flex className="mobile-top-nav">
+       {/* Left side - Menu button with avatar */}
+       <div className="mobile-menu-avatar">
+        <Button
+         type="text"
+         className="mobile-avatar-button"
+         onClick={showDrawer}
+        >
          <Space>
-          {item.icon}
-          <span>{item.label}</span>
+          <i className="fa-solid fa-bars" />
+          <Avatar size={38} src={userData?.avatar} />
          </Space>
+        </Button>
+       </div>
+
+       {/* Center - Logo */}
+       <div className="mobile-logo-container">
+        <Link to="/reservations">
+         <img src={MobileLogo} alt="Trevio Logo" className="mobile-logo" />
         </Link>
-       ),
-      }))}
-     />
-    )}
+       </div>
 
-    {/* Right side elements */}
-    <div className="right-section">
-     <LanguageSelector />
-     <NotificationBell userId={userData?.id} />
+       {/* Right side - Language and Notifications */}
+       <div className="mobile-actions">
+        <LanguageSelector />
+        <NotificationBell userId={userData?.id} />
+       </div>
+      </Flex>
+     ) : (
+      <>
+       {/* Desktop header */}
+       <div className="logo-container">
+        <Link to="/reservations">
+         <img src={Logo} alt="Trevio Logo" className="logo" />
+        </Link>
+       </div>
 
-     {/* Mobile burger menu */}
-     <div className="avatar-container">
-      <Button
-       type="text"
-       icon={<i className="fa-light fa-bars fa-lg" style={{ color: '#fff' }} />}
-       className="HeaderAvatar"
-       size="large"
-       onClick={showDrawer}
-      >
-       <Avatar
-        size={{ xs: 40, sm: 44, md: 44, lg: 44, xl: 44, xxl: 44 }}
-        src={userData.avatar}
+       <Menu
+        mode="horizontal"
+        selectedKeys={[selectedKey]}
+        className="nav-menu"
+        items={menuItems.map((item) => ({
+         key: item.key,
+         label: (
+          <Link to={item.path}>
+           <Space>
+            {item.icon}
+            <span>{item.label}</span>
+           </Space>
+          </Link>
+         ),
+        }))}
        />
-      </Button>
-     </div>
-    </div>
-   </Header>
+
+       <div className="right-section">
+        <LanguageSelector />
+        <NotificationBell userId={userData?.id} />
+        <div className="avatar-container">
+         <Button
+          type="text"
+          icon={
+           <i className="fa-light fa-bars fa-lg" style={{ color: '#fff' }} />
+          }
+          className="HeaderAvatar"
+          size="large"
+          onClick={showDrawer}
+         >
+          <Avatar
+           size={{ xs: 40, sm: 44, md: 44, lg: 44, xl: 44, xxl: 44 }}
+           src={userData?.avatar}
+          />
+         </Button>
+        </div>
+       </div>
+      </>
+     )}
+    </Header>
+   )}
+
+   {/* Mobile Navigation Bar - Only show on mobile */}
+   {isMobile && <MobileNavigationBar />}
 
    {/* Avatar Drawer */}
    <Drawer title={null} onClose={onClose} open={open}>

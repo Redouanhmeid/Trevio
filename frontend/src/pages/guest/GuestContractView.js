@@ -11,6 +11,7 @@ import {
  Col,
  Space,
  Flex,
+ Grid,
  Image,
  Carousel,
  Divider,
@@ -23,7 +24,6 @@ import {
  ExclamationCircleOutlined,
  ArrowRightOutlined,
  ClockCircleOutlined,
- KeyOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import useReservationContract from '../../hooks/useReservationContract';
@@ -36,6 +36,7 @@ import ElectronicLockDisplay from './ElectronicLockDisplay';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
+const { useBreakpoint } = Grid;
 
 const statusMap = {
  DRAFT: 0,
@@ -64,13 +65,13 @@ const GuestContractView = () => {
  const [error, setError] = useState(null);
  const [collapsed, setCollapsed] = useState(false);
  const [imageAspectRatios, setImageAspectRatios] = useState({});
+ const screens = useBreakpoint();
 
  useEffect(() => {
   const fetchData = async () => {
    try {
     const contractData = await getContractByHash(hashId);
     setContract(contractData);
-    console.log(contractData);
 
     if (contractData) {
      await fetchProperty(contractData.propertyId);
@@ -91,7 +92,7 @@ const GuestContractView = () => {
   navigate(`/guestform?hash=${contract.hashId}`);
  };
 
- const loading = contractLoading || propertyLoading;
+ const loading = contractLoading && propertyLoading;
 
  const handleImageLoad = (e, index) => {
   const { naturalWidth, naturalHeight } = e.target;
@@ -151,33 +152,21 @@ const GuestContractView = () => {
     <Layout className="contentStyle">
      <Content className="container">
       <Row gutter={[24, 24]}>
-       <Col xs={24} md={10}>
-        <Card
-         style={{
-          background:
-           'linear-gradient(93deg, rgba(65,56,148,1) 0%, rgba(109,95,250,1) 100%)',
-          color: 'white',
-          textAlign: 'center',
-          borderRadius: 16,
-          paddingBottom: 16,
-         }}
-        >
-         <Title
-          level={2}
-          style={{
-           color: 'white',
-           marginBottom: '2rem',
-           textTransform: 'uppercase',
-          }}
-         >
+       <Col xs={24} md={24}>
+        <Card className="booking-dates-card">
+         <Title level={3} className="booking-dates-title">
           {t('contract.bookingDates')}
          </Title>
-         <Row justify="space-between" align="middle">
-          <Col>
-           <Text style={{ color: 'white', fontSize: '12px' }}>
+         <Flex justify="space-between" align="center">
+          <Flex vertical align="center" className="date-column">
+           <Text className="date-label">
+            <i
+             className="fa-regular fa-arrow-right-to-arc fa-xl"
+             style={{ marginRight: 12 }}
+            />
             {t('contract.checkIn')}
            </Text>
-           <Title level={3} style={{ color: 'white', margin: 2 }}>
+           <Text strong className="date-value">
             {new Date(contract.checkInDate)
              .toLocaleDateString('fr-FR', {
               day: '2-digit',
@@ -185,14 +174,34 @@ const GuestContractView = () => {
               year: 'numeric',
              })
              .toUpperCase()}
-           </Title>
-          </Col>
-          <Col>→</Col>
-          <Col>
-           <Text style={{ color: 'white', fontSize: '12px' }}>
-            {t('contract.checkOut')}
            </Text>
-           <Title level={3} style={{ color: 'white', margin: 0 }}>
+          </Flex>
+
+          {screens.xs ? (
+           <div className="timeline-container-vertical">
+            <div className="timeline-line-vertical">
+             <div className="timeline-solid-vertical" />
+            </div>
+           </div>
+          ) : (
+           <div className="timeline-container">
+            <div className="timeline-dot" />
+            <div className="timeline-line">
+             <div className="timeline-dashed" />
+            </div>
+            <div className="timeline-dot" />
+           </div>
+          )}
+
+          <Flex vertical align="center" className="date-column">
+           <Text className="date-label">
+            {t('contract.checkOut')}
+            <i
+             className="fa-regular fa-arrow-right-from-arc fa-xl"
+             style={{ marginLeft: 12 }}
+            />
+           </Text>
+           <Text strong className="date-value">
             {new Date(contract.checkOutDate)
              .toLocaleDateString('fr-FR', {
               day: '2-digit',
@@ -200,192 +209,182 @@ const GuestContractView = () => {
               year: 'numeric',
              })
              .toUpperCase()}
-           </Title>
-          </Col>
-         </Row>
+           </Text>
+          </Flex>
+         </Flex>
         </Card>
        </Col>
 
        {contract.status === 'SENT' && (
-        <Col xs={24} md={14}>
-         <Card className="custom-stat-card">
-          <Title level={2}>{t('contract.checkIn')}</Title>
-          <Text type="secondary">{t('contract.filfill')}</Text>
-          <div style={{ marginTop: '24px' }}>
-           <Card
-            style={{
-             background: '#FFFAEB',
-             borderRadius: 16,
-             cursor: 'pointer',
-            }}
-            onClick={handleProceedToContract}
-           >
-            <Flex justify="space-between">
-             <Space>
-              <ExclamationCircleOutlined
-               style={{ color: '#FDB022', fontSize: '24px' }}
-              />
-              <div>
-               <Text strong>{t('contract.guestRegistration')}</Text>
-               <br />
-               <Text type="warning">{t('contract.checkInInComplete')}</Text>
-              </div>
-             </Space>
-             <ArrowRightOutlined />
-            </Flex>
-           </Card>
-          </div>
+        <Col xs={24} md={24}>
+         <Card className="status-card">
+          <Title level={3} className="status-title">
+           {t('contract.checkIn')}
+          </Title>
+          <Text className="status-description">{t('contract.filfill')}</Text>
+
+          <Card
+           className="notification-card notification-sent"
+           onClick={handleProceedToContract}
+          >
+           <Flex justify="space-between" align="center">
+            <Space align="center" wrap>
+             <ExclamationCircleOutlined className="status-icon-warning" />
+             <Text strong>{t('contract.guestRegistration')}</Text>
+            </Space>
+            <Space align="center" wrap>
+             <Text className="status-text-warning">
+              {t('contract.checkInInComplete')}
+             </Text>
+             <ArrowRightOutlined className="status-text-warning" />
+            </Space>
+           </Flex>
+          </Card>
          </Card>
         </Col>
        )}
 
        {contract.status === 'SIGNED' && (
-        <Col xs={24} md={14}>
-         <Card className="custom-stat-card">
-          <Title level={2}>{t('contract.checkIn')}</Title>
-          <Text type="secondary">{t('contract.underVerification')}</Text>
-          <div style={{ marginTop: '24px' }}>
-           <Card style={{ background: '#B5B0E8', borderRadius: 16 }}>
-            <Space>
-             <ClockCircleOutlined
-              style={{ color: '#6D5FFA', fontSize: '24px' }}
-             />
-             <div>
-              <Text strong>{t('contract.verificationInProgress')}</Text>
-              <br />
-              <Text type="warning">{t('contract.waitingForApproval')}</Text>
-             </div>
+        <Col xs={24} md={24}>
+         <Card className="status-card">
+          <Title level={3} className="status-title">
+           {t('contract.checkIn')}
+          </Title>
+          <Text className="status-description">
+           {t('contract.underVerification')}
+          </Text>
+
+          <Card className="notification-card notification-signed">
+           <Flex justify="space-between" align="center">
+            <Space align="center" wrap>
+             <ClockCircleOutlined className="status-icon-info" />
+             <Text strong>{t('contract.verificationInProgress')}</Text>
             </Space>
-           </Card>
-          </div>
+            <Text className="status-text-info">
+             {t('contract.waitingForApproval')}
+            </Text>
+           </Flex>
+          </Card>
          </Card>
         </Col>
        )}
 
        {contract.status === 'COMPLETED' && (
-        <Col xs={24} md={14}>
-         <Card className="custom-stat-card">
-          <Title level={2}>{t('contract.checkInComplete')}</Title>
-          <Text type="secondary">{t('contract.enjoyStay')}</Text>
-          <div style={{ marginTop: '24px' }}>
-           <Card style={{ background: '#ECFDF3', borderRadius: 16 }}>
-            <Space>
-             <CheckCircleOutlined
-              style={{ color: '#079455', fontSize: '24px' }}
-             />
-             <div>
-              <Text strong>{t('contract.guestRegistration')}</Text>
-              <br />
-              <Text type="success">{t('contract.completed')}</Text>
-             </div>
+        <Col xs={24} md={24}>
+         <Card className="status-card">
+          <Title level={3} className="status-title">
+           {t('contract.checkInComplete')}
+          </Title>
+          <Text className="status-description">{t('contract.enjoyStay')}</Text>
+
+          <Card className="notification-card notification-completed">
+           <Flex justify="space-between" align="center">
+            <Space align="center" wrap>
+             <CheckCircleOutlined className="status-icon-success" />
+             <Text strong>{t('contract.guestRegistration')}</Text>
             </Space>
-           </Card>
-          </div>
+            <Text className="status-text-success">
+             {t('contract.completed')}
+            </Text>
+           </Flex>
+          </Card>
          </Card>
+        </Col>
+       )}
+      </Row>
+      <br />
+      {property && (
+       <Row gutter={[24, 24]}>
+        <Col xs={24} md={14}>
+         <Row gutter={[12, 12]}>
+          <Col xs={24} md={12}>
+           <div style={{ position: 'relative' }}>
+            <Carousel className="propertycarousel" autoplay effect="fade">
+             {property.photos?.map((photo, index) => (
+              <div key={index} className="image-container">
+               <Image
+                alt={property.name}
+                src={photo}
+                preview={false}
+                fallback={fallback}
+                placeholder={
+                 <div className="image-placeholder">{t('common.loading')}</div>
+                }
+                className={`card-image ${imageAspectRatios[index]}`}
+                onLoad={(e) => handleImageLoad(e, index)}
+               />
+              </div>
+             ))}
+            </Carousel>
+           </div>
+          </Col>
+          <Col xs={24} md={12}>
+           <Flex vertical gap={4}>
+            <Text style={{ color: '#666' }}>
+             <i
+              className="PrimaryColor fa-light fa-location-dot"
+              style={{ marginRight: '4px' }}
+             />
+             {property.placeName}
+            </Text>
+            <Text strong style={{ fontSize: '16px' }}>
+             {property.name}
+            </Text>
+            <Paragraph
+             ellipsis={{
+              rows: 3,
+              expandable: false,
+              tooltip: property.description,
+             }}
+             style={{
+              marginBottom: 4,
+             }}
+            >
+             {property.description}
+            </Paragraph>
+            <Flex gap="middle" style={{ marginBottom: 4 }}>
+             {property.basicEquipements && (
+              <Text type="secondary">
+               <i
+                className="PrimaryColor fa-light fa-snowflake"
+                style={{ marginRight: '4px' }}
+               />
+               {t('property.tag.airconditioned')}
+              </Text>
+             )}
+             <Text type="secondary">
+              <i
+               className="PrimaryColor fa-light fa-lock"
+               style={{ marginRight: '4px' }}
+              />
+              {t('property.tag.smartlock')}
+             </Text>
+            </Flex>
 
-         <br />
+            <Button
+             block
+             type="primary"
+             size="large"
+             onClick={() =>
+              navigate(`/digitalguidebook?hash=${property.hashId}`)
+             }
+            >
+             {t('property.actions.guidebook')}
+            </Button>
+           </Flex>
+          </Col>
+         </Row>
+        </Col>
 
-         {contract.reservation &&
+        <Col xs={24} md={10}>
+         {contract.status === 'COMPLETED' &&
+          contract.reservation &&
           contract.reservation.electronicLockEnabled &&
           contract.reservation.electronicLockCode && (
            <ElectronicLockDisplay
             lockCode={contract.reservation.electronicLockCode}
            />
           )}
-        </Col>
-       )}
-      </Row>
-      <Divider />
-      {property && (
-       <Row gutter={[24, 24]}>
-        <Col xs={24} md={8}>
-         <div style={{ position: 'relative' }}>
-          <Carousel className="propertycarousel" autoplay effect="fade">
-           {property.photos?.map((photo, index) => (
-            <div key={index} className="image-container">
-             <Image
-              alt={property.name}
-              src={photo}
-              preview={false}
-              fallback={fallback}
-              placeholder={
-               <div className="image-placeholder">{t('common.loading')}</div>
-              }
-              className={`card-image ${imageAspectRatios[index]}`}
-              onLoad={(e) => handleImageLoad(e, index)}
-             />
-            </div>
-           ))}
-          </Carousel>
-         </div>
-        </Col>
-        <Col xs={24} md={16}>
-         <Flex vertical gap={4}>
-          <Flex
-           justify="space-between"
-           align="center"
-           style={{ marginBottom: '4px' }}
-          >
-           <Text strong style={{ fontSize: '16px' }}>
-            {property.name}
-           </Text>
-           <Text style={{ color: '#666' }}>
-            <i
-             className="PrimaryColor fa-light fa-location-dot"
-             style={{ marginRight: '4px' }}
-            />
-            {property.placeName}
-           </Text>
-          </Flex>
-          <Paragraph
-           ellipsis={{
-            rows: 2,
-            expandable: false,
-            tooltip: property.description,
-           }}
-           style={{
-            marginBottom: 16,
-           }}
-          >
-           {property.description}
-          </Paragraph>
-          <Flex gap="middle" style={{ marginBottom: '16px' }}>
-           {property.basicEquipements && (
-            <Text type="secondary">
-             <i
-              className="PrimaryColor fa-light fa-snowflake"
-              style={{ marginRight: '4px' }}
-             />
-             {t('property.tag.airconditioned')}
-            </Text>
-           )}
-           <Text type="secondary">
-            <i
-             className="PrimaryColor fa-light fa-lock"
-             style={{ marginRight: '4px' }}
-            />
-            {t('property.tag.smartlock')}
-           </Text>
-          </Flex>
-
-          <Flex gap="middle">
-           <Button
-            type="primary"
-            style={{ flex: 1, background: '#8B5CF6', borderColor: '#8B5CF6' }}
-            onClick={() =>
-             navigate(`/digitalguidebook?hash=${property.hashId}`)
-            }
-           >
-            {t('property.actions.guidebook')}
-           </Button>
-           <Button
-            style={{ flex: 1 }}
-            onClick={() => navigate(`/propertydetails?hash=${property.hashId}`)}
-           >
-            {t('property.learnMore')}
-           </Button>
-          </Flex>
-         </Flex>
         </Col>
        </Row>
       )}

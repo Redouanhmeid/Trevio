@@ -34,16 +34,6 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
    label: t('common.home'),
   },
   {
-   key: 'checkIn',
-   icon: <i className="fa-light fa-arrow-left-to-arc" />,
-   label: t('checkIn.title'),
-  },
-  // Divider
-  {
-   key: 'divider1',
-   type: 'divider',
-  },
-  {
    key: 'language',
    icon: <i className="fa-light fa-globe" />,
    label: <LanguageSelectorSideBar />,
@@ -115,7 +105,7 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
    {/* Desktop Sidebar */}
    {screens.md && (
     <Sider
-     width={240}
+     width={280}
      theme="dark"
      collapsible
      collapsed={collapsed}
@@ -124,7 +114,21 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
       height: '100vh',
       backgroundColor: '#303342',
       overflow: 'auto',
+      position: 'sticky',
+      top: 0,
+      left: 0,
+      zIndex: 100,
      }}
+     className="sidebar-desktop"
+     trigger={
+      <div className="custom-trigger">
+       <i
+        className={`fa-regular ${
+         collapsed ? 'fa-arrow-right-long' : 'fa-arrow-left-long'
+        }`}
+       />
+      </div>
+     }
     >
      <LogoSection />
      <Menu
@@ -148,13 +152,8 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
       type="text"
       icon={<MenuOutlined />}
       onClick={toggleDrawer}
-      style={{
-       position: 'fixed',
-       top: 16,
-       left: 16,
-       zIndex: 999,
-      }}
       size="large"
+      className="hamburger-btn"
      />
 
      <Drawer
@@ -162,7 +161,8 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
       onClose={toggleDrawer}
       open={drawerVisible}
       width={280}
-      style={{ padding: 0, backgroundColor: '#f6f6fa', display: 'none' }}
+      style={{ padding: 0, backgroundColor: '#f6f6fa' }}
+      className="sidebar-drawer"
      >
       <LogoSection />
       <Menu
@@ -174,6 +174,7 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
         backgroundColor: '#f6f6fa',
        }}
        items={menuItems}
+       className="sidebar-menu"
       />
      </Drawer>
     </>

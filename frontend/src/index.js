@@ -56,7 +56,7 @@ import ManagerDashboard from './pages/manager/ManagerDashboard';
 import GuestContractView from './pages/guest/GuestContractView';
 import EmailVerificationMessage from './pages/forms/sign/EmailVerificationMessage';
 import CreateReservationForm from './pages/forms/reservation/CreateReservationForm';
-import ReservationsList from './pages/forms/reservation/ReservationsList';
+import ReservationsList from './pages/dashboard/ReservationsList';
 import GenerateContract from './pages/forms/reservation/GenerateContract';
 import GuestReservationView from './pages/guest/GuestReservationView';
 import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
@@ -69,7 +69,7 @@ const router = createBrowserRouter([
   path: '/dashboard',
   element: (
    <ProtectedRoute>
-    <ReservationsList />
+    <Dashboard />
    </ProtectedRoute>
   ),
  },

@@ -102,7 +102,7 @@ const CreateReservationForm = () => {
     }
    } catch (error) {
     console.error('Error fetching properties:', error);
-    message.error(t('property.fetchError'));
+    message.error(t('property.messages.fetchError'));
    } finally {
     setFetchingProperties(false);
    }

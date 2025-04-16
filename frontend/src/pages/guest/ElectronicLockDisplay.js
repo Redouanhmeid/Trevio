@@ -29,76 +29,45 @@ const ElectronicLockDisplay = ({ lockCode }) => {
  }
 
  return (
-  <Card
-   className="detail-section"
-   title={
-    <Space>
-     <LockOutlined style={{ color: '#5DADE2' }} />
-     <span>{t('reservation.lock.title')}</span>
-    </Space>
-   }
-  >
-   <Row gutter={[16, 16]}>
-    <Col span={24}>
-     <Title level={4} style={{ textAlign: 'center', margin: 0 }}>
-      {t('reservation.lock.codeInfo')}
-     </Title>
-     <Divider style={{ margin: '12px 0' }} />
-     <Text type="secondary" style={{ display: 'block', textAlign: 'center' }}>
-      {t('reservation.lock.validityInfo')}
-     </Text>
-    </Col>
+  <Card className="electronic-lock-card">
+   <div className="lock-header">
+    <LockOutlined className="lock-icon" />
+    <Text>{t('reservation.lock.title')}</Text>
+   </div>
 
-    <Col span={24}>
-     <div
-      style={{
-       background: '#f7f7f7',
-       padding: '12px',
-       borderRadius: '8px',
-       textAlign: 'center',
-       position: 'relative',
-       margin: '8px 0',
-      }}
-     >
-      {codeVisible ? (
-       <Title
-        level={2}
-        style={{
-         fontFamily: 'monospace',
-         letterSpacing: '4px',
-         margin: 0,
-         color: '#6D5FFA',
-        }}
-       >
-        {formatLockCode(lockCode)}
-       </Title>
-      ) : (
-       <Title
-        level={2}
-        style={{
-         fontFamily: 'monospace',
-         letterSpacing: '8px',
-         margin: 0,
-        }}
-       >
-        • • • • • •
-       </Title>
-      )}
-     </div>
-    </Col>
+   <div className="lock-content">
+    <Title level={3} className="access-code-title">
+     {t('reservation.lock.codeInfo')}
+    </Title>
 
-    <Col span={24} style={{ textAlign: 'center' }}>
-     <Button
-      type="primary"
-      icon={codeVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-      onClick={() => setCodeVisible(!codeVisible)}
-     >
-      {codeVisible
-       ? t('reservation.lock.hideCode')
-       : t('reservation.lock.showCode')}
-     </Button>
-    </Col>
-   </Row>
+    <Text className="validity-text">{t('reservation.lock.validityInfo')}</Text>
+
+    <div className="code-display">
+     {codeVisible ? (
+      <Text className="visible-code">{formatLockCode(lockCode)}</Text>
+     ) : (
+      <div className="hidden-code">
+       <span>•</span>
+       <span>•</span>
+       <span>•</span>
+       <span>•</span>
+       <span>•</span>
+       <span>•</span>
+      </div>
+     )}
+    </div>
+
+    <Button
+     type="primary"
+     icon={codeVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+     onClick={() => setCodeVisible(!codeVisible)}
+     className="code-toggle-button"
+    >
+     {codeVisible
+      ? t('reservation.lock.hideCode')
+      : t('reservation.lock.showCode')}
+    </Button>
+   </div>
   </Card>
  );
 };

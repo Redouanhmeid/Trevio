@@ -99,14 +99,11 @@ const RevenueDashboard = () => {
  const fetchUserProperties = async () => {
   setLoadingRevenue(true);
   try {
-   console.log(userId);
    // Fetch owned properties
    const ownedProperties = await fetchPropertiesbyClient(userId);
-   console.log(ownedProperties);
 
    // Fetch managed properties
    const assignedProperties = await getConciergeProperties(userId);
-   console.log(assignedProperties);
 
    // Extract actual property details from the assignments
    const managedPropertyDetails = assignedProperties
