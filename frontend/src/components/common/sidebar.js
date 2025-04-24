@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Typography, Grid, Drawer, Button } from 'antd';
+import { Layout, Menu, Flex, Typography, Grid, Drawer, Button } from 'antd';
 import {
  HomeOutlined,
  FormOutlined,
@@ -99,6 +99,26 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
    )}
   </div>
  );
+ const TopHeader = () => (
+  <Flex
+   justify="space-between"
+   align="center"
+   style={{
+    padding: '12px 16px',
+    width: '100%',
+    backgroundColor: '#F8F7FE',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+   }}
+  >
+   <img src={MobileLogo} alt="Logo" width="42" />
+   <Button
+    type="text"
+    icon={<MenuOutlined />}
+    onClick={toggleDrawer}
+    size="large"
+   />
+  </Flex>
+ );
 
  return (
   <>
@@ -148,16 +168,10 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
    {/* Mobile Sidebar (Button + Drawer) */}
    {!screens.md && (
     <>
-     <Button
-      type="text"
-      icon={<MenuOutlined />}
-      onClick={toggleDrawer}
-      size="large"
-      className="hamburger-btn"
-     />
+     <TopHeader />
 
      <Drawer
-      placement="left"
+      placement="right"
       onClose={toggleDrawer}
       open={drawerVisible}
       width={280}

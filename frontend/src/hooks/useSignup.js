@@ -49,11 +49,12 @@ export const useSignup = () => {
    const userData = {
     email: user.email,
     password: dummyPassword,
-    firstname: user.displayName.split(' ')[0],
-    lastname: user.displayName.split(' ').slice(1).join(' '),
+    firstname: user.displayName.split(' ')[0] || 'Google',
+    lastname: user.displayName.split(' ').slice(1).join(' ') || 'User',
     phone: user.phoneNumber || 'N/A', // Ensure phone is not undefined
     isVerified: true, // Skip verification step for Google sign-ups
     avatar: user.photoURL || '/avatars/default.png',
+    role: 'client',
    };
 
    // Send user data to your backend
@@ -63,6 +64,32 @@ export const useSignup = () => {
     body: JSON.stringify(userData),
    });
    const json = await response.json();
+
+   // Handle existing user case
+   if (
+    !response.ok &&
+    response.status === 400 &&
+    json.error &&
+    json.error.includes('déjà enregistré')
+   ) {
+    // User exists but is verified, just fetch the user data
+    const fetchUserResponse = await fetch(`/api/v1/users/email/${user.email}`);
+
+    if (fetchUserResponse.ok) {
+     const existingUser = await fetchUserResponse.json();
+
+     // Update auth context with existing user
+     dispatch({ type: 'LOGIN', payload: existingUser });
+     localStorage.setItem('user', JSON.stringify(existingUser));
+     setMessage('Google Sign-Up Successful');
+     setIsLoading(false);
+     return;
+    } else {
+     throw new Error('Failed to fetch existing user data');
+    }
+   } else if (!response.ok) {
+    throw new Error(json.error || 'Failed to register user');
+   }
 
    // Send user information to your backend if needed
    dispatch({ type: 'LOGIN', payload: json });

@@ -9,6 +9,7 @@ import {
  Button,
  Radio,
  Spin,
+ Grid,
  message,
 } from 'antd';
 import DashboardHeader from '../../../components/common/DashboardHeader';
@@ -30,6 +31,8 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const { loading, error, success, propertyId, createProperty } =
   useCreateProperty();
@@ -51,17 +54,17 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
   {
    label: t('type.house'),
    value: 'house',
-   icon: <i className="Radioicon fa-regular fa-house"></i>,
+   icon: <i className="Radioicon fa-light fa-house"></i>,
   },
   {
    label: t('type.apartment'),
    value: 'apartment',
-   icon: <i className="Radioicon fa-regular fa-building"></i>,
+   icon: <i className="Radioicon fa-light fa-building"></i>,
   },
   {
    label: t('type.guesthouse'),
    value: 'guesthouse',
-   icon: <i className="Radioicon fa-regular fa-house-user"></i>,
+   icon: <i className="Radioicon fa-light fa-house-user"></i>,
   },
  ];
 
@@ -70,7 +73,6 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
  };
 
  const handlePlaceSelected = ({ latitude, longitude, placeName }) => {
-  console.log(latitude, longitude);
   setMapValues({
    latitude,
    longitude,
@@ -104,8 +106,6 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
     clientId: userData.id,
    };
 
-   console.log(completeFormData);
-
    // Create the property
    const newProperty = await createProperty(completeFormData);
 
@@ -128,168 +128,166 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
  return (
   <Layout className="contentStyle">
    <DashboardHeader />
-   <Layout>
-    <Content className="container-form">
-     <ProgressSteps />
-     <Form
-      form={form}
-      name="step1"
-      layout="vertical"
-      onFinish={submitFormData}
-      size="large"
-     >
-      <Title level={2}>{t('property.basic.title')}</Title>
-      <Row gutter={[24, 0]}>
-       <Col xs={24} md={24}>
-        <Form.Item
-         label={t('type.select')}
-         name="type"
-         className="hide-required-mark"
-         rules={[
-          {
-           required: true,
-           message: t('type.select'),
-          },
-         ]}
-        >
-         <Radio.Group value={checkedType} onChange={handleRadioChange}>
-          <div className="customRadioGroup">
-           {propertyTypes.map((PropertyType) => (
-            <div className="customRadioContainer" key={PropertyType.value}>
-             <Radio value={PropertyType.value}>
-              <div
-               className={
-                checkedType === PropertyType.value
-                 ? 'customRadioButton customRadioChecked'
-                 : 'customRadioButton'
-               }
-              >
-               {PropertyType.icon}
-               <div>{PropertyType.label}</div>
-              </div>
-             </Radio>
-            </div>
-           ))}
-          </div>
-         </Radio.Group>
-        </Form.Item>
-       </Col>
+   <Content className="container-form">
+    <ProgressSteps />
+    <Form
+     form={form}
+     name="step1"
+     layout="vertical"
+     onFinish={submitFormData}
+     size="large"
+    >
+     <Title level={4}>{t('property.basic.title')}</Title>
+     <Row gutter={[24, 0]}>
+      <Col xs={24} md={24}>
+       <Form.Item
+        label={t('type.select')}
+        name="type"
+        className="hide-required-mark"
+        rules={[
+         {
+          required: true,
+          message: t('type.select'),
+         },
+        ]}
+       >
+        <Radio.Group value={checkedType} onChange={handleRadioChange}>
+         <div className="customRadioGroup">
+          {propertyTypes.map((PropertyType) => (
+           <div className="customRadioContainer" key={PropertyType.value}>
+            <Radio value={PropertyType.value}>
+             <div
+              className={
+               checkedType === PropertyType.value
+                ? 'customRadioButton customRadioChecked'
+                : 'customRadioButton'
+              }
+             >
+              {PropertyType.icon}
+              <div>{PropertyType.label}</div>
+             </div>
+            </Radio>
+           </div>
+          ))}
+         </div>
+        </Radio.Group>
+       </Form.Item>
+      </Col>
 
-       <Col xs={24} md={24}>
-        <Form.Item
-         label={t('property.basic.name')}
-         name="name"
-         className="hide-required-mark"
-         rules={[
-          {
-           required: true,
-           message: t('validation.enterName'),
-          },
-         ]}
-        >
-         <Input onChange={handleFormData('name')} />
-        </Form.Item>
-       </Col>
+      <Col xs={24} md={24}>
+       <Form.Item
+        label={t('property.basic.name')}
+        name="name"
+        className="hide-required-mark"
+        rules={[
+         {
+          required: true,
+          message: t('validation.enterName'),
+         },
+        ]}
+       >
+        <Input onChange={handleFormData('name')} />
+       </Form.Item>
+      </Col>
 
-       <Col xs={24} md={24}>
-        <Form.Item
-         label={t('property.basic.description')}
-         name="description"
-         className="hide-required-mark"
-         rules={[
-          {
-           required: true,
-           message: t('validation.enterDescription'),
-          },
-         ]}
-        >
-         <Input.TextArea
-          rows={6}
-          onChange={handleFormData('description')}
-          showCount
-          maxLength={500}
-         />
-        </Form.Item>
-       </Col>
+      <Col xs={24} md={24}>
+       <Form.Item
+        label={t('property.basic.description')}
+        name="description"
+        className="hide-required-mark"
+        rules={[
+         {
+          required: true,
+          message: t('validation.enterDescription'),
+         },
+        ]}
+       >
+        <Input.TextArea
+         rows={6}
+         onChange={handleFormData('description')}
+         showCount
+         maxLength={500}
+        />
+       </Form.Item>
+      </Col>
 
-       <Col xs={24} md={12}>
-        <Form.Item
-         label={t('property.basic.airbnbUrl')}
-         name="airbnbUrl"
-         rules={[
-          {
-           type: 'url',
-           message: t('validation.validUrl'),
-          },
-         ]}
-        >
-         <Input
-          onChange={handleFormData('airbnbUrl')}
-          prefix={
-           <img src={airbnb} alt="prefix" style={{ width: 24, height: 24 }} />
-          }
-         />
-        </Form.Item>
-       </Col>
+      <Col xs={24} md={12}>
+       <Form.Item
+        label={t('property.basic.airbnbUrl')}
+        name="airbnbUrl"
+        rules={[
+         {
+          type: 'url',
+          message: t('validation.validUrl'),
+         },
+        ]}
+       >
+        <Input
+         onChange={handleFormData('airbnbUrl')}
+         prefix={
+          <img src={airbnb} alt="prefix" style={{ width: 24, height: 24 }} />
+         }
+        />
+       </Form.Item>
+      </Col>
 
-       <Col xs={24} md={12}>
-        <Form.Item
-         label={t('property.basic.bookingUrl')}
-         name="bookingUrl"
-         rules={[
-          {
-           type: 'url',
-           message: t('validation.validUrl'),
-          },
-         ]}
-        >
-         <Input
-          onChange={handleFormData('bookingUrl')}
-          prefix={
-           <img src={booking} alt="prefix" style={{ width: 24, height: 24 }} />
-          }
-         />
-        </Form.Item>
-       </Col>
+      <Col xs={24} md={12}>
+       <Form.Item
+        label={t('property.basic.bookingUrl')}
+        name="bookingUrl"
+        rules={[
+         {
+          type: 'url',
+          message: t('validation.validUrl'),
+         },
+        ]}
+       >
+        <Input
+         onChange={handleFormData('bookingUrl')}
+         prefix={
+          <img src={booking} alt="prefix" style={{ width: 24, height: 24 }} />
+         }
+        />
+       </Form.Item>
+      </Col>
 
-       <Col xs={24} md={24}>
-        <Form.Item
-         label={t('property.basic.selectLocation')}
-         required
-         className="hide-required-mark"
-         rules={[
-          {
-           validator: (_, value) => {
-            if (
-             !mapValues.latitude ||
-             !mapValues.longitude ||
-             !mapValues.placeName
-            ) {
-             return Promise.reject(t('property.basic.selectLocation'));
-            }
-            return Promise.resolve();
-           },
+      <Col xs={24} md={24}>
+       <Form.Item
+        label={t('property.basic.selectLocation')}
+        required
+        className="hide-required-mark"
+        rules={[
+         {
+          validator: (_, value) => {
+           if (
+            !mapValues.latitude ||
+            !mapValues.longitude ||
+            !mapValues.placeName
+           ) {
+            return Promise.reject(t('property.basic.selectLocation'));
+           }
+           return Promise.resolve();
           },
-         ]}
-        >
-         <MapPicker onPlaceSelected={handlePlaceSelected} />
-        </Form.Item>
-       </Col>
-      </Row>
-      <br />
-      <Row justify="center">
-       <Col xs={12} md={12}>
-        <Form.Item>
-         <Button type="primary" htmlType="submit" block>
-          {t('button.continue')} {<ArrowRightOutlined />}
-         </Button>
-        </Form.Item>
-       </Col>
-      </Row>
-     </Form>
-    </Content>
-   </Layout>
-   <Foot />
+         },
+        ]}
+       >
+        <MapPicker onPlaceSelected={handlePlaceSelected} />
+       </Form.Item>
+      </Col>
+     </Row>
+     <br />
+     <Row justify="center">
+      <Col xs={12} md={12}>
+       <Form.Item>
+        <Button type="primary" htmlType="submit" block>
+         {t('button.continue')} {<ArrowRightOutlined />}
+        </Button>
+       </Form.Item>
+      </Col>
+     </Row>
+    </Form>
+   </Content>
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

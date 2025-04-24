@@ -21,6 +21,8 @@ import {
  Tooltip,
  Empty,
  Image,
+ Popconfirm,
+ Grid,
 } from 'antd';
 import {
  ArrowLeftOutlined,
@@ -30,6 +32,7 @@ import {
  CloseCircleOutlined,
  LockOutlined,
  CopyOutlined,
+ ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
@@ -46,6 +49,9 @@ const { Title, Text, Paragraph } = Typography;
 
 const GenerateContract = () => {
  const { t } = useTranslation();
+
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const navigate = useNavigate();
  const { id } = useParams();
  const {
@@ -56,6 +62,7 @@ const GenerateContract = () => {
   getReservationContract,
   generateContract,
   sendToGuest,
+  deleteReservation,
  } = useReservation();
  const { loading, updateContractStatus } = useReservationContract();
 
@@ -64,6 +71,8 @@ const GenerateContract = () => {
  const [shareUrl, setShareUrl] = useState('');
 
  const [lockSettingsChanged, setLockSettingsChanged] = useState(false);
+
+ const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
  useEffect(() => {
   const fetchData = async () => {
@@ -175,6 +184,32 @@ const GenerateContract = () => {
   navigate('/reservations');
  };
 
+ const handleDeleteReservation = async (reservationId) => {
+  try {
+   await deleteReservation(reservationId);
+   message.success(t('messages.deleteSuccess'));
+   navigate('/reservations');
+  } catch (error) {
+   message.error(t('messages.deleteError'));
+  }
+ };
+
+ const showDeleteConfirm = (e) => {
+  e.stopPropagation(); // Stop event propagation to prevent immediate closing
+  setDeleteConfirmVisible(true);
+ };
+
+ const hideDeleteConfirm = () => {
+  setDeleteConfirmVisible(false);
+ };
+
+ const confirmDelete = () => {
+  if (reservation && reservation.id) {
+   handleDeleteReservation(reservation.id);
+  }
+  hideDeleteConfirm();
+ };
+
  if (loading) {
   return (
    <Layout className="contentStyle">
@@ -184,7 +219,7 @@ const GenerateContract = () => {
       <Spin size="large" />
      </div>
     </Content>
-    <Foot />
+    {!screens.xs && <Foot />}
    </Layout>
   );
  }
@@ -213,7 +248,7 @@ const GenerateContract = () => {
       ]}
      />
     </Content>
-    <Foot />
+    {!screens.xs && <Foot />}
    </Layout>
   );
  }
@@ -222,123 +257,191 @@ const GenerateContract = () => {
   <Layout className="contentStyle">
    <DashboardHeader />
    <Content className="container">
-    <Button
-     type="link"
-     icon={<ArrowLeftOutlined />}
-     onClick={() => navigate(-1)}
-    >
-     {t('button.back')}
-    </Button>
+    <Flex justify="space-between">
+     <Button
+      type="link"
+      icon={<ArrowLeftOutlined />}
+      onClick={() => navigate(-1)}
+     >
+      {t('button.back')}
+     </Button>
+     <Space>
+      <Button
+       type="text"
+       danger
+       icon={<i className="fa-light fa-trash" />}
+       onClick={showDeleteConfirm}
+      />
+     </Space>
+    </Flex>
 
-    <Title level={2}>{t('reservation.contractGeneration')}</Title>
+    <Title level={screens.xs ? 4 : 2}>
+     {t('reservation.contractGeneration')}
+    </Title>
 
-    <Steps
-     current={currentStep}
-     items={[
-      {
-       title: t('reservation.steps.created'),
-      },
-      {
-       title: t('reservation.steps.sent'),
-      },
-      {
-       title: t('reservation.steps.signed'),
-      },
-      {
-       title: t('reservation.steps.completed'),
-      },
-     ]}
-     style={{ marginBottom: 24 }}
-    />
+    {screens.xs ? (
+     <div
+      style={{
+       display: 'flex',
+       justifyContent: 'space-between',
+       alignItems: 'center',
+       marginBottom: 20,
+       width: '100%',
+      }}
+     >
+      {[0, 1, 2, 3].map((step) => (
+       <div
+        key={step}
+        style={{
+         display: 'flex',
+         flexDirection: 'column',
+         alignItems: 'center',
+        }}
+       >
+        <div
+         style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          backgroundColor: currentStep >= step ? '#6D5FFA' : '#E8E7F9',
+         }}
+        />
+        {step < 3 && (
+         <div
+          style={{
+           position: 'absolute',
+           height: 2,
+           width: '20%',
+           backgroundColor: currentStep > step ? '#6D5FFA' : '#E8E7F9',
+           transform: `translateX(70%) translateY(3px)`,
+           zIndex: 0,
+          }}
+         />
+        )}
+       </div>
+      ))}
+     </div>
+    ) : (
+     <Steps
+      current={currentStep}
+      items={[
+       {
+        title: t('reservation.steps.created'),
+       },
+       {
+        title: t('reservation.steps.sent'),
+       },
+       {
+        title: t('reservation.steps.signed'),
+       },
+       {
+        title: t('reservation.steps.completed'),
+       },
+      ]}
+      style={{ marginBottom: 24 }}
+     />
+    )}
 
     <Card bordered={false} className="contract-card">
      {reservation && (
       <>
-       <Descriptions
-        title={t('reservation.details')}
-        bordered
-        column={{ xs: 1, sm: 2 }}
-       >
-        <Descriptions.Item label={t('property.basic.name')}>
-         {reservation.property.name}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.dates')}>
-         {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
-         {dayjs(reservation.endDate).format('YYYY-MM-DD')}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.pricePerNight')}>
-         {reservation.totalPrice /
-          dayjs(reservation.endDate).diff(
-           dayjs(reservation.startDate),
-           'day'
-          )}{' '}
-         Dhs
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.totalNights')}>
-         {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.totalPrice')}>
-         {reservation.totalPrice} Dhs
-        </Descriptions.Item>
-        {reservation.bookingSource && (
-         <Descriptions.Item label={t('reservation.bookingSource')}>
-          {reservation.bookingSource}
-         </Descriptions.Item>
-        )}
-        <Descriptions.Item label={t('reservation.status')}>
-         {t(`reservation.statuses.${reservation.status}`)}
-        </Descriptions.Item>
-       </Descriptions>
-       {/* <Card
-        title={
-         <Space>
-          <LockOutlined />
-          {t('reservation.lock.title')}
-          {reservation.electronicLockEnabled ? (
-           <Tag color="success">{t('reservation.lock.active')}</Tag>
-          ) : (
-           <Tag color="default">{t('reservation.lock.inactive')}</Tag>
+       {screens.xs ? (
+        <Card bordered={false} className="reservation-details-card">
+         <Title level={4} style={{ marginBottom: '20px', color: '#6D5FFA' }}>
+          {t('reservation.details')}
+         </Title>
+         <Row gutter={[8, 8]}>
+          <Col span={12}>
+           <Text type="secondary">Full name</Text>
+           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+            {reservation.property.name}
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">Reservation dates</Text>
+           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+            {dayjs(reservation.startDate).format('DD-MM-YYYY')}
+            <br />
+            {dayjs(reservation.endDate).format('DD-MM-YYYY')}
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">Price per night</Text>
+           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+            {Math.round(
+             reservation.totalPrice /
+              dayjs(reservation.endDate).diff(
+               dayjs(reservation.startDate),
+               'day'
+              )
+            )}{' '}
+            Dhs
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">Total nights</Text>
+           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+            {dayjs(reservation.endDate).diff(
+             dayjs(reservation.startDate),
+             'day'
+            )}{' '}
+            nights
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">Total price</Text>
+           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+            {reservation.totalPrice} dhs
+           </Paragraph>
+          </Col>
+          {reservation.bookingSource && (
+           <Col span={12}>
+            <Text type="secondary">Booking source</Text>
+            <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
+             {reservation.bookingSource}
+            </Paragraph>
+           </Col>
           )}
-         </Space>
-        }
-        style={{ marginTop: 16 }}
-        bordered={false}
-       >
-        {reservation.electronicLockEnabled && reservation.electronicLockCode ? (
-         <Space direction="vertical" style={{ width: '100%' }}>
-          <Alert
-           message={t('reservation.lock.codeInfo')}
-           description={
-            <Space direction="vertical" style={{ width: '100%' }}>
-             <Text>{t('reservation.lock.validityInfo')}</Text>
-             <Space>
-              <Text strong>{reservation.electronicLockCode.toString()}</Text>
-              <Tooltip title={t('common.copy')}>
-               <Button
-                type="text"
-                icon={<CopyOutlined />}
-                onClick={() => {
-                 navigator.clipboard.writeText(
-                  reservation.electronicLockCode.toString()
-                 );
-                 message.success(t('common.copied'));
-                }}
-               />
-              </Tooltip>
-             </Space>
-            </Space>
-           }
-           type="info"
-           showIcon
-          />
-         </Space>
-        ) : (
-         <Empty
-          description={t('reservation.lock.noCodeInfo')}
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-         />
-        )}
-       </Card> */}
+         </Row>
+        </Card>
+       ) : (
+        <Descriptions
+         title={t('reservation.details')}
+         bordered
+         column={{ xs: 1, sm: 2 }}
+        >
+         <Descriptions.Item label={t('property.basic.name')}>
+          {reservation.property.name}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.dates')}>
+          {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
+          {dayjs(reservation.endDate).format('YYYY-MM-DD')}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.pricePerNight')}>
+          {reservation.totalPrice /
+           dayjs(reservation.endDate).diff(
+            dayjs(reservation.startDate),
+            'day'
+           )}{' '}
+          Dhs
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.totalNights')}>
+          {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.totalPrice')}>
+          {reservation.totalPrice} Dhs
+         </Descriptions.Item>
+         {reservation.bookingSource && (
+          <Descriptions.Item label={t('reservation.bookingSource')}>
+           {reservation.bookingSource}
+          </Descriptions.Item>
+         )}
+         <Descriptions.Item label={t('reservation.status')}>
+          {t(`reservation.statuses.${reservation.status}`)}
+         </Descriptions.Item>
+        </Descriptions>
+       )}
+
        <br />
        {reservation && (
         <ElectronicLockCodeManager
@@ -928,13 +1031,30 @@ const GenerateContract = () => {
      )}
     </Card>
 
+    <Modal
+     title={
+      <span>
+       <ExclamationCircleOutlined
+        style={{ color: 'red', marginRight: '8px' }}
+       />
+       {t('messages.deleteConfirm')}
+      </span>
+     }
+     open={deleteConfirmVisible}
+     onOk={confirmDelete}
+     onCancel={hideDeleteConfirm}
+     okText={t('common.yes')}
+     cancelText={t('common.no')}
+     okButtonProps={{ danger: true }}
+    />
+
     <ShareModal
      isVisible={isShareModalVisible}
      onClose={() => setIsShareModalVisible(false)}
      pageUrl={shareUrl}
     />
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

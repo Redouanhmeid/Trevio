@@ -14,6 +14,7 @@ import {
  InputNumber,
  Select,
  Alert,
+ Grid,
 } from 'antd';
 import {
  LockOutlined,
@@ -34,6 +35,8 @@ const { Option } = Select;
 
 const Signup = () => {
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const [form] = Form.useForm();
  const navigate = useNavigate();
  const location = useLocation();
@@ -92,11 +95,24 @@ const Signup = () => {
   <Layout className="contentStyle">
    <DashboardHeader />
    <Layout className="container">
-    <Row justify="center" align="middle" gutter={48} className="TrevioBg">
+    <Row
+     justify="center"
+     align="middle"
+     gutter={48}
+     className={!screens.xs && 'TrevioBg'}
+    >
      <Col xs={24} md={10}>
       <div style={{ maxWidth: 480, textAlign: 'center' }}>
        {/* Logo */}
-       <img src={Logo} alt="Trevio" style={{ height: 40, marginBottom: 12 }} />
+       <img
+        src={Logo}
+        alt="Trevio"
+        style={{
+         height: 40,
+         marginBottom: 12,
+         marginTop: screens.xs ? 32 : 0,
+        }}
+       />
 
        {/* Header */}
        <Title level={2} style={{ marginBottom: 8 }}>
@@ -309,7 +325,7 @@ const Signup = () => {
      </Col>
     </Row>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

@@ -10,6 +10,7 @@ import {
  Checkbox,
  Input,
  Alert,
+ Grid,
  message,
 } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
@@ -25,6 +26,8 @@ const { Title } = Typography;
 
 const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   updatePropertyCapacity,
   isLoading: capacityLoading,
@@ -92,7 +95,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
   if (!hasErrors) {
    // Update values object with all the new data
    Object.assign(values, { ...capacityData, ...rulesData });
-   navigate('/dashboard');
+   navigate('/');
   }
  };
 
@@ -126,7 +129,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
        additionalRules: AdditionalRules,
       }}
      >
-      <Title level={2}>{t('manual.title')}</Title>
+      <Title level={4}>{t('manual.title')}</Title>
       <Row gutter={[24, 0]}>
        <Col xs={24} md={9}>
         <Form.Item label={t('manual.setPrice')} name="price">
@@ -138,7 +141,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={9} md={5}>
+       <Col xs={12} md={5}>
         <Form.Item label={t('manual.maxPeople')} name="capacity">
          <InputNumber
           min={0}
@@ -147,7 +150,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={8} md={5}>
+       <Col xs={12} md={5}>
         <Form.Item label={t('manual.rooms')} name="rooms">
          <InputNumber
           min={0}
@@ -156,7 +159,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
          />
         </Form.Item>
        </Col>
-       <Col xs={7} md={5}>
+       <Col xs={12} md={5}>
         <Form.Item label={t('manual.beds')} name="beds">
          <InputNumber
           min={0}
@@ -286,7 +289,7 @@ const Step5HouseManual = ({ prev, values, ProgressSteps }) => {
      </Form>
     </Content>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

@@ -1,33 +1,34 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
  Layout,
  Card,
  Table,
+ List,
  Button,
  Input,
  Select,
  Tag,
  Typography,
  Space,
- Dropdown,
- Menu,
- Empty,
- Row,
- Col,
- Statistic,
- Tooltip,
  Flex,
  Badge,
  Popconfirm,
  message,
+ Grid,
+ Drawer,
+ Image,
+ Empty,
 } from 'antd';
 import useProperty from '../../hooks/useProperty';
 import { useConcierge } from '../../hooks/useConcierge';
 import { useTranslation } from '../../context/TranslationContext';
+import { useUserData } from '../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import fallback from '../../assets/fallback.png';
+import PasswordConfirmationModal from '../forms/PasswordConfirmationModal';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -37,12 +38,23 @@ const { Option } = Select;
 const PropertiesDashboard = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
+ const { user } = useAuthContext();
+ const { verifyUserPassword } = useUserData();
 
  // State variables
  const [userId, setUserId] = useState(null);
  const [properties, setProperties] = useState([]);
  const [filteredProperties, setFilteredProperties] = useState([]);
  const [loading, setLoading] = useState(true);
+ const [filterDrawerVisible, setFilterDrawerVisible] = useState(false);
+
+ // Password confirmation modal state
+ const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+ const [confirmLoading, setConfirmLoading] = useState(false);
+ const [passwordError, setPasswordError] = useState(null);
+ const [propertyToDelete, setPropertyToDelete] = useState(null);
 
  // Filters
  const [searchTerm, setSearchTerm] = useState('');
@@ -68,13 +80,9 @@ const PropertiesDashboard = () => {
  const fetchUserProperties = async () => {
   setLoading(true);
   try {
-   // Fetch owned properties
    const ownedProperties = await fetchPropertiesbyClient(userId);
-
-   // Fetch managed properties
    const assignedProperties = await getConciergeProperties(userId);
 
-   // Extract actual property details from the assignments
    const managedPropertyDetails = assignedProperties
     .filter((assignment) => assignment.status === 'active')
     .map((assignment) => ({
@@ -82,13 +90,11 @@ const PropertiesDashboard = () => {
      propertyType: 'managed',
     }));
 
-   // Mark owned properties
    const ownedPropertyDetails = (ownedProperties || []).map((property) => ({
     ...property,
     propertyType: 'owned',
    }));
 
-   // Combine and deduplicate properties
    const combinedProperties = [
     ...ownedPropertyDetails,
     ...managedPropertyDetails.filter(
@@ -108,49 +114,6 @@ const PropertiesDashboard = () => {
   }
  };
 
- // Apply filters
- useEffect(() => {
-  if (properties.length === 0) return;
-
-  const filtered = properties.filter((property) => {
-   // Search term filter
-   const matchesSearch =
-    !searchTerm ||
-    property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    property.placeName.toLowerCase().includes(searchTerm.toLowerCase());
-
-   // Property type filter
-   const matchesType =
-    propertyTypeFilter === 'all' || property.type === propertyTypeFilter;
-
-   // Ownership filter
-   const matchesOwnership =
-    propertyOwnershipFilter === 'all' ||
-    property.propertyType === propertyOwnershipFilter;
-
-   // Status filter
-   const matchesStatus =
-    propertyStatusFilter === 'all' || property.status === propertyStatusFilter;
-
-   return matchesSearch && matchesType && matchesOwnership && matchesStatus;
-  });
-
-  setFilteredProperties(filtered);
- }, [
-  properties,
-  searchTerm,
-  propertyTypeFilter,
-  propertyOwnershipFilter,
-  propertyStatusFilter,
- ]);
-
- // First, load properties when userId is available
- useEffect(() => {
-  if (userId) {
-   fetchUserProperties();
-  }
- }, [userId]);
-
  const handleToggleProperty = async (propertyId) => {
   try {
    await toggleEnableProperty(propertyId);
@@ -165,19 +128,51 @@ const PropertiesDashboard = () => {
   }
  };
 
- // Handle delete property
- const handleDeleteProperty = async (propertyId) => {
+ // Show password confirmation modal before deleting
+ const showDeleteConfirmation = (property) => {
+  setPropertyToDelete(property);
+  setPasswordModalVisible(true);
+  setPasswordError(null);
+ };
+
+ // Handle password confirmation and property deletion
+ const handlePasswordConfirm = async (password) => {
+  if (!propertyToDelete) return;
+
+  setConfirmLoading(true);
+  setPasswordError(null);
+
   try {
-   await deleteProperty(propertyId);
-   if (!propertyError) {
+   const email = user?.email;
+   if (!email) {
+    throw new Error('User information not available');
+   }
+
+   // Use our new verification function
+   const isPasswordValid = await verifyUserPassword(email, password);
+
+   if (isPasswordValid) {
+    // Password verified, proceed with deletion
+    await deleteProperty(propertyToDelete.id);
     message.success(t('messages.deleteSuccess'));
+    setPasswordModalVisible(false);
     fetchUserProperties();
    } else {
-    message.error(t('messages.deleteError', { error: propertyError.message }));
+    setPasswordError(t('auth.invalidPassword'));
    }
-  } catch (err) {
-   message.error(t('messages.deleteError', { error: err.message }));
+  } catch (error) {
+   console.error('Error during property deletion:', error);
+   setPasswordError(error.message || t('messages.deleteError'));
+  } finally {
+   setConfirmLoading(false);
   }
+ };
+
+ // Handle delete modal cancel
+ const handleCancelPasswordModal = () => {
+  setPasswordModalVisible(false);
+  setPropertyToDelete(null);
+  setPasswordError(null);
  };
 
  // Property action menu
@@ -185,8 +180,8 @@ const PropertiesDashboard = () => {
   const actions = [
    <Button
     key={`view-${property.id}`}
-    icon={<i className="Dashicon fa-light fa-eye" />}
-    onClick={() => navigate(`/propertydetails?hash=${property.hashId}`)}
+    icon={<i className="Dashicon fa-light fa-pen-to-square" />}
+    onClick={() => navigate(`/property-management?hash=${property.hashId}`)}
     type="link"
     shape="circle"
    />,
@@ -274,28 +269,62 @@ const PropertiesDashboard = () => {
      }
     />
    </Popconfirm>,
-   <Popconfirm
+   <Button
     key={`delete-${property.id}`}
-    title={t('messages.deleteConfirm')}
-    onConfirm={() => handleDeleteProperty(property.id)}
-    okText={t('common.yes')}
-    cancelText={t('common.no')}
-   >
-    <Button
-     danger
-     icon={
-      <i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />
-     }
-     type="link"
-     shape="circle"
-    />
-   </Popconfirm>,
+    danger
+    icon={<i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />}
+    type="link"
+    shape="circle"
+    onClick={() => showDeleteConfirmation(property)}
+   />,
   ];
 
   return actions;
  };
 
- // Columns for properties table
+ // Apply filters
+ useEffect(() => {
+  if (properties.length === 0) return;
+
+  const filtered = properties.filter((property) => {
+   // Search term filter
+   const matchesSearch =
+    !searchTerm ||
+    property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    property.placeName.toLowerCase().includes(searchTerm.toLowerCase());
+
+   // Property type filter
+   const matchesType =
+    propertyTypeFilter === 'all' || property.type === propertyTypeFilter;
+
+   // Ownership filter
+   const matchesOwnership =
+    propertyOwnershipFilter === 'all' ||
+    property.propertyType === propertyOwnershipFilter;
+
+   // Status filter
+   const matchesStatus =
+    propertyStatusFilter === 'all' || property.status === propertyStatusFilter;
+
+   return matchesSearch && matchesType && matchesOwnership && matchesStatus;
+  });
+
+  setFilteredProperties(filtered);
+ }, [
+  properties,
+  searchTerm,
+  propertyTypeFilter,
+  propertyOwnershipFilter,
+  propertyStatusFilter,
+ ]);
+
+ // First, load properties when userId is available
+ useEffect(() => {
+  if (userId) {
+   fetchUserProperties();
+  }
+ }, [userId]);
+
  const columns = [
   {
    title: t('property.basic.name'),
@@ -362,6 +391,7 @@ const PropertiesDashboard = () => {
    title: t('property.basic.price'),
    dataIndex: 'price',
    key: 'price',
+   width: 164,
    render: (price) => `${price} ${t('property.basic.priceNight')}`,
    sorter: (a, b) => a.price - b.price,
   },
@@ -385,123 +415,257 @@ const PropertiesDashboard = () => {
   <Layout className="contentStyle">
    <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
-    {/* Page Header */}
+    {/* Header */}
     <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
-     <Title level={2}>{t('property.title')}</Title>
-     <Button
-      type="primary"
-      icon={<i className="fa-regular fa-circle-plus fa-xl"></i>}
-      size="large"
-      onClick={() => navigate('/addproperty')}
-      style={{ width: 260, height: 48 }}
+     <Title
+      level={2}
+      style={
+       screens.xs && {
+        fontSize: '18px',
+        margin: 0,
+       }
+      }
      >
-      {t('property.addButton')}
-     </Button>
+      {t('property.title')}
+     </Title>
+
+     {screens.xs ? (
+      <Space>
+       <Button
+        type="text"
+        icon={
+         <i className="PrimaryColor fa-regular fa-magnifying-glass fa-xl" />
+        }
+        onClick={() => setFilterDrawerVisible(true)}
+       />
+       <Button
+        type="text"
+        icon={<i className="PrimaryColor fa-regular fa-circle-plus fa-2xl" />}
+        onClick={() => navigate('/addproperty')}
+       />
+      </Space>
+     ) : (
+      <Button
+       type="primary"
+       icon={<i className="fa-regular fa-circle-plus fa-xl"></i>}
+       size="large"
+       onClick={() => navigate('/addproperty')}
+       style={{ width: 260, height: 48 }}
+      >
+       {t('property.addButton')}
+      </Button>
+     )}
     </Flex>
 
-    {/* Filters and Search */}
-    <Flex gap={16} style={{ marginBottom: 16 }}>
-     <Search
-      placeholder={t('common.search')}
-      allowClear
-      style={{ width: 250 }}
-      onSearch={(value) => setSearchTerm(value)}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      size="large"
-     />
+    {/* Desktop filters */}
+    {!screens.xs && (
+     <Flex gap={16} style={{ marginBottom: 16 }}>
+      <Search
+       placeholder={t('common.search')}
+       allowClear
+       style={{ width: 250 }}
+       onSearch={(value) => setSearchTerm(value)}
+       onChange={(e) => setSearchTerm(e.target.value)}
+       size="large"
+      />
 
-     <Select
-      style={{ width: 150 }}
-      placeholder={t('property.basic.type')}
-      allowClear
-      onChange={(value) => setPropertyTypeFilter(value || 'all')}
-      size="large"
-     >
-      <Option value="house">{t('type.house')}</Option>
-      <Option value="apartment">{t('type.apartment')}</Option>
-      <Option value="guesthouse">{t('type.guesthouse')}</Option>
-     </Select>
+      <Select
+       style={{ width: 150 }}
+       placeholder={t('property.basic.type')}
+       allowClear
+       onChange={(value) => setPropertyTypeFilter(value || 'all')}
+       size="large"
+      >
+       <Option value="house">{t('type.house')}</Option>
+       <Option value="apartment">{t('type.apartment')}</Option>
+       <Option value="guesthouse">{t('type.guesthouse')}</Option>
+      </Select>
 
-     <Select
-      style={{ width: 150 }}
-      placeholder={t('property.status')}
-      allowClear
-      onChange={(value) => setPropertyStatusFilter(value || 'all')}
-      size="large"
-     >
-      <Option value="enable">{t('property.propertyStatus.active')}</Option>
-      <Option value="disable">{t('property.propertyStatus.inactive')}</Option>
-      <Option value="pending">{t('property.propertyStatus.pending')}</Option>
-     </Select>
+      <Select
+       style={{ width: 150 }}
+       placeholder={t('property.status')}
+       allowClear
+       onChange={(value) => setPropertyStatusFilter(value || 'all')}
+       size="large"
+      >
+       <Option value="enable">{t('property.propertyStatus.active')}</Option>
+       <Option value="disable">{t('property.propertyStatus.inactive')}</Option>
+       <Option value="pending">{t('property.propertyStatus.pending')}</Option>
+      </Select>
 
-     <Select
-      style={{ width: 200 }}
-      placeholder={t('managers.properties.assignedTo')}
-      allowClear
-      onChange={(value) => setPropertyOwnershipFilter(value || 'all')}
-      size="large"
-     >
-      <Option value="owned">{t('property.owned')}</Option>
-      <Option value="managed">{t('property.managed')}</Option>
-     </Select>
-    </Flex>
-
-    {/* Statistics */}
-    <Row gutter={16} style={{ marginBottom: 16 }}>
-     <Col xs={24} md={6}>
-      <Card>
-       <Statistic
-        title={t('dashboard.totalProperties')}
-        value={filteredProperties.length}
-       />
-      </Card>
-     </Col>
-     <Col xs={24} md={6}>
-      <Card>
-       <Statistic
-        title={t('property.owned')}
-        value={
-         filteredProperties.filter((p) => p.propertyType === 'owned').length
-        }
-       />
-      </Card>
-     </Col>
-     <Col xs={24} md={6}>
-      <Card>
-       <Statistic
-        title={t('property.managed')}
-        value={
-         filteredProperties.filter((p) => p.propertyType === 'managed').length
-        }
-       />
-      </Card>
-     </Col>
-     <Col xs={24} md={6}>
-      <Card>
-       <Statistic
-        title={t('property.propertyStatus.active')}
-        value={filteredProperties.filter((p) => p.status === 'enable').length}
-       />
-      </Card>
-     </Col>
-    </Row>
+      <Select
+       style={{ width: 200 }}
+       placeholder={t('managers.properties.assignedTo')}
+       allowClear
+       onChange={(value) => setPropertyOwnershipFilter(value || 'all')}
+       size="large"
+      >
+       <Option value="owned">{t('property.owned')}</Option>
+       <Option value="managed">{t('property.managed')}</Option>
+      </Select>
+     </Flex>
+    )}
 
     {/* Properties Table */}
-    <Table
-     columns={columns}
-     dataSource={filteredProperties}
-     loading={loading}
-     rowKey="id"
-     locale={{
-      emptyText: <Empty description={t('property.noProperties')} />,
-     }}
-     pagination={{
-      showSizeChanger: true,
-      showTotal: (total, range) => `${total} ${t('property.title')}`,
-     }}
+    {!screens.xs && (
+     <Table
+      columns={columns}
+      dataSource={filteredProperties}
+      loading={loading}
+      rowKey="id"
+      locale={{
+       emptyText: <Empty description={t('property.noProperties')} />,
+      }}
+      pagination={{
+       showSizeChanger: true,
+       showTotal: (total, range) => `${total} ${t('property.title')}`,
+      }}
+     />
+    )}
+
+    {/* Mobile properties list */}
+    {screens.xs && (
+     <List
+      dataSource={filteredProperties}
+      renderItem={(property) => (
+       <List.Item style={{ padding: 0, marginBottom: 8 }}>
+        <Card
+         styles={{ body: { padding: '0' } }}
+         style={{ width: '100%' }}
+         bordered={false}
+        >
+         <Flex align="stretch" justify="center">
+          <Image
+           src={property.frontPhoto || property.photos?.[0] || fallback}
+           alt={property.name}
+           style={{
+            width: 80,
+            height: 56,
+            objectFit: 'cover',
+            borderTopLeftRadius: 8,
+            borderBottomLeftRadius: 8,
+           }}
+           preview={false}
+           fallback={fallback}
+          />
+          <Flex
+           align="flex-start"
+           vertical
+           style={{ padding: '4px 12px', flex: 1, minHeight: 59 }}
+          >
+           <Text strong fontSize={screens.xs ? 10 : 14}>
+            {screens.xs && property.name.length > 40
+             ? property.name.substring(0, 40) + '...'
+             : property.name}
+           </Text>
+           <Text
+            style={{ color: '#6D5FFA', fontWeight: 'bold' }}
+            fontSize={screens.xs ? 12 : 16}
+           >
+            {property.price} dhs
+           </Text>
+          </Flex>
+          <Button
+           type="text"
+           shape="circle"
+           size="small"
+           icon={
+            <i
+             className="fa-regular fa-circle-arrow-right PrimaryColor"
+             style={{ fontSize: 20 }}
+            />
+           }
+           onClick={() => navigate(`/propertyactions?hash=${property.hashId}`)}
+          />
+         </Flex>
+        </Card>
+       </List.Item>
+      )}
+      locale={{
+       emptyText: <Empty description={t('property.noProperties')} />,
+      }}
+      loading={loading}
+      pagination={{
+       pageSize: 10,
+       showSizeChanger: false,
+       size: 'small',
+      }}
+      split={false}
+     />
+    )}
+
+    {/* Mobile Filter Drawer */}
+    <Drawer
+     title={t('home.filters.title')}
+     placement="right"
+     onClose={() => setFilterDrawerVisible(false)}
+     open={filterDrawerVisible}
+     width={screens.xs ? '90%' : 400}
+     className="filter-drawer"
+    >
+     <Flex gap="middle" vertical>
+      <Search
+       placeholder={t('common.search')}
+       allowClear
+       onSearch={(value) => setSearchTerm(value)}
+       onChange={(e) => setSearchTerm(e.target.value)}
+       size="large"
+      />
+
+      <Select
+       style={{ width: '100%', marginTop: 8 }}
+       placeholder={t('property.basic.type')}
+       allowClear
+       onChange={(value) => setPropertyTypeFilter(value || 'all')}
+       value={propertyTypeFilter === 'all' ? undefined : propertyTypeFilter}
+       size="large"
+      >
+       <Option value="house">{t('type.house')}</Option>
+       <Option value="apartment">{t('type.apartment')}</Option>
+       <Option value="guesthouse">{t('type.guesthouse')}</Option>
+      </Select>
+
+      <Select
+       placeholder={t('property.status')}
+       style={{ width: '100%', marginTop: 8 }}
+       onChange={(value) => setPropertyStatusFilter(value || 'all')}
+       value={propertyStatusFilter === 'all' ? undefined : propertyStatusFilter}
+       allowClear
+       size="large"
+      >
+       <Option value="enable">{t('property.propertyStatus.active')}</Option>
+       <Option value="disable">{t('property.propertyStatus.inactive')}</Option>
+       <Option value="pending">{t('property.propertyStatus.pending')}</Option>
+      </Select>
+
+      <Select
+       placeholder={t('managers.properties.assignedTo')}
+       style={{ width: '100%', marginTop: 8 }}
+       onChange={(value) => setPropertyOwnershipFilter(value || 'all')}
+       value={
+        propertyOwnershipFilter === 'all' ? undefined : propertyOwnershipFilter
+       }
+       allowClear
+       size="large"
+      >
+       <Option value="owned">{t('property.owned')}</Option>
+       <Option value="managed">{t('property.managed')}</Option>
+      </Select>
+     </Flex>
+    </Drawer>
+
+    {/* Password Confirmation Modal */}
+    <PasswordConfirmationModal
+     visible={passwordModalVisible}
+     onCancel={handleCancelPasswordModal}
+     onConfirm={handlePasswordConfirm}
+     title={t('property.deleteConfirmation')}
+     confirmLoading={confirmLoading}
+     errorMessage={passwordError}
+     actionText={t('property.delete')}
     />
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

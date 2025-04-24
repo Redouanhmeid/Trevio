@@ -51,12 +51,49 @@ const AssignConciergeForm = () => {
  const [allProperties, setAllProperties] = useState([]);
  const [form] = Form.useForm();
 
+ // This will be added to the document head only on mobile
+ useEffect(() => {
+  if (screens.xs) {
+   // Create a style element
+   const styleElement = document.createElement('style');
+   styleElement.id = 'custom-transfer-mobile-styles';
+   styleElement.innerHTML = `
+     .ant-transfer-operation {
+       display: flex !important;
+       flex-direction: row-reverse !important;
+       justify-content: center !important;
+       width: 100% !important;
+       margin: 8px 0 !important;
+       gap: 16px !important;
+     }
+     .ant-transfer-operation .ant-btn {
+       width: 100px !important;
+     }
+   `;
+
+   // Append to the head if it doesn't exist already
+   if (!document.getElementById('custom-transfer-mobile-styles')) {
+    document.head.appendChild(styleElement);
+   }
+
+   // Cleanup when component unmounts
+   return () => {
+    const styleToRemove = document.getElementById(
+     'custom-transfer-mobile-styles'
+    );
+    if (styleToRemove) {
+     document.head.removeChild(styleToRemove);
+    }
+   };
+  }
+ }, [screens.xs]);
+
  // Memoize transfer style configuration
  const transferStyle = useMemo(
   () => ({
    listStyle: {
     width: screens.xs ? '100%' : 400,
-    height: 400,
+    height: screens.xs ? 240 : 400,
     marginBottom: screens.xs ? '16px' : 0,
    },
    style: {
@@ -180,7 +217,7 @@ const AssignConciergeForm = () => {
    }
 
    message.success(t('managers.assignSuccess'));
-   navigate('/dashboard');
+   navigate('/concierges');
   } catch (err) {
    message.error(t('managers.assignError'));
   }
@@ -201,7 +238,7 @@ const AssignConciergeForm = () => {
   <Layout className="contentStyle">
    <DashboardHeader />
    <Content className="container">
-    <Title level={2}>{t('managers.assignProperties')}</Title>
+    <Title level={3}>{t('managers.assignProperties')}</Title>
 
     <Spin spinning={isLoading}>
      {!isLoading && allProperties.length > 0 && (
@@ -230,7 +267,7 @@ const AssignConciergeForm = () => {
         placeholder={t('managers.selectManagerPlaceholder')}
         onChange={setSelectedConcierge}
         value={selectedConcierge}
-        style={{ width: '100%', marginBottom: 24 }}
+        style={{ width: '100%', marginBottom: 12 }}
        >
         {concierges.map((concierge) => (
          <Option key={concierge.id} value={concierge.id}>
@@ -291,7 +328,7 @@ const AssignConciergeForm = () => {
      </Form>
     </Spin>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

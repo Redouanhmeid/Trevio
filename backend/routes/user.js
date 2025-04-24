@@ -15,6 +15,7 @@ const {
  resetPasswordRequest,
  verifyResetCode,
  resetPassword,
+ verifyPassword,
 } = require('../controllers/UserController');
 
 router.get('/:iduser', getUser);
@@ -33,5 +34,6 @@ router.patch('/:id/verify', verifyUser);
 router.post('/reset-password-request', resetPasswordRequest);
 router.post('/verify-reset-code', verifyResetCode);
 router.post('/reset-password', resetPassword);
+router.post('/verify-password', verifyPassword);
 
 module.exports = router;

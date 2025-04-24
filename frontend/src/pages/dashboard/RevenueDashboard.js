@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
  Layout,
  Card,
@@ -16,6 +16,7 @@ import {
  Badge,
  Flex,
  Spin,
+ Grid,
 } from 'antd';
 import {
  ArrowUpOutlined,
@@ -67,13 +68,14 @@ const COLORS = [
 const RevenueDashboard = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const [userId, setUserId] = useState(null);
  const [selectedProperty, setSelectedProperty] = useState(null);
  const [propertyRevenues, setPropertyRevenues] = useState({});
  const [monthlyRevenuesByProperty, setMonthlyRevenuesByProperty] = useState({});
  const [totalAnnualRevenue, setTotalAnnualRevenue] = useState(0);
- const [loadingRevenue, setLoadingRevenue] = useState(true);
  const [percentageChange, setPercentageChange] = useState(0);
  const [topPerformers, setTopPerformers] = useState([]);
  const [underperformers, setUnderperformers] = useState([]);
@@ -81,10 +83,13 @@ const RevenueDashboard = () => {
  const [activeTab, setActiveTab] = useState('overview');
  const [chartData, setChartData] = useState([]);
  const [isChartModalVisible, setIsChartModalVisible] = useState(false);
- const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+ const [selectedPropertyId, setSelectedPropertyId] = useState('all');
 
  const [properties, setProperties] = useState([]);
  const [managedProperties, setManagedProperties] = useState([]);
+
+ const [loadingProperties, setLoadingProperties] = useState(false);
+ const [loadingRevenue, setLoadingRevenue] = useState(false);
 
  // Get hooks
  const { getAnnualRevenue } = useRevenue();
@@ -130,6 +135,12 @@ const RevenueDashboard = () => {
 
    setProperties(combinedProperties);
    setManagedProperties(managedPropertyDetails);
+
+   setTimeout(() => {
+    if (combinedProperties.length > 0) {
+     fetchAllPropertyRevenues(combinedProperties);
+    }
+   }, 0);
   } catch (error) {
    console.error('Error fetching properties:', error);
    setProperties([]);
@@ -146,9 +157,13 @@ const RevenueDashboard = () => {
   }
  }, [userId]);
 
- // Load revenue data once properties are loaded
- useEffect(() => {
-  const fetchAllPropertyRevenues = async () => {
+ const fetchAllPropertyRevenues = useCallback(
+  async (propsToUse) => {
+   const propsArray = propsToUse || properties;
+   if (!propsArray || propsArray.length === 0) {
+    setLoadingRevenue(false);
+    return;
+   }
    if (!properties || properties.length === 0) {
     setLoadingRevenue(false);
     return;
@@ -162,50 +177,63 @@ const RevenueDashboard = () => {
 
    try {
     // Get current year and previous year revenues for all properties
-    const currentYearPromises = properties.map(async (property) => {
-     try {
-      const revenue = await getAnnualRevenue(property.id, selectedYear);
+    const currentYearPromises = properties
+     .filter(
+      (property) =>
+       selectedPropertyId === 'all' || property.id === selectedPropertyId
+     )
+     .map(async (property) => {
+      try {
+       const revenue = await getAnnualRevenue(property.id, selectedYear);
 
-      if (revenue && revenue.totalRevenue) {
-       revenues[property.id] = {
-        total: revenue.totalRevenue,
-        propertyName: property.name,
-        monthlyData: revenue.revenues,
-       };
-
-       totalRevenue += revenue.totalRevenue;
-
-       // Store monthly data for charts
-       monthlyRevenuesByPropertyTemp[property.id] = revenue.revenues.map(
-        (item) => ({
-         month: item.month,
-         amount: item.amount,
+       if (revenue && revenue.totalRevenue) {
+        revenues[property.id] = {
+         total: revenue.totalRevenue,
          propertyName: property.name,
-        })
+         monthlyData: revenue.revenues,
+        };
+
+        totalRevenue += revenue.totalRevenue;
+
+        // Store monthly data for charts
+        monthlyRevenuesByPropertyTemp[property.id] = revenue.revenues.map(
+         (item) => ({
+          month: item.month,
+          amount: item.amount,
+          propertyName: property.name,
+         })
+        );
+       }
+      } catch (err) {
+       console.error(
+        `Error fetching revenue for property ${property.id}:`,
+        err
+       );
+       revenues[property.id] = { total: 0, propertyName: property.name };
+      }
+     });
+
+    const previousYearPromises = properties
+     .filter(
+      (property) =>
+       selectedPropertyId === 'all' || property.id === selectedPropertyId
+     )
+     .map(async (property) => {
+      try {
+       const prevYearRevenue = await getAnnualRevenue(
+        property.id,
+        selectedYear - 1
+       );
+       if (prevYearRevenue && prevYearRevenue.totalRevenue) {
+        previousYearTotal += prevYearRevenue.totalRevenue;
+       }
+      } catch (err) {
+       console.error(
+        `Error fetching previous year revenue for property ${property.id}:`,
+        err
        );
       }
-     } catch (err) {
-      console.error(`Error fetching revenue for property ${property.id}:`, err);
-      revenues[property.id] = { total: 0, propertyName: property.name };
-     }
-    });
-
-    const previousYearPromises = properties.map(async (property) => {
-     try {
-      const prevYearRevenue = await getAnnualRevenue(
-       property.id,
-       selectedYear - 1
-      );
-      if (prevYearRevenue && prevYearRevenue.totalRevenue) {
-       previousYearTotal += prevYearRevenue.totalRevenue;
-      }
-     } catch (err) {
-      console.error(
-       `Error fetching previous year revenue for property ${property.id}:`,
-       err
-      );
-     }
-    });
+     });
 
     await Promise.all([...currentYearPromises, ...previousYearPromises]);
 
@@ -247,12 +275,16 @@ const RevenueDashboard = () => {
    } finally {
     setLoadingRevenue(false);
    }
-  };
+  },
+  [properties, selectedYear, selectedPropertyId]
+ );
 
+ // Load revenue data once properties are loaded
+ useEffect(() => {
   if (properties.length > 0) {
    fetchAllPropertyRevenues();
   }
- }, [properties, selectedYear]);
+ }, [fetchAllPropertyRevenues]);
 
  // Generate year options for selector
  const generateYearOptions = () => {
@@ -393,7 +425,7 @@ const RevenueDashboard = () => {
       <Spin size="large" />
      </div>
     </Content>
-    <Foot />
+    {!screens.xs && <Foot />}
    </Layout>
   );
  }
@@ -406,7 +438,7 @@ const RevenueDashboard = () => {
     <Content className="container">
      <Empty description={t('revenue.noData')} style={{ marginTop: '20vh' }} />
     </Content>
-    <Foot />
+    {!screens.xs && <Foot />}
    </Layout>
   );
  }
@@ -417,14 +449,31 @@ const RevenueDashboard = () => {
    <Content className="container">
     <Title level={2}>{t('revenue.allPropertiesTitle')}</Title>
 
-    {/* Year Filter */}
-    <Row gutter={16} style={{ marginBottom: 16 }}>
+    {/* Filters */}
+    <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+     <Col>
+      <Select
+       style={{ width: 280 }}
+       placeholder={t('dashboard.filterByProperty')}
+       value={selectedPropertyId}
+       onChange={(value) => setSelectedPropertyId(value)}
+       size="large"
+      >
+       <Option value="all">{t('revenue.allProperties')}</Option>
+       {properties.map((property) => (
+        <Option key={property.id} value={property.id}>
+         {property.name}
+        </Option>
+       ))}
+      </Select>
+     </Col>
      <Col>
       <Select
        style={{ width: 200 }}
        placeholder={t('revenue.filterByYear')}
        value={selectedYear}
        onChange={(value) => setSelectedYear(value)}
+       size="large"
       >
        {generateYearOptions().map((year) => (
         <Option key={year} value={year}>
@@ -438,27 +487,45 @@ const RevenueDashboard = () => {
     {/* Statistics Cards */}
     <Row gutter={16} style={{ marginBottom: 24 }}>
      <Col xs={24} md={8}>
-      <Card>
+      <Card className="stat-card revenue-stat-card">
        <Statistic
         title={t('revenue.annualTotal')}
         value={totalAnnualRevenue}
         suffix={t('revenue.currency')}
         precision={0}
        />
+       <div className="stat-info">
+        <i className="fa-light fa-chart-line stat-icon" />
+        <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+         {t('dashboard.totalRevenue')}
+        </Text>
+       </div>
       </Card>
      </Col>
      <Col xs={24} md={8}>
-      <Card>
+      <Card className="stat-card property-stat-card">
        <Statistic
         title={t('revenue.propertiesCount')}
         value={properties.length}
         suffix={t('property.title')}
         precision={0}
        />
+       <div className="stat-info">
+        <i className="fa-light fa-building stat-icon" />
+        <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+         {t('property.title')}
+        </Text>
+       </div>
       </Card>
      </Col>
      <Col xs={24} md={8}>
-      <Card>
+      <Card
+       className={`stat-card ${
+        percentageChange >= 0
+         ? 'change-stat-card-positive'
+         : 'change-stat-card-negative'
+       }`}
+      >
        <Statistic
         title={t('revenue.yearOverYear')}
         value={percentageChange}
@@ -467,8 +534,19 @@ const RevenueDashboard = () => {
          percentageChange >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />
         }
         suffix="%"
-        valueStyle={{ color: percentageChange >= 0 ? '#3f8600' : '#cf1322' }}
        />
+       <div className="stat-info">
+        <i
+         className={`fa-light ${
+          percentageChange >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'
+         } stat-icon`}
+        />
+        <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+         {percentageChange >= 0
+          ? t('dashboard.growth')
+          : t('dashboard.decline')}
+        </Text>
+       </div>
       </Card>
      </Col>
     </Row>
@@ -768,7 +846,7 @@ const RevenueDashboard = () => {
      </div>
     </Modal>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

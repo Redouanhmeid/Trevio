@@ -19,6 +19,19 @@
         "noProperties": "aucune propriété n'existe",
         "managed": "Propriétés gérées",
         "owned": "Vos propriétés",
+        "deleteConfirmation": "Confirmer la suppression de la propriété",
+        "confirmDeletePassword": "Veuillez saisir votre mot de passe pour confirmer la suppression",
+        "delete": "Supprimer",
+        "deleteSuccess": "Propriété supprimée avec succès",
+        "deleteError": "Échec de la suppression de la propriété",
+        "securityConfirmation": "Pour des raisons de sécurité, veuillez saisir votre mot de passe pour confirmer cette action",
+        "notFound": "Propriété non trouvée",
+        "fetchError": "Échec du chargement des détails de la propriété",
+        "toggleSuccess": "Statut de la propriété mis à jour avec succès",
+        "toggleError": "Erreur lors de la mise à jour du statut de la propriété: {{error}}",
+        "confirmToggle": "Êtes-vous sûr de vouloir changer le statut de cette propriété?",
+        "oneOwned": "Ma Propriété",
+        "oneManaged": "Propriété Gérée",
         "basic": {
             "title": "Enregistrez les informations de votre propriété",
             "name": "Nom complet",
@@ -37,6 +50,14 @@
             "Capacity": "Capacité Personne",
             "priceNight": "Par Nuit"
         },
+        "manage": {
+            "title": "Gestion immobilière"
+        },
+        "tabs": {
+            "information": "Informations sur la propriété",
+            "equipments": "Équipement",
+            "checks": "Arrivée et départ"
+        },
         "checkOutTitle": "Départ",
         "checkOutDepartureTime": "À quelle heure voulez-vous demander aux invités de quitter les lieux ?",
         "checkOut": {
@@ -49,11 +70,8 @@
             "title": "Modifier les informations de base de votre propriété"
         },
         "updateError": "Impossible de mettre à jour les informations sur la propriété",
-        "toggleSuccess": "Propriété activer avec succès.",
-        "toggleError": "Erreur lors de la activation de la propriété: {error}",
         "disable": "Désactiver la propriété",
         "enable": "Activer la propriété",
-        "confirmToggle": "Etes-vous sûr de vouloir activer cette propriété ?",
         "addButton": "Ajoutez votre propriété",
         "sections": {
             "info": "Information",
@@ -77,7 +95,13 @@
             "viewCard": "Voir la carte",
             "addCard": "Ajouter une carte",
             "editCard": "Modifier la carte",
-            "modifyEquipement": "Modifier les équipements"
+            "modifyEquipement": "Modifier les équipements",
+            "main": "Actions Principales",
+            "bookings": "Réservations & Contrats",
+            "operations": "Opérations & Gestion",
+            "administration": "Administration",
+            "edit": "Modifier la Propriété",
+            "view": "Voir les Détails"
         },
         "messages": {
             "success": "Propriété supprimée avec succès.",
@@ -102,7 +126,9 @@
             "inactive": "Inactive",
             "enable": "Activer",
             "disable": "Désactiver",
-            "pending": "En attente"
+            "pending": "En attente",
+            "published": "Publié",
+            "undefined": " "
         }
     },
     "type": {
@@ -134,6 +160,7 @@
         "passwordMismatch": "Le nouveau mot de passe que vous avez saisi ne correspond pas!"
     },
     "photo": {
+        "photos": "Photos",
         "title": "Ajouter des Photos de votre logement",
         "dragDrop": "Vous pouvez réorganiser vos photos en les glissant-déposant",
         "maxReached": "Vous avez atteint le nombre maximum de photos.",
@@ -273,7 +300,7 @@
         "fireplace": "Cheminée",
         "ceilingfan": "Ventilateur de pla",
         "tablefan": "Ventilateur de table",
-        "fingerprint": "Serrure biometrique à empreinte digitale",
+        "fingerprint": "Serrure de porte intelligente",
         "lockbox": "Boite à serrure",
         "parkingaccess": "Accès parking",
         "wifi": "Wifi",
@@ -337,13 +364,21 @@
         "delete": "Supprimer",
         "cancel": "Annuler",
         "view": "Voir",
-        "viewAll": "Voir tout",
+        "viewAll": "Tout Voir",
+        "all": "Tous",
         "language": "Langue",
         "FAQs": "FAQ",
         "copy": "Copier",
         "accessDenied": "Accès refusé",
         "noPermissionToView": "Aucune autorisation de visualisation",
-        "accessCheckError": "Erreur de vérification d'accès"
+        "accessCheckError": "Erreur de vérification d'accès",
+        "apply": "Appliquer",
+        "reload": "Recharger",
+        "close": "Fermer",
+        "confirm": "Confirmer",
+        "error": "Erreur",
+        "passwordRequired": "Le mot de passe est requis pour confirmer cette action",
+        "more": "plus"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -374,7 +409,10 @@
         "users": "Users",
         "activeProperties": "Propriétés actives",
         "lastUpdate": "Dernière Mise à Jour",
-        "assignedToMe": "Assigné à moi"
+        "assignedToMe": "Assigné à moi",
+        "growth": "Croissance",
+        "declin": "déclin",
+        "filterByProperty": "Filtrer par propriété"
     },
     "tasks": {
         "title": "Tâches à faire",
@@ -396,6 +434,7 @@
         "updateError": "Échec de la mise à jour de la tâche",
         "fetchError": "Échec de la récupération des tâches",
         "selectProperty": "Sélectionner une propriété",
+        "emptyText": "Texte vide",
         "confirmDelete": {
             "title": "Confirmer la suppression",
             "content": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
@@ -753,7 +792,9 @@
         "loginAsManager": "Se connecter en tant que Gestionnaire",
         "validation": {
             "required": "Please input your password!"
-        }
+        },
+        "invalidPassword": "Mot de passe invalide. Veuillez réessayer.",
+        "enterPassword": "Veuillez saisir votre mot de passe"
     },
     "signup": {
         "startFree": "Commencez avec un compte gratuit",
@@ -966,6 +1007,8 @@
         "noUserId": "Aucun user sélectionné pour la création du concierge",
         "manageProperties": "Propriétés gérées",
         "noAvailableProperties": "Aucune propriété disponible",
+        "noAssignedProperties": "Aucune propriété attribuée",
+        "noConcierges": "Aucun concierge n'existe",
         "validation": {
             "required": "Ce champ est obligatoire",
             "email": "Veuillez entrer un email valide",
@@ -1132,6 +1175,9 @@
         },
         "sources": {
             "direct": "Réservation directe",
+            "airbnb": "AirBnb",
+            "booking": "Booking",
+            "expedia": "Expedia",
             "other": "Autre"
         },
         "contract": {
@@ -1251,5 +1297,39 @@
         "updateError": "Échec de la mise à jour du prestataire",
         "deleteError": "Échec de la suppression du prestataire",
         "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce prestataire ?"
+    },
+    "equipment": {
+        "cards": "Fiches d'Équipement",
+        "editCardFor": "Modifier la carte pour",
+        "existingCards": "Fiches d'Équipement Existantes",
+        "availableEquipments": "Équipements Disponibles",
+        "addCard": "Ajouter une Fiche",
+        "noEquipments": "Aucun équipement trouvé pour cette propriété",
+        "noCardYet": "Aucune fiche créée",
+        "needsCard": "A besoin d'une carte",
+        "allCardsCreated": "Toutes les fiches d'équipement ont été créées",
+        "noDescription": "Aucune description fournie",
+        "fetchError": "Échec de récupération des détails de l'équipement",
+        "wifiName": "Nom du Réseau WiFi",
+        "wifiPassword": "Mot de Passe WiFi",
+        "videoUrlLabel": "URL de la Vidéo",
+        "videoUrlHint": "URL YouTube, Vimeo ou autre site de partage vidéo",
+        "guestMessage": "Message pour les Invités",
+        "mediaUrl": "URL du Média",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette fiche d'équipement?",
+        "confirmYes": "Oui",
+        "confirmNo": "Non",
+        "deleteSuccess": "Fiche d'équipement supprimée avec succès",
+        "deleteError": "Erreur lors de la suppression de la fiche d'équipement",
+        "mediaType": "Type de Média",
+        "mediaRequired": "Veuillez télécharger une image",
+        "videoRequired": "Veuillez entrer une URL de vidéo",
+        "descriptionRequired": "Veuillez ajouter une description pour les invités",
+        "wifiNameRequired": "Veuillez entrer le nom du réseau WiFi",
+        "wifiPasswordRequired": "Veuillez entrer le mot de passe WiFi",
+        "createSuccess": "Fiche d'équipement créée avec succès",
+        "createError": "Erreur lors de la création de la fiche d'équipement",
+        "updateSuccess": "Fiche d'équipement mise à jour avec succès",
+        "updateError": "Erreur lors de la mise à jour de la fiche d'équipement"
     }
 }

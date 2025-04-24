@@ -37,7 +37,15 @@ const getClientConcierges = async (req, res) => {
      [Op.in]: invitedEmails,
     },
    },
-   attributes: ['id', 'firstname', 'lastname', 'email', 'phone', 'isVerified'],
+   attributes: [
+    'id',
+    'firstname',
+    'lastname',
+    'email',
+    'phone',
+    'isVerified',
+    'avatar',
+   ],
   });
   console.log('Found Managers:', managers.length); // Debug log
 
@@ -68,6 +76,7 @@ const getClientConcierges = async (req, res) => {
      email: manager.email,
      phone: manager.phone,
      isVerified: manager.isVerified,
+     avatar: manager.avatar,
      properties: propertyAssignments.map((assignment) => ({
       id: assignment.property?.id,
       name: assignment.property?.name,

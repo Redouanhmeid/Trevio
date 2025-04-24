@@ -13,13 +13,14 @@ export const useLogin = () => {
  const login = async (email, password) => {
   setIsLoading(true);
   setError(null);
-
+  console.log(email, password);
   try {
    const response = await fetch('/api/v1/users/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
    });
+   console.log(response);
    const json = await response.json();
 
    if (!response.ok) {
@@ -60,17 +61,71 @@ export const useLogin = () => {
    provider.addScope('email');
 
    const result = await signInWithPopup(auth, provider);
-   const user = result.user;
+   const googleUser = result.user;
 
-   // Optionally send user information to your backend if needed
-   dispatch({ type: 'LOGIN', payload: user });
-   localStorage.setItem('user', JSON.stringify(user));
+   // First check if the user already exists in our system
+   const checkUserResponse = await fetch(
+    `/api/v1/users/email/${googleUser.email}`
+   );
+
+   let userData;
+   let token;
+
+   if (checkUserResponse.ok) {
+    // User exists, get their data
+    userData = await checkUserResponse.json();
+
+    // No need to log in again since we already have the user data
+    token = 'google-auth'; // A placeholder token - in a real scenario, you'd need a proper JWT
+   } else {
+    // User doesn't exist, register them
+    const registerResponse = await fetch('/api/v1/users', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+      email: googleUser.email,
+      password: Math.random().toString(36).slice(-8), // Random password
+      firstname: googleUser.displayName?.split(' ')[0] || 'Google',
+      lastname: googleUser.displayName?.split(' ').slice(1).join(' ') || 'User',
+      phone: googleUser.phoneNumber || 'N/A',
+      avatar: googleUser.photoURL || '/avatars/default.png',
+      isVerified: true, // User is verified through Google
+      role: 'client', // Set default role to client
+     }),
+    });
+
+    if (!registerResponse.ok) {
+     const errorData = await registerResponse.json();
+     throw new Error(errorData.error || 'Failed to register with Google');
+    }
+
+    userData = await registerResponse.json();
+    token = 'google-auth'; // A placeholder token
+   }
+
+   // Ensure user has a role, default to 'client' if missing
+   if (!userData.role) {
+    userData.role = 'client';
+   }
+
+   // Store user data and token
+   localStorage.setItem('user', JSON.stringify(userData));
+   localStorage.setItem('token', token);
+
+   // Update auth context
+   dispatch({
+    type: 'LOGIN',
+    payload: { ...userData, token },
+   });
 
    setIsLoading(false);
    navigate('/');
+   return true;
   } catch (error) {
+   console.error('Google login error:', error);
    setIsLoading(false);
-   setError(error.message);
+   setError(error.message || 'Error during Google login');
+   return false;
   }
  };
 

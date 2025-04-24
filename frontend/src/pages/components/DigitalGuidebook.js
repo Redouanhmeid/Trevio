@@ -18,7 +18,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../context/TranslationContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
 import useEquipement from '../../hooks/useEquipement';
@@ -42,6 +42,7 @@ import { useUserData } from '../../hooks/useUserData';
 import ShareModal from '../../components/common/ShareModal';
 import HouseManual from './HouseManual';
 import ServiceWorkerGuest from './ServiceWorkerGuest';
+import MobileTabsComponent from './MobileTabsComponent';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -88,8 +89,8 @@ const generateTabs = (
  {
   key: '1',
   icon: <i className="fa-regular fa-arrow-left-to-arc"></i>,
-  tab: t('guidebook.tabs.arrival.title'),
-  content: (
+  label: t('guidebook.tabs.arrival.title'),
+  children: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
      <Divider orientation="left">
@@ -223,8 +224,8 @@ const generateTabs = (
  {
   key: '2',
   icon: <i className="fa-regular fa-door-open"></i>,
-  tab: t('guidebook.tabs.manual.title'),
-  content: (
+  label: t('guidebook.tabs.manual.title'),
+  children: (
    <div>
     <Flex gap="middle" align="center" justify="flex-end">
      {isOwner && (
@@ -256,8 +257,8 @@ const generateTabs = (
  {
   key: '3',
   icon: <i className="fa-regular fa-arrow-right-to-arc"></i>,
-  tab: t('guidebook.tabs.departure.title'),
-  content: (
+  label: t('guidebook.tabs.departure.title'),
+  children: (
    <div>
     <Flex gap="middle" align="center" justify="space-between">
      <Divider orientation="left">
@@ -314,8 +315,8 @@ const generateTabs = (
  {
   key: '4',
   icon: <i className="fa-regular fa-plate-utensils"></i>,
-  tab: t('guidebook.tabs.places.restaurants'),
-  content: (
+  label: t('guidebook.tabs.places.restaurants'),
+  children: (
    <div>
     <MapNearbyPlaces
      latitude={property.latitude}
@@ -334,8 +335,8 @@ const generateTabs = (
  {
   key: '5',
   icon: <i className="fa-regular fa-sun-cloud"></i>,
-  tab: t('guidebook.tabs.places.activities'),
-  content: (
+  label: t('guidebook.tabs.places.activities'),
+  children: (
    <div>
     <MapNearbyPlaces
      latitude={property.latitude}
@@ -354,8 +355,8 @@ const generateTabs = (
  {
   key: '6',
   icon: <i className="fa-regular fa-camera"></i>,
-  tab: t('guidebook.tabs.places.attractions'),
-  content: (
+  label: t('guidebook.tabs.places.attractions'),
+  children: (
    <div>
     <MapNearbyPlaces
      latitude={property.latitude}
@@ -374,8 +375,8 @@ const generateTabs = (
  {
   key: '7',
   icon: <i className="fa-regular fa-store"></i>,
-  tab: t('guidebook.tabs.places.malls'),
-  content: (
+  label: t('guidebook.tabs.places.malls'),
+  children: (
    <div>
     <MapNearbyPlaces
      latitude={property.latitude}
@@ -394,8 +395,8 @@ const generateTabs = (
  {
   key: '8',
   icon: <i className="fa-regular fa-phone"></i>,
-  tab: t('serviceWorker.title'),
-  content: (
+  label: t('serviceWorker.title'),
+  children: (
    <div>
     <ServiceWorkerGuest propertyId={property.id} />
    </div>
@@ -571,10 +572,10 @@ const DigitalGuidebook = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout className="container">
     <Content>
-     <Flex gap="middle" align="start" justify="space-between">
+     {/* <Flex gap="middle" align="end" justify="space-between">
       <Button
        type="link"
        icon={<ArrowLeftOutlined />}
@@ -588,32 +589,16 @@ const DigitalGuidebook = () => {
       >
        {t('guidebook.share')}
       </Button>
-     </Flex>
+     </Flex> */}
      <Divider type="vertical" />
      <Row gutter={[16, 16]}>
       <Col xs={24}>
-       <Tabs
-        defaultActiveKey="1"
-        tabPosition={screens.md ? 'left' : 'top'}
-        size="large"
-        className="digital-tabs"
-        items={innerTabs.map((tab) => ({
-         label: tab.tab,
-         icon: tab.icon,
-         key: tab.key,
-         children:
-          tab.key === '1' && (!validLatitude || !validLongitude) ? (
-           <div>{t('guidbook.invalidCoordinates')}</div>
-          ) : (
-           tab.content
-          ),
-        }))}
-       />
+       <MobileTabsComponent items={innerTabs} defaultActiveKey="1" />
       </Col>
      </Row>
     </Content>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
    <ShareModal
     isVisible={isShareModalVisible}
     onClose={hideShareModal}

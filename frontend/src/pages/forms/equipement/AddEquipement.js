@@ -12,6 +12,7 @@ import {
  Radio,
  Upload,
  Image,
+ Grid,
 } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import Head from '../../../components/common/header';
@@ -37,6 +38,8 @@ const AddEquipement = () => {
  const location = useLocation();
  const { equipement, id } = location.state;
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const navigate = useNavigate();
  const { uploadEquipement } = useUploadPhotos();
  const { loading, error, postEquipement } = useEquipement();
@@ -293,7 +296,7 @@ const AddEquipement = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

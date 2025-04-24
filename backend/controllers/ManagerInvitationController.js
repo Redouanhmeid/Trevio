@@ -19,7 +19,7 @@ const sendManagerInvitation = async (req, res) => {
  try {
   // Check if the client exists and has appropriate role
   const client = await User.findByPk(clientId);
-  if (!client || client.role !== 'client') {
+  if (!client) {
    return res
     .status(403)
     .json({ error: 'Unauthorized to send manager invitations' });
@@ -49,6 +49,8 @@ const sendManagerInvitation = async (req, res) => {
    token,
    expiresAt,
   });
+
+  console.log(invitation);
 
   // Generate invitation link
   const invitationLink = `${process.env.FRONTEND_URL}/manager/verify/${token}`;

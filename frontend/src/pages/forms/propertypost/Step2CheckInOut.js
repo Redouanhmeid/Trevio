@@ -12,11 +12,16 @@ import {
  Upload,
  Image,
  Spin,
+ Grid,
  message,
 } from 'antd';
 import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
-import { ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+ ArrowLeftOutlined,
+ ArrowRightOutlined,
+ PlusOutlined,
+} from '@ant-design/icons';
 import ReactPlayer from 'react-player';
 import dayjs from 'dayjs';
 import ImgCrop from 'antd-img-crop';
@@ -88,8 +93,10 @@ const getBase64 = (file) =>
   reader.onerror = (error) => reject(error);
  });
 
-const Step2CheckInOut = ({ next, values, ProgressSteps }) => {
+const Step2CheckInOut = ({ prev, next, values, ProgressSteps }) => {
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   updatePropertyCheckIn,
   isLoading: checkInLoading,
@@ -237,7 +244,18 @@ const Step2CheckInOut = ({ next, values, ProgressSteps }) => {
        />
        <br />
        <Row justify="center">
-        <Col xs={12} md={12}>
+        <Col xs={8} md={2}>
+         <Form.Item>
+          <Button
+           htmlType="submit"
+           shape="circle"
+           onClick={prev}
+           icon={<ArrowLeftOutlined />}
+          />
+         </Form.Item>
+        </Col>
+
+        <Col xs={16} md={6}>
          <Form.Item>
           <Button
            type="primary"
@@ -254,7 +272,7 @@ const Step2CheckInOut = ({ next, values, ProgressSteps }) => {
      </Spin>
     </Content>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };
@@ -336,10 +354,10 @@ const CheckInForm = ({
  return (
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
-    <Title level={2}>
+    <Title level={4}>
      {t('checkIn.title')}
      {'  '}
-     <i className="PrimaryColor fa-regular fa-arrow-left-to-arc" />
+     <i className="PrimaryColor fa-regular fa-arrow-right-to-arc" />
     </Title>
     <TimePickerWithDefault
      value={CheckInTime}
@@ -497,10 +515,10 @@ const CheckOutForm = ({
  return (
   <Row gutter={[24, 0]}>
    <Col xs={24} md={24}>
-    <Title level={2}>
+    <Title level={4}>
      {t('checkOut.title')}
      {'  '}
-     <i className="PrimaryColor fa-regular fa-arrow-right-to-arc" />
+     <i className="PrimaryColor fa-regular fa-arrow-right-from-arc" />
     </Title>
     <TimePickerWithDefault
      value={CheckOutTime}

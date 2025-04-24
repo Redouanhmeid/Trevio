@@ -13,6 +13,7 @@ import {
  Input,
  InputNumber,
  Select,
+ Grid,
 } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -22,6 +23,7 @@ import Foot from '../../../components/common/footer';
 import { useUserData } from '../../../hooks/useUserData';
 import { useLogin } from '../../../hooks/useLogin';
 import { countries } from '../../../utils/countries';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -31,6 +33,8 @@ const ManagerVerification = () => {
  const [form] = Form.useForm();
  const [loading, setLoading] = useState(true);
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const { token } = useParams();
  const navigate = useNavigate();
  const [validToken, setValidToken] = useState(false);
@@ -193,7 +197,7 @@ const ManagerVerification = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Row justify="center" align="middle" gutter={48}>
      <Col xs={24}>
@@ -367,7 +371,7 @@ const ManagerVerification = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

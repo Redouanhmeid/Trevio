@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {
  Layout,
- Table,
+ List,
  Image,
  Button,
  Select,
  message,
  Typography,
+ Grid,
+ Card,
+ Space,
+ Flex,
+ Tag,
+ Divider,
+ Spin,
+ Empty,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +25,7 @@ import fallback from '../../assets/fallback.png';
 import DashboardHeader from '../../components/common/DashboardHeader';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const ConciergeProperties = () => {
  const navigate = useNavigate();
@@ -26,13 +34,27 @@ const ConciergeProperties = () => {
   useConcierge();
  const [userProperties, setUserProperties] = useState([]);
  const [loading, setLoading] = useState(false);
+ const [managerData, setManagerData] = useState(null);
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const fetchProperties = async () => {
   setLoading(true);
   try {
    const data = await getConciergeProperties(managerId);
    setUserProperties(data);
+
+   // Get manager info from the first property assignment (if available)
+   if (data && data.length > 0) {
+    const firstAssignment = data[0];
+    const managerEmail = firstAssignment?.manager?.email || 'Unknown';
+    setManagerData({
+     email: managerEmail,
+     propertyCount: data.length,
+     activeCount: data.filter((item) => item.status === 'active').length,
+    });
+   }
   } catch (error) {
    message.error(t('managers.fetchPropertiesError'));
   } finally {
@@ -55,7 +77,6 @@ const ConciergeProperties = () => {
  };
 
  const handleRemove = async (clientId, conciergeId, propertyId) => {
-  console.log(clientId, conciergeId, propertyId);
   try {
    await removeConcierge(clientId, conciergeId, propertyId);
    message.success(t('managers.messages.propertyRemoved'));
@@ -64,65 +85,6 @@ const ConciergeProperties = () => {
    message.error(t('managers.messages.removeError'));
   }
  };
-
- const columns = [
-  {
-   title: 'Photo',
-   key: 'photo',
-   render: (_, record) => (
-    <Image
-     src={record.property.photos?.[0] || fallback}
-     alt={record.property.name}
-     height={64}
-     width={64}
-    />
-   ),
-  },
-  {
-   title: t('property.title'),
-   dataIndex: ['property', 'name'],
-   key: 'name',
-  },
-  {
-   title: t('property.basic.location'),
-   dataIndex: ['property', 'placeName'],
-   key: 'placeName',
-  },
-  {
-   title: t('managers.assignmentStatus'),
-   dataIndex: 'status',
-   key: 'status',
-   render: (status, record) => (
-    <Select
-     value={status}
-     onChange={(value) => handleStatusChange(record.id, value)}
-     style={{ width: 120 }}
-    >
-     <Select.Option value="active">
-      {t('property.propertyStatus.active')}
-     </Select.Option>
-     <Select.Option value="inactive">
-      {t('property.propertyStatus.inactive')}
-     </Select.Option>
-    </Select>
-   ),
-  },
-  {
-   title: t('property.actions.actions'),
-   key: 'actions',
-   render: (_, record) => (
-    <Button
-     type="link"
-     danger
-     onClick={() =>
-      handleRemove(record.clientId, managerId, record.property.id)
-     }
-    >
-     {t('property.actions.remove')}
-    </Button>
-   ),
-  },
- ];
 
  return (
   <Layout className="contentStyle">
@@ -135,15 +97,91 @@ const ConciergeProperties = () => {
     >
      {t('button.back')}
     </Button>
-    <Title level={2}>{t('managers.propertiesTitle')}</Title>
-    <Table
-     columns={columns}
-     dataSource={userProperties}
-     loading={loading}
-     rowKey="id"
-    />
+
+    <Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
+     <Title level={2}>{t('managers.propertiesTitle')}</Title>
+    </Flex>
+
+    {loading ? (
+     <div style={{ textAlign: 'center', padding: '40px 0' }}>
+      <Spin size="large" />
+     </div>
+    ) : (
+     <Card className="dash-card">
+      <List
+       itemLayout="horizontal"
+       dataSource={userProperties}
+       locale={{
+        emptyText: <Empty description={t('managers.noAssignedProperties')} />,
+       }}
+       renderItem={(item) => (
+        <List.Item
+         key={item.id}
+         actions={[
+          <Select
+           key="status"
+           value={item.status}
+           onChange={(value) => handleStatusChange(item.id, value)}
+           style={{ width: 120 }}
+          >
+           <Select.Option value="active">
+            {t('property.propertyStatus.active')}
+           </Select.Option>
+           <Select.Option value="inactive">
+            {t('property.propertyStatus.inactive')}
+           </Select.Option>
+          </Select>,
+          <Button
+           key="remove"
+           type="link"
+           danger
+           onClick={() =>
+            handleRemove(item.clientId, managerId, item.property.id)
+           }
+          >
+           {t('property.actions.remove')}
+          </Button>,
+         ]}
+        >
+         <List.Item.Meta
+          avatar={
+           <Image
+            src={item.property.photos?.[0] || fallback}
+            alt={item.property.name}
+            height={64}
+            width={64}
+            style={{ borderRadius: 8, objectFit: 'cover' }}
+           />
+          }
+          title={<Text strong>{item.property.name}</Text>}
+          description={
+           <Space direction="vertical" size={1}>
+            <Text type="secondary">
+             <i
+              className="fa-light fa-location-dot"
+              style={{ marginRight: 4 }}
+             />
+             {item.property.placeName}
+            </Text>
+            {item.property.price && (
+             <Text type="secondary">
+              <i
+               className="fa-light fa-money-bill"
+               style={{ marginRight: 4 }}
+              />
+              {item.property.price} {t('property.basic.priceNight')}
+             </Text>
+            )}
+           </Space>
+          }
+         />
+        </List.Item>
+       )}
+      />
+     </Card>
+    )}
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

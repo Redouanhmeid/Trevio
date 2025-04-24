@@ -1,7 +1,7 @@
 const haversine = require('haversine-distance');
 const {
  Property,
- Equipement,
+ Equipment,
  PropertyTask,
  UserProperty,
 } = require('../models');
@@ -127,7 +127,7 @@ const deleteProperty = async (req, res) => {
  try {
   const { id } = req.params;
 
-  const equipements = await Equipement.findAll({
+  const equipments = await Equipment.findAll({
    where: { propertyId: id },
   });
   const property = await Property.findByPk(id);
@@ -137,7 +137,7 @@ const deleteProperty = async (req, res) => {
   }
 
   // Add the equipements to the property object
-  property.Equipements = equipements;
+  property.Equipments = equipments;
 
   // Delete all associated files first
   try {
@@ -231,12 +231,40 @@ const getPropertiesByPlaceLatLon = async (req, res) => {
 const updatePropertyBasicInfo = async (req, res) => {
  try {
   const { id } = req.params;
-  const { name, description, type, airbnbUrl, bookingUrl } = req.body;
+  const {
+   name,
+   description,
+   type,
+   airbnbUrl,
+   bookingUrl,
+   latitude,
+   longitude,
+   placeName,
+   price,
+   capacity,
+   rooms,
+   beds,
+   frontPhoto,
+  } = req.body;
   const property = await Property.findByPk(id);
   if (!property) {
    return res.status(404).json({ error: 'Property not found' });
   }
-  await property.update({ name, description, type, airbnbUrl, bookingUrl });
+  await property.update({
+   name,
+   description,
+   type,
+   airbnbUrl,
+   bookingUrl,
+   latitude,
+   longitude,
+   placeName,
+   price,
+   capacity,
+   rooms,
+   beds,
+   frontPhoto,
+  });
   res.status(200).json(property);
  } catch (error) {
   console.error(error);

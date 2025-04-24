@@ -405,8 +405,6 @@ export const useReservation = () => {
     throw new Error(data.error || 'Failed to delete reservation');
    }
 
-   message.success(t('reservation.deleteSuccess'));
-
    // Update the reservations list if it exists
    if (reservations.length > 0) {
     setReservations(reservations.filter((r) => r.id !== id));

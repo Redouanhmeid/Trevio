@@ -251,9 +251,47 @@ body {
   .nearbyplacescarousel .ant-image{
     position: initial;
   }
-  .container {
-    padding: 2em 1em;
+  .container-form {
+    padding: 1em 1em;
     margin: 0 1em;
+  }
+  .container {
+    padding: 1em 0.5em;
+    margin: 0 0.8em;
+  }
+  .form-card .ant-card-body {
+    padding: 16px 12px;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .ant-picker {
+    width: 100%;
+  }
+  
+  /* Make sure inputs aren't cut off on small screens */
+  .ant-input-number-group-wrapper {
+    width: 100%;
+  }
+  
+  .ant-input-number {
+    width: 100% !important;
+  }
+  
+  /* Date picker specific styles */
+  .ant-picker-panels {
+    flex-direction: column;
+  }
+  
+  .ant-picker-panel {
+    width: 100%;
+  }
+  
+  /* Better spacing for the date range form item */
+  .ant-form-item-with-help {
+    margin-bottom: 24px;
   }
   .container-poperty-details {
     padding: 0 2em 2em 2em;
@@ -289,7 +327,17 @@ body {
   .NotificationRender .ant-dropdown-menu-item > div {
     max-width: 100% !important;
   }
+  .reservation-details-card .ant-col {
+    margin-bottom: 12px;
+  }
 }
+
+.reservation-details-card {
+  background-color: #fff;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
 
 @media only screen and (min-width: 577px) {
   .NotificationRender {
@@ -624,17 +672,33 @@ body {
     justify-content: flex-start;
   }
   .customRadioButton {
-    padding: 6px;
-    width: 104px;
+    padding: 3px;
+    width: 92px;
   }
   .customRadioContainer .ant-radio-wrapper{
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-size: 13px;
+    font-size: 11px;
   }
   .customRadioContainer .ant-radio-wrapper > span:last-child {
     padding-inline-start: 3px;
     padding-inline-end: 3px;
+  }
+  .Radioicon {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 28px;
+  }
+  .ant-checkbox-group {
+    line-height : 3 !important;
+  }
+  .ant-form-item .ant-form-item-label >label{
+    font-weight: 400;
+    height: auto !important;
+  }
+  .ant-checkbox-wrapper {
+    font-weight: 300;
+    line-height: 1.2 !important;
   }
 }
 
@@ -762,6 +826,12 @@ body {
   .TrevioBg {
     padding: 8px 0;
   }
+  .dash-card .ant-card-body {
+    padding: 8px;
+  }
+  .dash-card .ant-list-item {
+    padding: 12px !important;
+}
 }
 
 .dash-card {
@@ -852,8 +922,8 @@ body {
   line-height: 2.2;
 }
 
-.houseRules-checkbox-group .ant-checkbox-wrapper {
-  line-height: 1.2;
+.ant-checkbox-wrapper {
+  line-height: 1.4;
 }
 
 .custom-upload .ant-upload {
@@ -1251,14 +1321,22 @@ body {
 .sidebar-desktop {
   height: 100%;
   min-height: 100vh;
-  position: fixed;
-  left: 0;
+  position: sticky !important;
   top: 0;
   bottom: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   z-index: 1000;
 }
-
+.sidebar-desktop .ant-menu-item {
+  font-size: 16px; /* Adjust this value as needed */
+}
+.sidebar-desktop .ant-menu-item .anticon,
+.sidebar-desktop .ant-menu-item i {
+  font-size: 18px; /* Adjust icon size if needed */
+}
+.sidebar-desktop .ant-menu-item-selected {
+  border-radius: 0;
+}
 .custom-trigger {
   height: 48px;
   display: flex;
@@ -1355,6 +1433,10 @@ body {
 
 .sidebar-drawer .ant-drawer-content-wrapper {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.filter-drawer .ant-drawer-body {
+  padding: 12px !important;
+  background-color: #f6f6fa;
 }
 
 /* Menu divider */
@@ -1815,15 +1897,24 @@ body {
     left: 0;
   }
 
+  .booking-dates-card .ant-card-body {
+    padding: 16px !important;
+  }
+  .status-card .ant-card-body {
+    padding: 14px !important;
+  }
   .notification-card {
     width: 100%;
   }
-  .notification-card .ant-card-body {
+  .notification-card .ant-card .ant-card-body {
     padding: 12px;
   }
   
   .status-text-warning {
     font-size: 12px;
+  }
+  .hidden-code {
+    gap: 16px;
   }
 }
 
@@ -2033,4 +2124,161 @@ body {
   .dashboard-header .logo-container {
     display: none;
   }
+}
+
+/* Statistics Cards Styling */
+.stat-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.revenue-stat-card {
+  background: linear-gradient(135deg, #6D5FFA 0%, #8B7FFB 100%);
+}
+
+.property-stat-card {
+  background: linear-gradient(135deg, #AA7E42 0%, #D4AD6A 100%);
+}
+
+.change-stat-card-positive {
+  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+}
+
+.change-stat-card-negative {
+  background: linear-gradient(135deg, #F5222D 0%, #FF7875 100%);
+}
+
+.stat-card .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.stat-card .ant-statistic-content {
+  color: white !important;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.stat-card .ant-statistic-content-suffix,
+.stat-card .ant-statistic-content-prefix {
+  color: white !important;
+}
+
+.stat-info {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-icon {
+  font-size: 24px;
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+  
+  .stat-card .ant-statistic-content {
+    font-size: 24px;
+  }
+
+  .stat-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .stat-icon {
+    font-size: 20px;
+  }
+}
+
+.mobile-tabs-container {
+  width: 100%;
+}
+
+.mobile-tabs-container .mobile-tabs-select {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mobile-tab-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-tab-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  color: #6D5FFA;
+  margin-right: 8px;
+}
+
+.mobile-tabs-container .ant-select-selection-item .mobile-tab-icon {
+  color: #6D5FFA;
+}
+
+.mobile-tabs-container .mobile-tabs-content {
+  margin-top: 16px;
+  padding-bottom: 20px;
+}
+
+/* Style the select dropdown to look like an accordion header */
+.mobile-tabs-container .ant-select-selector {
+  background-color: #F3F2FF !important;
+  border-radius: 8px !important;
+  border: 1px solid #f0f0f0 !important;
+  padding: 12px 16px !important;
+  height: auto !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-tabs-container .ant-select-selection-item {
+  font-size: 16px;
+  font-weight: 500;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 0 !important; 
+}
+
+.mobile-tabs-container .ant-select-dropdown {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-tabs-container .ant-select-item {
+  padding: 10px 16px !important;
+  transition: all 0.3s;
+}
+
+.mobile-tabs-container .ant-select-item-option-selected {
+  background-color: rgba(109, 95, 250, 0.1) !important;
+  color: #6D5FFA !important;
+}
+
+.mobile-tabs-container .ant-select-item-option-active {
+  background-color: rgba(109, 95, 250, 0.05) !important;
+}
+
+.mobile-tabs-container .ant-select-arrow {
+  font-size: 14px;
+  color: #6D5FFA;
+  margin: auto;
+  top: 70%;
 }

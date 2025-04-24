@@ -62,7 +62,11 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    key: 'properties',
    label: t('property.title'),
    path: '/propertiesdashboard',
-   pathPatterns: ['/propertiesdashboard', '/addproperty'],
+   pathPatterns: [
+    '/propertiesdashboard',
+    '/addproperty',
+    '/property-management',
+   ],
   },
   {
    key: 'tasks',
@@ -298,10 +302,15 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    )}
 
    {/* Mobile Navigation Bar - Only show on mobile */}
-   {isMobile && <MobileNavigationBar />}
+   {isMobile && userExists && <MobileNavigationBar />}
 
    {/* Avatar Drawer */}
-   <Drawer title={null} onClose={onClose} open={open}>
+   <Drawer
+    title={null}
+    onClose={onClose}
+    open={open}
+    placement={isMobile ? 'left' : 'right'}
+   >
     <List
      dataSource={[{ id: 1, name: userData?.firstname || 'User' }]}
      bordered={false}

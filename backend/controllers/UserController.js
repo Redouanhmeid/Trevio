@@ -455,6 +455,31 @@ const resetPassword = async (req, res) => {
  }
 };
 
+// Verify password for an existing user
+const verifyPassword = async (req, res) => {
+ const { email, password } = req.body;
+
+ try {
+  // Check if the user exists
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+   return res.status(404).json({ message: 'Utilisateur non trouvé' });
+  }
+
+  // Check if the password matches
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+   return res.status(400).json({ verified: false });
+  }
+
+  // Password is correct
+  return res.status(200).json({ verified: true });
+ } catch (error) {
+  console.error('Erreur lors de la vérification du mot de passe:', error);
+  return res.status(500).json({ verified: false });
+ }
+};
+
 module.exports = {
  getUser,
  getUserByEmail,
@@ -470,4 +495,5 @@ module.exports = {
  resetPasswordRequest,
  verifyResetCode,
  resetPassword,
+ verifyPassword,
 };

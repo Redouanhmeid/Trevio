@@ -141,6 +141,7 @@ export const useUserData = () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, code }),
    });
+   console.log(response);
    if (!response.ok)
     throw new Error('Échec de la vérification du code de réinitialisation');
    setSuccess(true);
@@ -339,6 +340,29 @@ export const useUserData = () => {
   }
  };
 
+ const verifyUserPassword = async (email, password) => {
+  setIsLoading(true);
+  setError(false);
+  setErrorMsg('');
+
+  try {
+   const response = await axios.post('/api/v1/users/verify-password', {
+    email,
+    password,
+   });
+
+   setIsLoading(false);
+   return response.data.verified === true;
+  } catch (err) {
+   setError(true);
+   setErrorMsg(
+    err.response?.data?.message || 'Erreur de vérification du mot de passe'
+   );
+   setIsLoading(false);
+   return false;
+  }
+ };
+
  return {
   isLoading,
   userData,
@@ -358,6 +382,7 @@ export const useUserData = () => {
   sendManagerInvitation,
   verifyManagerInvitation,
   acceptManagerInvitation,
+  verifyUserPassword,
   success,
   error,
   errorMsg,

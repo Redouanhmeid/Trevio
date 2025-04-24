@@ -63,13 +63,28 @@ import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
 import RevenueDashboard from './pages/dashboard/RevenueDashboard';
 import PropertiesDashboard from './pages/dashboard/PropertiesDashboard';
 import ConciergesDashboard from './pages/dashboard/ConciergesDashboard';
+import PropertyManagement from './pages/forms/propertyedit/PropertyManagement';
+import Home from './pages/home';
+import PropertyActions from './pages/dashboard/PropertyActions';
 const router = createBrowserRouter([
- { path: '/', element: <ReservationsList />, errorElement: <NotFoundPage /> },
+ {
+  path: '/',
+  element: (
+   <ProtectedRoute>
+    <ReservationsList />
+   </ProtectedRoute>
+  ),
+  errorElement: <NotFoundPage />,
+ },
+ {
+  path: '/home',
+  element: <Home />,
+ },
  {
   path: '/dashboard',
   element: (
    <ProtectedRoute>
-    <Dashboard />
+    <ReservationsList />
    </ProtectedRoute>
   ),
  },
@@ -101,7 +116,22 @@ const router = createBrowserRouter([
    </ProtectedRoute>
   ),
  },
-
+ {
+  path: '/propertyactions',
+  element: (
+   <ProtectedRoute>
+    <PropertyActions />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/property-management',
+  element: (
+   <ProtectedRoute>
+    <PropertyManagement />
+   </ProtectedRoute>
+  ),
+ },
  {
   path: '/concierges',
   element: (
@@ -225,7 +255,14 @@ const router = createBrowserRouter([
    </ProtectedRoute>
   ),
  },
- { path: '/profile', element: <Profile /> },
+ {
+  path: '/profile',
+  element: (
+   <ProtectedRoute>
+    <Profile />
+   </ProtectedRoute>
+  ),
+ },
  { path: '/reset-password-request', element: <ResetPasswordRequest /> },
  { path: '/verify-reset-code', element: <VerifyResetCode /> },
  { path: '/new-password', element: <NewPassword /> },

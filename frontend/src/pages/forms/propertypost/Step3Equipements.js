@@ -7,6 +7,7 @@ import {
  Col,
  Checkbox,
  Button,
+ Grid,
  message,
 } from 'antd';
 import DashboardHeader from '../../../components/common/DashboardHeader';
@@ -20,6 +21,8 @@ const { Title, Text } = Typography;
 
 const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   updatePropertyEquipements,
   isLoading: equipementsLoading,
@@ -79,7 +82,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
        basicEquipements: values.basicEquipements || [],
       }}
      >
-      <Title level={2}>{t('property.equipements.title')}</Title>
+      <Title level={4}>{t('property.equipements.title')}</Title>
       <Row gutter={[16, 8]}>
        <Col xs={24} md={24}>
         <Form.Item name="basicEquipements">
@@ -89,10 +92,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Bathroom */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.bathroom')}
-              </Text>
+              <Text strong>{t('equipement.categories.bathroom')}</Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="shower">
@@ -116,10 +116,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Bedroom and Linen */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.bedroomLinen')}
-              </Text>
+              <Text strong>{t('equipement.categories.bedroomLinen')}</Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="washingMachine">
@@ -155,10 +152,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Entertainment */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.entertainment')}
-              </Text>
+              <Text strong>{t('equipement.categories.entertainment')}</Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="television">
@@ -182,10 +176,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Kitchen */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.kitchen')}
-              </Text>
+              <Text strong>{t('equipement.categories.kitchen')}</Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="oven">
@@ -221,10 +212,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/*  Heating and Cooling */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.heatingCooling')}
-              </Text>
+              <Text strong>{t('equipement.categories.heatingCooling')}</Text>
              </Col>
              <Col xs={10} md={8}>
               <Checkbox value="heating">
@@ -260,10 +248,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Home Security */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.homeSecurity')}
-              </Text>
+              <Text strong>{t('equipement.categories.homeSecurity')}</Text>
              </Col>
              <Col xs={24} md={16}>
               <Checkbox value="fingerprint">
@@ -287,10 +272,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Internet and Office */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.internetOffice')}
-              </Text>
+              <Text strong>{t('equipement.categories.internetOffice')}</Text>
              </Col>
              <Col xs={24} md={8}>
               <Checkbox value="wifi">
@@ -308,10 +290,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
             {/* Parking and Facilities */}
             <Row>
              <Col xs={24}>
-              <Text strong>
-               <br />
-               {t('equipement.categories.parkingFacilities')}
-              </Text>
+              <Text strong>{t('equipement.categories.parkingFacilities')}</Text>
              </Col>
              <Col xs={12} md={8}>
               <Checkbox value="freeParking">
@@ -367,7 +346,7 @@ const Step3Equipements = ({ next, prev, values, ProgressSteps }) => {
      </Form>
     </Content>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

@@ -11,6 +11,7 @@ import {
  Alert,
  Typography,
  Progress,
+ Grid,
  message,
 } from 'antd';
 import {
@@ -135,6 +136,8 @@ const DraggableUploadListItem = ({ originNode, file }) => {
 
 const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   updatePropertyPhotos,
   isLoading: isUpdating,
@@ -299,7 +302,7 @@ const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
      <Form name="step4" layout="vertical" onFinish={handleSubmit} size="large">
       <Row gutter={[24, 0]}>
        <Col xs={24} md={24}>
-        <Title level={2}>{t('photo.title')}</Title>
+        <Title level={4}>{t('photo.title')}</Title>
         {fileList.length > 1 && (
          <div
           style={{
@@ -369,12 +372,14 @@ const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
          <Progress
           percent={uploadProgress}
           status="active"
-          strokeColor={{ from: '#ebdecd', to: '#aa7e42' }}
+          strokeColor={{ from: '#F8F7FE', to: '#6D5FFA' }}
          />
         </Col>
        )}
       </Row>
-
+      <br />
+      <br />
+      <br />
       <Row justify="center">
        <Col xs={8} md={2}>
         <Form.Item>
@@ -402,7 +407,7 @@ const Step4Photos = ({ next, prev, values, ProgressSteps }) => {
      </Form>
     </Content>
    </Layout>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

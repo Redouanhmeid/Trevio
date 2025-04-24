@@ -69,11 +69,13 @@ const NotificationBell = ({ userId }) => {
   // Then navigate based on notification type
   switch (notification.type) {
    case 'revenue_update':
+    navigate('/revenues');
+    break;
    case 'task_update':
-    navigate('/revtaskdashboard');
+    navigate('/propertytaskdashboard');
     break;
    case 'property_update':
-    navigate('/dashboard');
+    navigate('/propertiesdashboard');
     break;
    default:
     break;

@@ -10,6 +10,7 @@ import {
  Spin,
  message,
  Tag,
+ Grid,
  Tooltip,
 } from 'antd';
 import {
@@ -43,6 +44,8 @@ const ServiceWorkerGuest = ({ propertyId }) => {
  const { t } = useTranslation();
  const { loading, error, serviceWorkers, getGuestVisibleServiceWorkers } =
   useServiceWorker();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  useEffect(() => {
   if (propertyId) {
@@ -73,6 +76,7 @@ const ServiceWorkerGuest = ({ propertyId }) => {
 
  const renderAction = (worker) => {
   const actions = [];
+  const isMobile = screens.xs;
 
   // Call action
   actions.push(
@@ -81,34 +85,31 @@ const ServiceWorkerGuest = ({ propertyId }) => {
     type="primary"
     icon={<PhoneOutlined />}
     onClick={() => (window.location.href = `tel:${worker.phone}`)}
+    size={isMobile ? 'middle' : 'default'}
    >
-    {t('serviceWorker.callButton')}
+    {!isMobile && t('serviceWorker.callButton')}
    </Button>
   );
 
-  // SMS action
-  actions.push(
-   <Button
-    key="sms"
-    type="default"
-    icon={<MessageOutlined />}
-    onClick={() => (window.location.href = `sms:${worker.phone}`)}
-   >
-    {t('serviceWorker.messageButton')}
-   </Button>
-  );
-
-  // Email action (if available)
-  if (worker.email) {
+  // WhatsApp action - only for mobile
+  if (isMobile) {
    actions.push(
     <Button
-     key="email"
+     key="whatsapp"
      type="default"
-     icon={<MailOutlined />}
-     onClick={() => (window.location.href = `mailto:${worker.email}`)}
-    >
-     {t('serviceWorker.emailButton')}
-    </Button>
+     icon={<i className="fa-brands fa-whatsapp" />}
+     onClick={() =>
+      (window.location.href = `https://wa.me/${worker.phone.replace(
+       /\D/g,
+       ''
+      )}`)
+     }
+     style={{
+      backgroundColor: '#25D366',
+      borderColor: '#25D366',
+      color: '#FFFFFF',
+     }}
+    />
    );
   }
 
@@ -159,31 +160,27 @@ const ServiceWorkerGuest = ({ propertyId }) => {
         <List.Item.Meta
          title={worker.name}
          description={
-          <>
-           {worker.phone && (
-            <div>
-             <PhoneOutlined /> {worker.phone}
-            </div>
-           )}
-           {worker.email && (
-            <div>
-             <MailOutlined /> {worker.email}
-            </div>
-           )}
-           {worker.notes && (
-            <div>
-             <Tooltip title={worker.notes}>
-              <InfoCircleOutlined /> {t('serviceWorker.notesforGuest')}
-             </Tooltip>
-            </div>
-           )}
-          </>
+          !screens.xs && (
+           <>
+            {worker.phone && (
+             <div>
+              <PhoneOutlined /> {worker.phone}
+             </div>
+            )}
+            {worker.notes && (
+             <div>
+              <Tooltip title={worker.notes}>
+               <InfoCircleOutlined /> {t('serviceWorker.notesforGuest')}
+              </Tooltip>
+             </div>
+            )}
+           </>
+          )
          }
         />
        </List.Item>
       )}
      />
-     <Divider />
     </div>
    ))}
   </Card>

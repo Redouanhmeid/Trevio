@@ -4,7 +4,6 @@ import {
  Typography,
  Form,
  Select,
- DatePicker,
  InputNumber,
  Input,
  Button,
@@ -14,6 +13,7 @@ import {
  Divider,
  Checkbox,
  message,
+ Grid,
  Spin,
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
@@ -29,6 +29,7 @@ import dayjs from 'dayjs';
 import isBetweenPlugin from 'dayjs/plugin/isBetween';
 import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
+import ResponsiveDatePicker from './ResponsiveDatePicker';
 
 // Extend dayjs with the isBetween plugin
 dayjs.extend(isBetweenPlugin);
@@ -36,12 +37,13 @@ dayjs.extend(isBetweenPlugin);
 const { Content } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 const CreateReservationForm = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
  const location = useLocation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   properties: ownedProperties,
   fetchPropertiesbyClient,
@@ -142,7 +144,13 @@ const CreateReservationForm = () => {
 
  // Calculate total nights and suggested total price when date range or property changes
  useEffect(() => {
-  if (dateRange && dateRange.length === 2 && selectedProperty) {
+  if (
+   dateRange &&
+   dateRange.length === 2 &&
+   dateRange[0] &&
+   dateRange[1] &&
+   selectedProperty
+  ) {
    // Calculate total nights
    const nights = dateRange[1].diff(dateRange[0], 'day');
    setTotalNights(nights);
@@ -208,7 +216,13 @@ const CreateReservationForm = () => {
   fetchReservedDates(propertyId);
 
   // Recalculate total price if date range exists
-  if (dateRange && dateRange.length === 2 && property) {
+  if (
+   dateRange &&
+   dateRange.length === 2 &&
+   dateRange[0] &&
+   dateRange[1] &&
+   property
+  ) {
    const nights = dateRange[1].diff(dateRange[0], 'day');
    const total = (property.price || 0) * nights;
    form.setFieldsValue({ totalPrice: total });
@@ -240,7 +254,7 @@ const CreateReservationForm = () => {
   setDateRange(dates);
 
   // Check availability as the user selects dates
-  if (dates && dates.length === 2 && selectedProperty) {
+  if (dates && dates.length === 2 && dates[0] && dates[1] && selectedProperty) {
    validateDateRangeAvailability(selectedProperty.id, dates[0], dates[1]);
   }
  };
@@ -285,7 +299,13 @@ const CreateReservationForm = () => {
 
   try {
    // Validate date range availability first
-   if (values.propertyId && values.dateRange && values.dateRange.length === 2) {
+   if (
+    values.propertyId &&
+    values.dateRange &&
+    values.dateRange.length === 2 &&
+    values.dateRange[0] &&
+    values.dateRange[1]
+   ) {
     const availabilityResult = await checkAvailability(
      values.propertyId,
      values.dateRange[0].format('YYYY-MM-DD'),
@@ -392,11 +412,12 @@ const CreateReservationForm = () => {
      type="link"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
+     style={{ marginBottom: 16, padding: 0 }}
     >
      {t('button.back')}
     </Button>
 
-    <Title level={2}>{t('reservation.create.title')}</Title>
+    <Title level={4}>{t('reservation.create.title')}</Title>
 
     <Card bordered={false} className="form-card">
      <Spin spinning={isLoading}>
@@ -451,16 +472,14 @@ const CreateReservationForm = () => {
         rules={[
          { required: true, message: t('reservation.create.datesRequired') },
         ]}
-        help={
-         availabilityError && <Text type="danger">{availabilityError}</Text>
-        }
         validateStatus={availabilityError ? 'error' : ''}
        >
-        <RangePicker
-         style={{ width: '100%' }}
-         disabledDate={disabledDate}
+        <ResponsiveDatePicker
+         value={dateRange}
          onChange={handleDateRangeChange}
-         format="YYYY-MM-DD"
+         disabledDate={disabledDate}
+         availabilityError={availabilityError}
+         form={form}
         />
        </Form.Item>
 
@@ -503,7 +522,9 @@ const CreateReservationForm = () => {
        </Form.Item>
 
        <Form.Item name="electronicLockEnabled" valuePropName="checked">
-        <Checkbox>{t('reservation.lock.enableLock')}</Checkbox>
+        <Checkbox style={{ lineHeight: 1.2 }}>
+         {t('reservation.lock.enableLock')}
+        </Checkbox>
        </Form.Item>
 
        <Form.Item
@@ -579,7 +600,7 @@ const CreateReservationForm = () => {
      </Spin>
     </Card>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

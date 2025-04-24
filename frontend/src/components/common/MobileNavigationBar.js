@@ -27,7 +27,12 @@ const MobileNavigationBar = () => {
    icon: <i className="fa-light fa-house" />,
    label: t('property.title'),
    path: '/propertiesdashboard',
-   pathPatterns: ['/propertiesdashboard', '/addproperty'],
+   pathPatterns: [
+    '/propertiesdashboard',
+    '/addproperty',
+    '/property-management',
+    '/propertyactions',
+   ],
   },
   {
    key: 'tasks',

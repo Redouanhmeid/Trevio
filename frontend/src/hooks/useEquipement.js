@@ -47,7 +47,7 @@ const useEquipement = () => {
  const updateEquipement = async (equipementData) => {
   try {
    const response = await axios.put(
-    `/api/v1/equipements/${equipementData.id}`,
+    `/api/v1/equipments/${equipementData.id}`,
     equipementData
    );
    return response.data;

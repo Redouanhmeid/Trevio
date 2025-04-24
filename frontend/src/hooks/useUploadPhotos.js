@@ -78,7 +78,7 @@ const useUploadPhotos = () => {
   try {
    setUploading(true);
 
-   const response = await fetch('/equipements', {
+   const response = await fetch('/equipments', {
     method: 'POST',
     body: formData,
    });
@@ -88,6 +88,7 @@ const useUploadPhotos = () => {
    }
 
    const data = await response.json();
+   console.log(data);
    setUploading(false);
 
    return data.file.url;

@@ -47,6 +47,7 @@ const ServiceWorkerManagement = ({ propertyId, isOwner = false }) => {
  const [isModalVisible, setIsModalVisible] = useState(false);
  const [editingWorker, setEditingWorker] = useState(null);
  const [form] = Form.useForm();
+ const [openPopconfirmId, setOpenPopconfirmId] = useState(null);
 
  // Fetch service workers when component mounts
  useEffect(() => {
@@ -83,6 +84,14 @@ const ServiceWorkerManagement = ({ propertyId, isOwner = false }) => {
   showModal();
  };
 
+ const handleOpenChange = (open, workerId) => {
+  if (open) {
+   setOpenPopconfirmId(workerId);
+  } else {
+   setOpenPopconfirmId(null);
+  }
+ };
+
  const handleDelete = async (id) => {
   try {
    await deleteServiceWorker(id);
@@ -91,6 +100,7 @@ const ServiceWorkerManagement = ({ propertyId, isOwner = false }) => {
   } catch (error) {
    message.error(t('serviceWorker.deleteError'));
   }
+  setOpenPopconfirmId(null);
  };
 
  const handleSubmit = async (values) => {
@@ -200,7 +210,10 @@ const ServiceWorkerManagement = ({ propertyId, isOwner = false }) => {
       <Button
        type="link"
        icon={<EditOutlined />}
-       onClick={() => handleEdit(record)}
+       onClick={(e) => {
+        e.stopPropagation();
+        handleEdit(record);
+       }}
       />
      </Tooltip>
      <Popconfirm
@@ -208,9 +221,24 @@ const ServiceWorkerManagement = ({ propertyId, isOwner = false }) => {
       onConfirm={() => handleDelete(record.id)}
       okText={t('common.yes')}
       cancelText={t('common.no')}
+      open={openPopconfirmId === record.id}
+      onOpenChange={(open) => handleOpenChange(open, record.id)}
+      placement="topRight"
      >
       <Tooltip title={t('common.delete')}>
-       <Button type="link" danger icon={<DeleteOutlined />} />
+       <Button
+        type="link"
+        danger
+        icon={<DeleteOutlined />}
+        onClick={(e) => {
+         // Stop event propagation
+         e.stopPropagation();
+         // Manually set this popconfirm to open if it's not already
+         if (openPopconfirmId !== record.id) {
+          setOpenPopconfirmId(record.id);
+         }
+        }}
+       />
       </Tooltip>
      </Popconfirm>
     </Space>

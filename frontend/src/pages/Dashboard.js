@@ -178,7 +178,6 @@ const Dashboard = () => {
  return (
   <Layout className="contentStyle">
    <Head onUserData={handleUserData} /> <br />
-   <DashboardHeader />
    <Content className="container">
     <Flex justify="flex-end">
      <Button

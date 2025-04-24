@@ -9,13 +9,14 @@ import {
  Typography,
  Divider,
  Spin,
+ Grid,
 } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
-import useManager from '../../../hooks/useManager';
 import Foot from '../../../components/common/footer';
 import { useUserData } from '../../../hooks/useUserData';
 import DashboardHeader from '../../../components/common/DashboardHeader';
+import { useConcierge } from '../../../hooks/useConcierge';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -23,11 +24,13 @@ const { Title } = Typography;
 const AddConciergeForm = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
- const { createManager, loading, error } = useManager();
+ const { assignConcierge, isLoading, error } = useConcierge();
  const { sendManagerInvitation } = useUserData();
  const [form] = Form.useForm();
  const location = useLocation();
  const clientId = location.state?.clientId;
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const onFinish = async (values) => {
   try {
@@ -50,9 +53,9 @@ const AddConciergeForm = () => {
   <Layout className="contentStyle">
    <DashboardHeader />
    <Content className="container">
-    <Title level={2}>{t('managers.addTitle')}</Title>
+    <Title level={3}>{t('managers.addTitle')}</Title>
 
-    <Spin spinning={loading}>
+    <Spin spinning={isLoading}>
      <Form
       form={form}
       layout="vertical"
@@ -92,7 +95,7 @@ const AddConciergeForm = () => {
      </Form>
     </Spin>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

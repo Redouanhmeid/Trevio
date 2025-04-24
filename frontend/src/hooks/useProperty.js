@@ -16,7 +16,6 @@ const useProperty = () => {
  const apiBase = '/api/v1/properties';
 
  const getIdFromHash = async (hashId) => {
-  setLoading(true);
   setError(null);
   try {
    const response = await axios.get(`${apiBase}/hash/${hashId}`);
@@ -27,7 +26,6 @@ const useProperty = () => {
    setError(err.message || 'Failed to fetch property ID');
    return null;
   } finally {
-   setLoading(false);
   }
  };
 
@@ -47,12 +45,43 @@ const useProperty = () => {
 
  // Fetch properties by id
  const fetchProperty = async (id) => {
+  setLoading(true);
+  setError(null);
   try {
    const response = await axios.get(`${apiBase}/${id}`);
-   setProperty(response.data);
-   setLoading(false);
+   const propertyData = response.data;
+
+   // Parse JSON fields if they are strings
+   if (propertyData) {
+    const fieldsToCheck = [
+     'photos',
+     'basicEquipements',
+     'safetyFeatures',
+     'elements',
+     'houseRules',
+     'earlyCheckIn',
+     'beforeCheckOut',
+     'accessToProperty',
+     'lateCheckOutPolicy',
+    ];
+
+    fieldsToCheck.forEach((field) => {
+     if (typeof propertyData[field] === 'string') {
+      try {
+       propertyData[field] = JSON.parse(propertyData[field]);
+      } catch (err) {
+       console.warn(`Failed to parse ${field}, keeping as string`);
+      }
+     }
+    });
+   }
+   setProperty(propertyData);
+   return propertyData;
   } catch (error) {
-   console.error('Error fetching properties:', error);
+   console.error('Error fetching property:', error);
+   setError(error.message || 'Failed to fetch property');
+   return null;
+  } finally {
    setLoading(false);
   }
  };

@@ -37,7 +37,7 @@ const AddProperty = () => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 48,
+    marginBottom: 12,
     paddingTop: 24,
    }}
   >
@@ -48,7 +48,7 @@ const AddProperty = () => {
        width: 12,
        height: 12,
        borderRadius: '50%',
-       backgroundColor: step === 1 ? '#6D5FFA' : '#f0f0f0',
+       backgroundColor: step <= current ? '#6D5FFA' : '#f0f0f0',
       }}
      />
      {index < 4 && (
