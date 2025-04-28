@@ -110,13 +110,14 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
     borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
    }}
   >
-   <img src={MobileLogo} alt="Logo" width="42" />
    <Button
     type="text"
     icon={<MenuOutlined />}
     onClick={toggleDrawer}
     size="large"
    />
+
+   <img src={MobileLogo} alt="Logo" width="42" />
   </Flex>
  );
 
@@ -171,7 +172,7 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
      <TopHeader />
 
      <Drawer
-      placement="right"
+      placement="left"
       onClose={toggleDrawer}
       open={drawerVisible}
       width={280}

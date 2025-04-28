@@ -339,7 +339,7 @@ const CreateReservationForm = () => {
 
    const data = await createReservation(reservationData);
 
-   if (data) {
+   /*  if (data) {
     try {
      const property = allProperties.find((p) => p.id === values.propertyId);
      const propertyName = property ? property.name : 'Property';
@@ -389,7 +389,9 @@ const CreateReservationForm = () => {
     }
     // Navigate to the contract generation page
     navigate(`/generate-contract/${data.id}`);
-   }
+   } */
+
+   navigate(`/generate-contract/${data.id}`);
   } catch (error) {
    setFormError(error.message || 'Failed to create reservation');
    message.error(t('reservation.createError'));
@@ -440,9 +442,6 @@ const CreateReservationForm = () => {
          disabled={hashId !== null}
          optionFilterProp="children"
          showSearch
-         filterOption={(input, option) =>
-          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-         }
         >
          {ownedProperties.length > 0 && (
           <Select.OptGroup label={t('property.owned')}>

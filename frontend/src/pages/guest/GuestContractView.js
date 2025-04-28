@@ -184,7 +184,7 @@ const GuestContractView = () => {
             </div>
            </div>
           ) : (
-           <div className="timeline-container">
+           <div className="timeline-container" style={{ width: '50%' }}>
             <div className="timeline-dot" />
             <div className="timeline-line">
              <div className="timeline-dashed" />

@@ -380,7 +380,7 @@ const PropertyTaskDashboard = () => {
 
  if (isLoading) {
   return (
-   <Layout>
+   <Layout className="contentStyle">
     <DashboardHeader onUserData={handleUserData} />
     <Content className="container">
      <div

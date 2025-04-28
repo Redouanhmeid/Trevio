@@ -327,18 +327,96 @@ body {
   .NotificationRender .ant-dropdown-menu-item > div {
     max-width: 100% !important;
   }
+
+  .reservation-details-card .ant-card-body {
+    padding: 0;
+  }
   .reservation-details-card .ant-col {
     margin-bottom: 12px;
   }
+  
+  .reservation-details-paragraph {
+    font-size: 13px;
+    margin-bottom: 0;
+  }
+  .electroniclock {
+    margin-bottom: 16px;
+  }
+  .electroniclock .ant-card-body {
+    padding: 12px;
+  }
+  .reservation-guest-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .reservation-guest-card .ant-card-head {
+    padding: 0 0 12px 0;
+  }
+  
+  .reservation-guest-card .ant-card-body {
+    padding: 12px 0 0 0;
+  }
+  
+  .reservation-guest-card .ant-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .reservation-guest-card .ant-space {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  
+  .reservation-guest-card .ant-space + .ant-space {
+    margin-top: 4px;
+  }
+  
+  .reservation-guest-card h2.ant-typography {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .reservation-guest-card .ant-space-item span {
+    font-size: 14px;
+  }
 }
 
-.reservation-details-card {
+.reservation-card {
   background-color: #fff;
   border-radius: 12px;
   margin-bottom: 16px;
 }
+.reservation-guest-card {
+  border-radius: 16px;
+  background-color: #F8F7FE;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  margin-bottom: 16px;
+}
 
+.reservation-guest-card .ant-card-head {
+  border-bottom: none;
+  padding: 0 0 16px 0;
+}
 
+.reservation-guest-card .ant-card-body {
+  padding: 0;
+}
+
+.reservation-guest-card .ant-typography {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.reservation-guest-card .ant-flex {
+  flex-wrap: wrap;
+}
+
+.reservation-guest-card i {
+  color: #6D5FFA;
+  margin-right: 10px;
+}
 @media only screen and (min-width: 577px) {
   .NotificationRender {
     margin-top: -10px;
@@ -1760,7 +1838,8 @@ body {
 .timeline-container {
   display: flex;
   align-items: center;
-  width: 50%;
+  max-width: 50%;
+  min-width: 20%;
   margin: 0 10px;
 }
 

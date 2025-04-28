@@ -142,32 +142,31 @@ const ElectronicLockCodeManager = ({
      </Popover>
     </Space>
    }
-   style={{ marginBottom: 16 }}
+   className="electroniclock"
   >
-   <div style={{ marginBottom: 16 }}>
-    <Space>
-     <Text>{t('reservation.lock.enabled')}</Text>
-     <Switch
-      checked={lockEnabled}
-      onChange={toggleLockEnabled}
-      loading={isLoading}
-      className="custom-switch-purple"
-     />
-     <Text>
-      {lockEnabled
-       ? t('reservation.lock.active')
-       : t('reservation.lock.inactive')}
-     </Text>
-    </Space>
-   </div>
+   <Space>
+    <Text>{t('reservation.lock.enabled')}</Text>
+    <Switch
+     checked={lockEnabled}
+     onChange={toggleLockEnabled}
+     loading={isLoading}
+     className="custom-switch-purple"
+    />
+    <Text>
+     {lockEnabled
+      ? t('reservation.lock.active')
+      : t('reservation.lock.inactive')}
+    </Text>
+   </Space>
 
    {lockEnabled && (
     <>
-     <Divider />
+     <Divider style={{ margin: '12px 0' }} />
      <Form form={form} layout="vertical" onFinish={handleSubmit}>
       <Form.Item
        name="lockCode"
        label={t('reservation.lock.code')}
+       className="hide-required-mark"
        rules={[
         { required: true, message: t('reservation.lock.codeRequired') },
         {

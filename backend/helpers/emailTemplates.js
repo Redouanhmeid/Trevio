@@ -131,7 +131,7 @@ const generatePropertyUpdateTemplate = (
       </div>
       
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://app.trevio.ma/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #17B26A; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Accéder au tableau de bord</a>
+        <a href="https://app.trevio.ma/" style="display: inline-block; padding: 12px 24px; background-color: #17B26A; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Accéder au tableau de bord</a>
       </div>
     `;
 
@@ -157,7 +157,7 @@ const generateRevenueUpdateTemplate = (
       </div>
       
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://app.trevio.ma/dashboard#revenue" style="display: inline-block; padding: 12px 24px; background-color: #6D5FFA; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Voir les revenus</a>
+        <a href="https://app.trevio.ma/revenues" style="display: inline-block; padding: 12px 24px; background-color: #6D5FFA; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Voir les revenus</a>
       </div>
     `;
 
@@ -183,7 +183,7 @@ const generateTaskUpdateTemplate = (
       </div>
       
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://app.trevio.ma/dashboard#tasks" style="display: inline-block; padding: 12px 24px; background-color: #F79009; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Voir les tâches</a>
+        <a href="https://app.trevio.ma/propertytaskdashboard" style="display: inline-block; padding: 12px 24px; background-color: #F79009; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Voir les tâches</a>
       </div>
     `;
 
@@ -200,7 +200,7 @@ const generateDefaultTemplate = (notification, user, message) => {
       </div>
       
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://app.trevio.ma/dashboard" style="display: inline-block; padding: 12px 24px; background-color: #F79009; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Accéder au tableau de bord</a>
+        <a href="https://app.trevio.ma/" style="display: inline-block; padding: 12px 24px; background-color: #F79009; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 4px;">Accéder au tableau de bord</a>
       </div>
     `;
 

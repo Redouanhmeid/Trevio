@@ -90,6 +90,7 @@ const useRevenue = () => {
     `${apiBase}/reservation/${reservationId}/revenue`,
     revenueData
    );
+   console.log(response);
    return response.data;
   } catch (error) {
    setError(error.response?.data?.error || error.message);

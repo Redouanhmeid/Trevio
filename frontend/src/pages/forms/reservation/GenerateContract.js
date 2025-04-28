@@ -37,6 +37,8 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
 import { useReservation } from '../../../hooks/useReservation';
+import useRevenue from '../../../hooks/useRevenue';
+import useNotification from '../../../hooks/useNotification';
 import ShareModal from '../../../components/common/ShareModal';
 import dayjs from 'dayjs';
 import DashboardHeader from '../../../components/common/DashboardHeader';
@@ -66,6 +68,10 @@ const GenerateContract = () => {
  } = useReservation();
  const { loading, updateContractStatus } = useReservationContract();
 
+ const { createRevenueFromReservation, loading: revenueLoading } = useRevenue();
+ const { createNotification } = useNotification();
+ const [userId, setUserId] = useState(null);
+
  const [currentStep, setCurrentStep] = useState(0);
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [shareUrl, setShareUrl] = useState('');
@@ -73,6 +79,10 @@ const GenerateContract = () => {
  const [lockSettingsChanged, setLockSettingsChanged] = useState(false);
 
  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+
+ const handleUserData = (userData) => {
+  setUserId(userData);
+ };
 
  useEffect(() => {
   const fetchData = async () => {
@@ -154,6 +164,36 @@ const GenerateContract = () => {
    await updateContractStatus(contractId, 'COMPLETED');
    message.success(t('reservation.contract.completeSuccess'));
 
+   const revenueData = {
+    propertyId: reservation.propertyId,
+    amount: reservation.totalPrice,
+    createdBy: userId,
+    notes: `Revenue from reservation #${reservation.id}`,
+    startDate: reservation.startDate,
+    endDate: reservation.endDate,
+   };
+
+   const revenueResult = await createRevenueFromReservation(
+    reservation.id,
+    revenueData
+   );
+
+   try {
+    const notificationData = {
+     userId: userId,
+     propertyId: reservation.propertyId,
+     title: 'New Revenue Update',
+     message: `The revenue for ${reservation.property.propertyName} has been updated`,
+     type: 'revenue_update',
+     channel: 'email',
+     status: 'pending',
+    };
+
+    await createNotification(notificationData);
+   } catch (notificationError) {
+    console.error('Error creating notification:', notificationError);
+    // Continue execution even if notification creation fails
+   }
    // Refresh data to update UI
    await getReservationContract(id);
    setCurrentStep(3);
@@ -255,7 +295,7 @@ const GenerateContract = () => {
 
  return (
   <Layout className="contentStyle">
-   <DashboardHeader />
+   <DashboardHeader onUserData={handleUserData} />
    <Content className="container">
     <Flex justify="space-between">
      <Button
@@ -342,694 +382,661 @@ const GenerateContract = () => {
      />
     )}
 
-    <Card bordered={false} className="contract-card">
-     {reservation && (
-      <>
-       {screens.xs ? (
-        <Card bordered={false} className="reservation-details-card">
-         <Title level={4} style={{ marginBottom: '20px', color: '#6D5FFA' }}>
-          {t('reservation.details')}
-         </Title>
-         <Row gutter={[8, 8]}>
-          <Col span={12}>
-           <Text type="secondary">Full name</Text>
-           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-            {reservation.property.name}
-           </Paragraph>
-          </Col>
-          <Col span={12}>
-           <Text type="secondary">Reservation dates</Text>
-           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-            {dayjs(reservation.startDate).format('DD-MM-YYYY')}
-            <br />
-            {dayjs(reservation.endDate).format('DD-MM-YYYY')}
-           </Paragraph>
-          </Col>
-          <Col span={12}>
-           <Text type="secondary">Price per night</Text>
-           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-            {Math.round(
-             reservation.totalPrice /
-              dayjs(reservation.endDate).diff(
-               dayjs(reservation.startDate),
-               'day'
-              )
-            )}{' '}
-            Dhs
-           </Paragraph>
-          </Col>
-          <Col span={12}>
-           <Text type="secondary">Total nights</Text>
-           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-            {dayjs(reservation.endDate).diff(
-             dayjs(reservation.startDate),
-             'day'
-            )}{' '}
-            nights
-           </Paragraph>
-          </Col>
-          <Col span={12}>
-           <Text type="secondary">Total price</Text>
-           <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-            {reservation.totalPrice} dhs
-           </Paragraph>
-          </Col>
-          {reservation.bookingSource && (
-           <Col span={12}>
-            <Text type="secondary">Booking source</Text>
-            <Paragraph strong style={{ fontSize: '14px', marginBottom: '0' }}>
-             {reservation.bookingSource}
-            </Paragraph>
-           </Col>
-          )}
-         </Row>
-        </Card>
-       ) : (
-        <Descriptions
-         title={t('reservation.details')}
-         bordered
-         column={{ xs: 1, sm: 2 }}
-        >
-         <Descriptions.Item label={t('property.basic.name')}>
-          {reservation.property.name}
-         </Descriptions.Item>
-         <Descriptions.Item label={t('reservation.dates')}>
-          {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
-          {dayjs(reservation.endDate).format('YYYY-MM-DD')}
-         </Descriptions.Item>
-         <Descriptions.Item label={t('reservation.pricePerNight')}>
-          {reservation.totalPrice /
-           dayjs(reservation.endDate).diff(
+    {reservation && (
+     <>
+      {screens.xs ? (
+       <Card bordered={false} className="reservation-details-card">
+        <Title level={4} style={{ marginBottom: '12px', color: '#6D5FFA' }}>
+         {t('reservation.details')}
+        </Title>
+        <Row gutter={[8, 0]}>
+         <Col span={12}>
+          <Text type="secondary">Full name</Text>
+          <Paragraph strong className="reservation-paragraph">
+           {reservation.property.name}
+          </Paragraph>
+         </Col>
+         <Col span={12}>
+          <Text type="secondary">Reservation dates</Text>
+          <Paragraph strong className="reservation-paragraph">
+           {dayjs(reservation.startDate).format('DD-MM-YYYY')}
+           <br />
+           {dayjs(reservation.endDate).format('DD-MM-YYYY')}
+          </Paragraph>
+         </Col>
+         <Col span={12}>
+          <Text type="secondary">Price per night</Text>
+          <Paragraph strong className="reservation-paragraph">
+           {Math.round(
+            reservation.totalPrice /
+             dayjs(reservation.endDate).diff(
+              dayjs(reservation.startDate),
+              'day'
+             )
+           )}{' '}
+           Dhs
+          </Paragraph>
+         </Col>
+         <Col span={12}>
+          <Text type="secondary">Total nights</Text>
+          <Paragraph strong className="reservation-paragraph">
+           {dayjs(reservation.endDate).diff(
             dayjs(reservation.startDate),
             'day'
            )}{' '}
-          Dhs
-         </Descriptions.Item>
-         <Descriptions.Item label={t('reservation.totalNights')}>
-          {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
-         </Descriptions.Item>
-         <Descriptions.Item label={t('reservation.totalPrice')}>
-          {reservation.totalPrice} Dhs
-         </Descriptions.Item>
+           nights
+          </Paragraph>
+         </Col>
+         <Col span={12}>
+          <Text type="secondary">Total price</Text>
+          <Paragraph strong className="reservation-paragraph">
+           {reservation.totalPrice} dhs
+          </Paragraph>
+         </Col>
          {reservation.bookingSource && (
-          <Descriptions.Item label={t('reservation.bookingSource')}>
-           {reservation.bookingSource}
-          </Descriptions.Item>
+          <Col span={12}>
+           <Text type="secondary">Booking source</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {reservation.bookingSource}
+           </Paragraph>
+          </Col>
          )}
-         <Descriptions.Item label={t('reservation.status')}>
-          {t(`reservation.statuses.${reservation.status}`)}
+        </Row>
+       </Card>
+      ) : (
+       <Descriptions
+        title={t('reservation.details')}
+        bordered
+        column={{ xs: 1, sm: 2 }}
+       >
+        <Descriptions.Item label={t('property.basic.name')}>
+         {reservation.property.name}
+        </Descriptions.Item>
+        <Descriptions.Item label={t('reservation.dates')}>
+         {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
+         {dayjs(reservation.endDate).format('YYYY-MM-DD')}
+        </Descriptions.Item>
+        <Descriptions.Item label={t('reservation.pricePerNight')}>
+         {reservation.totalPrice /
+          dayjs(reservation.endDate).diff(
+           dayjs(reservation.startDate),
+           'day'
+          )}{' '}
+         Dhs
+        </Descriptions.Item>
+        <Descriptions.Item label={t('reservation.totalNights')}>
+         {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
+        </Descriptions.Item>
+        <Descriptions.Item label={t('reservation.totalPrice')}>
+         {reservation.totalPrice} Dhs
+        </Descriptions.Item>
+        {reservation.bookingSource && (
+         <Descriptions.Item label={t('reservation.bookingSource')}>
+          {reservation.bookingSource}
          </Descriptions.Item>
-        </Descriptions>
-       )}
+        )}
+        <Descriptions.Item label={t('reservation.status')}>
+         {t(`reservation.statuses.${reservation.status}`)}
+        </Descriptions.Item>
+       </Descriptions>
+      )}
 
-       <br />
-       {reservation && (
-        <ElectronicLockCodeManager
-         reservationId={reservation.id}
-         initialLockEnabled={reservation.electronicLockEnabled || false}
-         initialLockCode={reservation.electronicLockCode}
-         onSettingsChange={handleLockSettingsChange}
+      <br />
+      {reservation && (
+       <ElectronicLockCodeManager
+        reservationId={reservation.id}
+        initialLockEnabled={reservation.electronicLockEnabled || false}
+        initialLockCode={reservation.electronicLockCode}
+        onSettingsChange={handleLockSettingsChange}
+       />
+      )}
+
+      {currentStep === 0 && !contract && (
+       <div className="action-container">
+        <Alert
+         message={t('reservation.readyToGenerate')}
+         description={t('reservation.generateDescription')}
+         type="info"
+         showIcon
+         style={{ marginBottom: 16 }}
         />
-       )}
-       <Divider />
+        <Button
+         type="primary"
+         onClick={handleGenerateContract}
+         loading={loading}
+        >
+         {t('reservation.generateContract')}
+        </Button>
+       </div>
+      )}
 
-       {currentStep === 0 && !contract && (
-        <div className="action-container">
-         <Alert
-          message={t('reservation.readyToGenerate')}
-          description={t('reservation.generateDescription')}
-          type="info"
-          showIcon
-          style={{ marginBottom: 16 }}
+      {contract && currentStep === 0 && (
+       <div className="action-container">
+        <Alert
+         message={t('reservation.contractReady')}
+         description={t('reservation.sendDescription')}
+         type="success"
+         showIcon
+         style={{ marginBottom: 16 }}
+        />
+        <Button type="primary" onClick={handleSendToGuest} loading={loading}>
+         {t('reservation.sendToGuest')}{' '}
+         <i
+          className="fa-regular fa-paper-plane-top"
+          style={{ marginLeft: 6 }}
          />
+        </Button>
+       </div>
+      )}
+
+      {contract && currentStep === 1 && (
+       <div className="action-container">
+        <Alert
+         message={t('reservation.contractSent')}
+         description={
+          <>
+           <Paragraph>{t('reservation.waitingForGuest')}</Paragraph>
+           <Space>
+            <Text
+             copyable
+            >{`${window.location.origin}/guest/contract/${contract.hashId}`}</Text>
+            <Button
+             type="link"
+             icon={<LinkOutlined />}
+             onClick={handleShowShareModal}
+            >
+             {t('common.share')}
+            </Button>
+           </Space>
+          </>
+         }
+         type="info"
+         showIcon
+         style={{ marginBottom: 16 }}
+        />
+        <Button type="primary" onClick={handleContinue}>
+         {t('button.continue')}
+        </Button>
+       </div>
+      )}
+
+      {contract && currentStep === 2 && (
+       <div className="action-container">
+        <Alert
+         message={t('reservation.contract.contractSigned')}
+         description={t('reservation.contract.completionDescription')}
+         type="success"
+         showIcon
+         style={{ marginBottom: 16 }}
+        />
+
+        {/* Contract information display - styled like GuestContractView */}
+        <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+         <Col xs={24} md={10}>
+          <Card className="booking-dates-card">
+           <Title level={3} className="booking-dates-title">
+            {t('contract.bookingDates')}
+           </Title>
+           <Flex justify="space-between" align="center">
+            <Flex vertical align="center" className="date-column">
+             <Text className="date-label">
+              <i
+               className="fa-regular fa-arrow-right-to-arc fa-xl"
+               style={{ marginRight: 12 }}
+              />
+              {t('contract.checkIn')}
+             </Text>
+             <Text strong className="date-value">
+              {new Date(contract.checkInDate)
+               .toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+               })
+               .toUpperCase()}
+             </Text>
+            </Flex>
+
+            {screens.xs ? (
+             <div className="timeline-container-vertical">
+              <div className="timeline-line-vertical">
+               <div className="timeline-solid-vertical" />
+              </div>
+             </div>
+            ) : (
+             <div className="timeline-container">
+              <div className="timeline-dot" />
+              <div className="timeline-line">
+               <div className="timeline-dashed" />
+              </div>
+              <div className="timeline-dot" />
+             </div>
+            )}
+
+            <Flex vertical align="center" className="date-column">
+             <Text className="date-label">
+              {t('contract.checkOut')}
+              <i
+               className="fa-regular fa-arrow-right-from-arc fa-xl"
+               style={{ marginLeft: 12 }}
+              />
+             </Text>
+             <Text strong className="date-value">
+              {new Date(contract.checkOutDate)
+               .toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+               })
+               .toUpperCase()}
+             </Text>
+            </Flex>
+           </Flex>
+          </Card>
+         </Col>
+
+         <Col xs={24} md={14}>
+          <Card className="reservation-guest-card">
+           <Title level={3}>{t('contracts.guestInformation')}</Title>
+           <Space direction="vertical" size="small" style={{ width: '100%' }}>
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-user PrimaryColor" />
+              <div>
+               <Text>
+                {contract.firstname} {contract.middlename || ''}{' '}
+                {contract.lastname}
+               </Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-envelope PrimaryColor" />
+              <div>
+               <Text>{contract.email}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-phone PrimaryColor" />
+              <div>
+               <Text>{contract.phone || '-'}</Text>
+              </div>
+             </Space>
+            </Flex>
+
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-calendar PrimaryColor" />
+              <div>
+               <Text>{dayjs(contract.birthDate).format('YYYY-MM-DD')}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-venus-mars PrimaryColor" />
+              <div>
+               <Text>{contract.sex}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-globe PrimaryColor" />
+              <div>
+               <Text>{contract.nationality}</Text>
+              </div>
+             </Space>
+            </Flex>
+
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-location-dot PrimaryColor" />
+              <div>
+               <Text>
+                {contract.residenceAddress}, {contract.residenceCity},{' '}
+                {contract.residenceCountry},{contract.residencePostalCode}
+               </Text>
+              </div>
+             </Space>
+            </Flex>
+           </Space>
+          </Card>
+         </Col>
+        </Row>
+
+        {/* Document Information */}
+        <Card
+         title={t('contracts.details.documentInfo')}
+         style={{ marginBottom: 16, borderRadius: 16 }}
+        >
+         <Row gutter={[16, 16]}>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-passport PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">{t('contracts.details.documentType')}</Text>
+             <br />
+             <Text>{contract.documentType}</Text>
+            </div>
+           </Space>
+          </Col>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-id-card PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">
+              {t('contracts.details.documentNumber')}
+             </Text>
+             <br />
+             <Text>{contract.documentNumber}</Text>
+            </div>
+           </Space>
+          </Col>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-calendar-check PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">
+              {t('contracts.details.documentIssueDate')}
+             </Text>
+             <br />
+             <Text>
+              {dayjs(contract.documentIssueDate).format('YYYY-MM-DD')}
+             </Text>
+            </div>
+           </Space>
+          </Col>
+         </Row>
+        </Card>
+
+        {/* Signature */}
+        {contract.signatureImageUrl && (
+         <Card
+          title={t('contracts.details.signature')}
+          style={{ marginBottom: 16, borderRadius: 16 }}
+         >
+          <Flex justify="center" align="center">
+           <div
+            style={{
+             padding: 16,
+             border: '1px solid #f0f0f0',
+             borderRadius: 8,
+             background: '#f9f9f9',
+            }}
+           >
+            <Image
+             src={contract.signatureImageUrl}
+             alt="Signature"
+             style={{ maxHeight: 100 }}
+            />
+           </div>
+          </Flex>
+         </Card>
+        )}
+
+        <Space direction={screens.xs ? 'vertical' : 'horizontal'}>
          <Button
           type="primary"
-          onClick={handleGenerateContract}
-          loading={loading}
+          onClick={() => markContractComplete(contract.id)}
+          icon={<CheckCircleOutlined />}
          >
-          {t('reservation.generateContract')}
+          {t('reservation.contract.markComplete')}
          </Button>
-        </div>
-       )}
 
-       {contract && currentStep === 0 && (
-        <div className="action-container">
-         <Alert
-          message={t('reservation.contractReady')}
-          description={t('reservation.sendDescription')}
-          type="success"
-          showIcon
-          style={{ marginBottom: 16 }}
-         />
-         <Button type="primary" onClick={handleSendToGuest} loading={loading}>
-          {t('reservation.sendToGuest')}{' '}
-          <i
-           className="fa-regular fa-paper-plane-top"
-           style={{ marginLeft: 6 }}
-          />
+         <Button
+          danger
+          onClick={() => markContractRejected(contract.id)}
+          icon={<CloseCircleOutlined />}
+         >
+          {t('reservation.contract.markRejected')}
          </Button>
-        </div>
-       )}
 
-       {contract && currentStep === 1 && (
-        <div className="action-container">
-         <Alert
-          message={t('reservation.contractSent')}
-          description={
-           <>
-            <Paragraph>{t('reservation.waitingForGuest')}</Paragraph>
-            <Space>
-             <Text
-              copyable
-             >{`${window.location.origin}/guest/contract/${contract.hashId}`}</Text>
-             <Button
-              type="link"
-              icon={<LinkOutlined />}
-              onClick={handleShowShareModal}
-             >
-              {t('common.share')}
-             </Button>
-            </Space>
-           </>
+         <Button
+          onClick={() =>
+           navigate(`/contractslist?hash=${reservation.property.hashId}`)
           }
-          type="info"
-          showIcon
-          style={{ marginBottom: 16 }}
-         />
-         <Button type="primary" onClick={handleContinue}>
-          {t('button.continue')}
+         >
+          {t('reservation.contract.viewAllContracts')}
          </Button>
-        </div>
-       )}
+        </Space>
+       </div>
+      )}
 
-       {contract && currentStep === 2 && (
-        <div className="action-container">
-         <Alert
-          message={t('reservation.contract.contractSigned')}
-          description={t('reservation.contract.completionDescription')}
-          type="success"
-          showIcon
-          style={{ marginBottom: 16 }}
-         />
+      {contract && currentStep === 3 && (
+       <div className="action-container">
+        <Alert
+         message={t('reservation.contract.contractCompleted')}
+         description={t('reservation.contract.completedDescription')}
+         type="success"
+         showIcon
+         style={{ marginBottom: 16 }}
+        />
+        {/* Contract information display - styled like GuestContractView */}
+        <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+         <Col xs={24} md={10}>
+          <Card className="booking-dates-card">
+           <Title level={3} className="booking-dates-title">
+            {t('contract.bookingDates')}
+           </Title>
+           <Flex justify="space-between" align="center">
+            <Flex vertical align="center" className="date-column">
+             <Text className="date-label">
+              <i
+               className="fa-regular fa-arrow-right-to-arc fa-xl"
+               style={{ marginRight: 12 }}
+              />
+              {t('contract.checkIn')}
+             </Text>
+             <Text strong className="date-value">
+              {new Date(contract.checkInDate)
+               .toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+               })
+               .toUpperCase()}
+             </Text>
+            </Flex>
 
-         {/* Contract information display - styled like GuestContractView */}
-         <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
-          <Col xs={24} md={10}>
-           <Card
-            style={{
-             background:
-              'linear-gradient(93deg, rgba(65,56,148,1) 0%, rgba(109,95,250,1) 100%)',
-             color: 'white',
-             textAlign: 'center',
-             borderRadius: 16,
-             paddingBottom: 16,
-            }}
-           >
-            <Title
-             level={2}
-             style={{
-              color: 'white',
-              marginBottom: '2rem',
-              textTransform: 'uppercase',
-             }}
-            >
-             {t('contract.bookingDates')}
-            </Title>
-            <Row justify="space-between" align="middle">
-             <Col>
-              <Text style={{ color: 'white', fontSize: '12px' }}>
-               {t('contract.checkIn')}
-              </Text>
-              <Title level={3} style={{ color: 'white', margin: 2 }}>
-               {new Date(contract.checkInDate)
-                .toLocaleDateString('fr-FR', {
-                 day: '2-digit',
-                 month: 'short',
-                 year: 'numeric',
-                })
-                .toUpperCase()}
-              </Title>
-             </Col>
-             <Col>→</Col>
-             <Col>
-              <Text style={{ color: 'white', fontSize: '12px' }}>
-               {t('contract.checkOut')}
-              </Text>
-              <Title level={3} style={{ color: 'white', margin: 0 }}>
-               {new Date(contract.checkOutDate)
-                .toLocaleDateString('fr-FR', {
-                 day: '2-digit',
-                 month: 'short',
-                 year: 'numeric',
-                })
-                .toUpperCase()}
-              </Title>
-             </Col>
-            </Row>
-           </Card>
-          </Col>
-
-          <Col xs={24} md={14}>
-           <Card className="custom-stat-card">
-            <Title level={2}>{t('contracts.guestInformation')}</Title>
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-user PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text strong style={{ fontSize: 16 }}>
-                 {contract.firstname} {contract.middlename || ''}{' '}
-                 {contract.lastname}
-                </Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-envelope PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.email}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-phone PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.phone || '-'}</Text>
-               </div>
-              </Space>
-             </Flex>
-
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-calendar PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{dayjs(contract.birthDate).format('YYYY-MM-DD')}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-venus-mars PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.sex}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-globe PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.nationality}</Text>
-               </div>
-              </Space>
-             </Flex>
-
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-location-dot PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>
-                 {contract.residenceAddress}, {contract.residenceCity},{' '}
-                 {contract.residenceCountry},{contract.residencePostalCode}
-                </Text>
-               </div>
-              </Space>
-             </Flex>
-            </Space>
-           </Card>
-          </Col>
-         </Row>
-
-         {/* Document Information */}
-         <Card
-          title={t('contracts.details.documentInfo')}
-          style={{ marginBottom: 16, borderRadius: 16 }}
-         >
-          <Row gutter={[16, 16]}>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-passport PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentType')}
-              </Text>
-              <br />
-              <Text>{contract.documentType}</Text>
+            {screens.xs ? (
+             <div className="timeline-container-vertical">
+              <div className="timeline-line-vertical">
+               <div className="timeline-solid-vertical" />
+              </div>
              </div>
-            </Space>
-           </Col>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-id-card PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentNumber')}
-              </Text>
-              <br />
-              <Text>{contract.documentNumber}</Text>
+            ) : (
+             <div className="timeline-container">
+              <div className="timeline-dot" />
+              <div className="timeline-line">
+               <div className="timeline-dashed" />
+              </div>
+              <div className="timeline-dot" />
              </div>
-            </Space>
-           </Col>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-calendar-check PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentIssueDate')}
-              </Text>
-              <br />
-              <Text>
-               {dayjs(contract.documentIssueDate).format('YYYY-MM-DD')}
-              </Text>
-             </div>
-            </Space>
-           </Col>
-          </Row>
-         </Card>
+            )}
 
-         {/* Signature */}
-         {contract.signatureImageUrl && (
-          <Card
-           title={t('contracts.details.signature')}
-           style={{ marginBottom: 16, borderRadius: 16 }}
-          >
-           <Flex justify="center" align="center">
-            <div
-             style={{
-              padding: 16,
-              border: '1px solid #f0f0f0',
-              borderRadius: 8,
-              background: '#f9f9f9',
-             }}
-            >
-             <Image
-              src={contract.signatureImageUrl}
-              alt="Signature"
-              style={{ maxHeight: 100 }}
-             />
-            </div>
+            <Flex vertical align="center" className="date-column">
+             <Text className="date-label">
+              {t('contract.checkOut')}
+              <i
+               className="fa-regular fa-arrow-right-from-arc fa-xl"
+               style={{ marginLeft: 12 }}
+              />
+             </Text>
+             <Text strong className="date-value">
+              {new Date(contract.checkOutDate)
+               .toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+               })
+               .toUpperCase()}
+             </Text>
+            </Flex>
            </Flex>
           </Card>
-         )}
+         </Col>
 
-         <Space>
-          <Button
-           type="primary"
-           onClick={() => markContractComplete(contract.id)}
-           icon={<CheckCircleOutlined />}
-          >
-           {t('reservation.contract.markComplete')}
-          </Button>
+         <Col xs={24} md={14}>
+          <Card className="reservation-guest-card">
+           <Title level={3}>{t('contracts.guestInformation')}</Title>
+           <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-user PrimaryColor" />
+              <div>
+               <Text strong style={{ fontSize: 16 }}>
+                {contract.firstname} {contract.middlename || ''}{' '}
+                {contract.lastname}
+               </Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-envelope PrimaryColor" />
+              <div>
+               <Text>{contract.email}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-phone PrimaryColor" />
+              <div>
+               <Text>{contract.phone || '-'}</Text>
+              </div>
+             </Space>
+            </Flex>
 
-          <Button
-           danger
-           onClick={() => markContractRejected(contract.id)}
-           icon={<CloseCircleOutlined />}
-          >
-           {t('reservation.contract.markRejected')}
-          </Button>
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-calendar PrimaryColor" />
+              <div>
+               <Text>{dayjs(contract.birthDate).format('YYYY-MM-DD')}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-venus-mars PrimaryColor" />
+              <div>
+               <Text>{contract.sex}</Text>
+              </div>
+             </Space>
+             <Space>
+              <i className="fa-regular fa-globe PrimaryColor" />
+              <div>
+               <Text>{contract.nationality}</Text>
+              </div>
+             </Space>
+            </Flex>
 
-          <Button
-           onClick={() =>
-            navigate(`/contractslist?hash=${reservation.property.hashId}`)
-           }
-          >
-           {t('reservation.contract.viewAllContracts')}
-          </Button>
-         </Space>
-        </div>
-       )}
+            <Flex justify="space-between">
+             <Space>
+              <i className="fa-regular fa-location-dot PrimaryColor" />
+              <div>
+               <Text>
+                {contract.residenceAddress}, {contract.residenceCity},{' '}
+                {contract.residenceCountry},{contract.residencePostalCode}
+               </Text>
+              </div>
+             </Space>
+            </Flex>
+           </Space>
+          </Card>
+         </Col>
+        </Row>
 
-       {contract && currentStep === 3 && (
-        <div className="action-container">
-         <Alert
-          message={t('reservation.contract.contractCompleted')}
-          description={t('reservation.contract.completedDescription')}
-          type="success"
-          showIcon
-          style={{ marginBottom: 16 }}
-         />
-         {/* Contract information display - styled like GuestContractView */}
-         <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
-          <Col xs={24} md={10}>
-           <Card
-            style={{
-             background:
-              'linear-gradient(93deg, rgba(65,56,148,1) 0%, rgba(109,95,250,1) 100%)',
-             color: 'white',
-             textAlign: 'center',
-             borderRadius: 16,
-             paddingBottom: 16,
-            }}
-           >
-            <Title
-             level={2}
-             style={{
-              color: 'white',
-              marginBottom: '2rem',
-              textTransform: 'uppercase',
-             }}
-            >
-             {t('contract.bookingDates')}
-            </Title>
-            <Row justify="space-between" align="middle">
-             <Col>
-              <Text style={{ color: 'white', fontSize: '12px' }}>
-               {t('contract.checkIn')}
-              </Text>
-              <Title level={3} style={{ color: 'white', margin: 2 }}>
-               {new Date(contract.checkInDate)
-                .toLocaleDateString('fr-FR', {
-                 day: '2-digit',
-                 month: 'short',
-                 year: 'numeric',
-                })
-                .toUpperCase()}
-              </Title>
-             </Col>
-             <Col>→</Col>
-             <Col>
-              <Text style={{ color: 'white', fontSize: '12px' }}>
-               {t('contract.checkOut')}
-              </Text>
-              <Title level={3} style={{ color: 'white', margin: 0 }}>
-               {new Date(contract.checkOutDate)
-                .toLocaleDateString('fr-FR', {
-                 day: '2-digit',
-                 month: 'short',
-                 year: 'numeric',
-                })
-                .toUpperCase()}
-              </Title>
-             </Col>
-            </Row>
-           </Card>
+        {/* Document Information */}
+        <Card
+         title={t('contracts.details.documentInfo')}
+         style={{ marginBottom: 16, borderRadius: 16 }}
+        >
+         <Row gutter={[16, 16]}>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-passport PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">{t('contracts.details.documentType')}</Text>
+             <br />
+             <Text>{contract.documentType}</Text>
+            </div>
+           </Space>
           </Col>
-
-          <Col xs={24} md={14}>
-           <Card className="custom-stat-card">
-            <Title level={2}>{t('contracts.guestInformation')}</Title>
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-user PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text strong style={{ fontSize: 16 }}>
-                 {contract.firstname} {contract.middlename || ''}{' '}
-                 {contract.lastname}
-                </Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-envelope PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.email}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-phone PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.phone || '-'}</Text>
-               </div>
-              </Space>
-             </Flex>
-
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-calendar PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{dayjs(contract.birthDate).format('YYYY-MM-DD')}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-venus-mars PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.sex}</Text>
-               </div>
-              </Space>
-              <Space>
-               <i
-                className="fa-regular fa-globe PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>{contract.nationality}</Text>
-               </div>
-              </Space>
-             </Flex>
-
-             <Flex justify="space-between">
-              <Space>
-               <i
-                className="fa-regular fa-location-dot PrimaryColor"
-                style={{ fontSize: 24 }}
-               />
-               <div>
-                <Text>
-                 {contract.residenceAddress}, {contract.residenceCity},{' '}
-                 {contract.residenceCountry},{contract.residencePostalCode}
-                </Text>
-               </div>
-              </Space>
-             </Flex>
-            </Space>
-           </Card>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-id-card PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">
+              {t('contracts.details.documentNumber')}
+             </Text>
+             <br />
+             <Text>{contract.documentNumber}</Text>
+            </div>
+           </Space>
+          </Col>
+          <Col xs={24} md={8}>
+           <Space>
+            <i
+             className="fa-regular fa-calendar-check PrimaryColor"
+             style={{ fontSize: 24 }}
+            />
+            <div>
+             <Text type="secondary">
+              {t('contracts.details.documentIssueDate')}
+             </Text>
+             <br />
+             <Text>
+              {dayjs(contract.documentIssueDate).format('YYYY-MM-DD')}
+             </Text>
+            </div>
+           </Space>
           </Col>
          </Row>
+        </Card>
 
-         {/* Document Information */}
+        {/* Signature */}
+        {contract.signatureImageUrl && (
          <Card
-          title={t('contracts.details.documentInfo')}
+          title={t('contracts.details.signature')}
           style={{ marginBottom: 16, borderRadius: 16 }}
          >
-          <Row gutter={[16, 16]}>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-passport PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentType')}
-              </Text>
-              <br />
-              <Text>{contract.documentType}</Text>
-             </div>
-            </Space>
-           </Col>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-id-card PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentNumber')}
-              </Text>
-              <br />
-              <Text>{contract.documentNumber}</Text>
-             </div>
-            </Space>
-           </Col>
-           <Col xs={24} md={8}>
-            <Space>
-             <i
-              className="fa-regular fa-calendar-check PrimaryColor"
-              style={{ fontSize: 24 }}
-             />
-             <div>
-              <Text type="secondary">
-               {t('contracts.details.documentIssueDate')}
-              </Text>
-              <br />
-              <Text>
-               {dayjs(contract.documentIssueDate).format('YYYY-MM-DD')}
-              </Text>
-             </div>
-            </Space>
-           </Col>
-          </Row>
+          <Flex justify="center" align="center">
+           <div
+            style={{
+             padding: 16,
+             border: '1px solid #f0f0f0',
+             borderRadius: 8,
+             background: '#f9f9f9',
+            }}
+           >
+            <Image
+             src={contract.signatureImageUrl}
+             alt="Signature"
+             style={{ maxHeight: 100 }}
+            />
+           </div>
+          </Flex>
          </Card>
-
-         {/* Signature */}
-         {contract.signatureImageUrl && (
-          <Card
-           title={t('contracts.details.signature')}
-           style={{ marginBottom: 16, borderRadius: 16 }}
-          >
-           <Flex justify="center" align="center">
-            <div
-             style={{
-              padding: 16,
-              border: '1px solid #f0f0f0',
-              borderRadius: 8,
-              background: '#f9f9f9',
-             }}
-            >
-             <Image
-              src={contract.signatureImageUrl}
-              alt="Signature"
-              style={{ maxHeight: 100 }}
-             />
-            </div>
-           </Flex>
-          </Card>
-         )}
-         <Space>
-          <Button
-           onClick={() =>
-            navigate(`/contractslist?hash=${reservation.property.hashId}`)
-           }
-          >
-           {t('reservation.contract.viewAllContracts')}
-          </Button>
-         </Space>
-        </div>
-       )}
-      </>
-     )}
-    </Card>
+        )}
+        <Space>
+         <Button
+          onClick={() =>
+           navigate(`/contractslist?hash=${reservation.property.hashId}`)
+          }
+         >
+          {t('reservation.contract.viewAllContracts')}
+         </Button>
+        </Space>
+       </div>
+      )}
+     </>
+    )}
 
     <Modal
      title={

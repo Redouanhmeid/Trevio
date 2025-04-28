@@ -39,11 +39,12 @@ const useNotification = () => {
 
  // Create a new notification
  const createNotification = async (notificationData) => {
+  console.log(notificationData);
   setLoading(true);
   try {
    const response = await axios.post(`${apiBase}`, notificationData);
-   return response.data;
    console.log(response);
+   return response.data;
   } catch (error) {
    setError(error);
    return null;

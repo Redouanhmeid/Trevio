@@ -1,11 +1,11 @@
-# ConciergeStay 🌐
+# Trevio 🌐
 
 A Digital Concierge and Rental Management Application
-🌟 [Live Application](https://conciergestay.pro) 🌟
+🌟 [Live Application](https://app.trevio.ma) 🌟
 
 ## 📖 Overview
 
-ConciergeStay is a modern application designed to simplify rental management and enhance guest experiences with digital concierge services. It offers features for clients, concierge services and admins, making property listings, bookings, and guest interactions seamless.
+Trevio is a modern application designed to simplify rental management and enhance guest experiences with digital concierge services. It offers features for clients, concierge services and admins, making property listings, bookings, and guest interactions seamless.
 
 ## 🚀 Features
 
@@ -14,13 +14,14 @@ ConciergeStay is a modern application designed to simplify rental management and
 - Admin Verification: Ensure properties meet quality standards before publication.
 - Multi-Step Forms: User-friendly forms for adding and updating property details.
 - Nearby Places: Display nearby attractions with Google Maps integration.
+-
 
 ## 📂 Project Structure
 
 - **Frontend**: React.js with Ant Design for a modern and intuitive user interface.
 - **Backend**: Node.js with Express.js for API handling.
 - **Database**: MySQL and Sequelize ORM.
-- **Deployment**: PM2 for server management, hosted on a secure platform
+- **Deployment**: Docker for containerization and process management, hosted on a secure platform
 
 ## 🖼️ Screenshots
 
