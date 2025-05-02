@@ -383,6 +383,7 @@ const GuestContractView = () => {
           contract.reservation.electronicLockCode && (
            <ElectronicLockDisplay
             lockCode={contract.reservation.electronicLockCode}
+            propertyId={contract.propertyId}
            />
           )}
         </Col>

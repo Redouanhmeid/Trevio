@@ -11,10 +11,11 @@ import {
  Space,
  Spin,
  Checkbox,
+ Grid,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useProperty from '../../hooks/useProperty';
@@ -27,6 +28,8 @@ const { Title } = Typography;
 const PendingProperties = () => {
  const navigate = useNavigate();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const {
   pendingProperties,
   loading: pendingLoading,
@@ -383,7 +386,7 @@ const PendingProperties = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"
@@ -419,7 +422,7 @@ const PendingProperties = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

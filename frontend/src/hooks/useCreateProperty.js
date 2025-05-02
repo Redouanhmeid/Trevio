@@ -7,7 +7,6 @@ const useCreateProperty = () => {
  const [propertyId, setPropertyId] = useState(null);
 
  const createProperty = async (firstStepData) => {
-  console.log(firstStepData);
   setLoading(true);
   try {
    const initialProperty = {
@@ -41,7 +40,6 @@ const useCreateProperty = () => {
     frontPhoto: '',
     status: 'pending',
    };
-   console.log(initialProperty);
 
    const response = await fetch('/api/v1/properties', {
     method: 'POST',
@@ -50,7 +48,6 @@ const useCreateProperty = () => {
     },
     body: JSON.stringify(initialProperty),
    });
-   console.log(response);
 
    const data = await response.json();
 

@@ -18,12 +18,13 @@ import {
  Tag,
  Rate,
  Popconfirm,
+ Grid,
  message,
 } from 'antd';
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../context/TranslationContext';
 import { useNavigate } from 'react-router-dom';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
@@ -43,6 +44,8 @@ const Dashboard = () => {
  const { Users = [], isLoading: UsersLoading, fetchAllUsers } = useUserData();
  const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const navigate = useNavigate();
 
  const [NearbyPlaces, setNearbyPlaces] = useState([]);
@@ -156,7 +159,7 @@ const Dashboard = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Row gutter={[16, 16]} align="bottom" justify="center">
      <Col xs={24} md={8}>
@@ -441,7 +444,7 @@ const Dashboard = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

@@ -11,10 +11,11 @@ import {
  Tag,
  Popconfirm,
  Image,
+ Grid,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
@@ -34,6 +35,8 @@ const PendingNearbyPlaces = () => {
  } = useNearbyPlace();
  const navigate = useNavigate();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
@@ -238,10 +241,10 @@ const PendingNearbyPlaces = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
-   <Content className="container-fluid">
+   <DashboardHeader />
+   <Content className="container">
     <Button
-     type="default"
+     type="link"
      shape="round"
      icon={<ArrowLeftOutlined />}
      onClick={() => navigate(-1)}
@@ -277,7 +280,7 @@ const PendingNearbyPlaces = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs & <Foot />}
   </Layout>
  );
 };

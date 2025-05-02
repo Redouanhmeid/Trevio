@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import './App.css';
+import './components/common/CustomSpinner';
 import { AuthContextProvider } from './context/AuthContext';
 import { TranslationProvider } from './context/TranslationContext';
 import themeConfig from './utils/themeConfig';
@@ -66,6 +67,8 @@ import ConciergesDashboard from './pages/dashboard/ConciergesDashboard';
 import PropertyManagement from './pages/forms/propertyedit/PropertyManagement';
 import Home from './pages/home';
 import PropertyActions from './pages/dashboard/PropertyActions';
+import ProtectedAddProperty from './pages/forms/propertypost/ProtectedAddProperty';
+
 const router = createBrowserRouter([
  {
   path: '/',
@@ -274,7 +277,7 @@ const router = createBrowserRouter([
   path: '/addproperty',
   element: (
    <ProtectedRoute>
-    <AddProperty />
+    <ProtectedAddProperty />
    </ProtectedRoute>
   ),
  },

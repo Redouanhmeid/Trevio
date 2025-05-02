@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DatePicker, Space, Form, Alert, Typography, Grid } from 'antd';
 import { useTranslation } from '../../../context/TranslationContext';
 import dayjs from 'dayjs';
@@ -45,7 +45,7 @@ const ResponsiveDatePicker = ({
  };
 
  // Sync state with form values when value changes externally
- React.useEffect(() => {
+ useEffect(() => {
   if (value && Array.isArray(value)) {
    setStartDate(value[0]);
    setEndDate(value[1]);

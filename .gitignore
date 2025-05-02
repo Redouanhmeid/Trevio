@@ -27,3 +27,5 @@ backend/equipments/
 vps/
 backend/0.env
 .env
+frontend/public/
+frontend/src/assets/

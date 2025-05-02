@@ -219,7 +219,6 @@ const PropertyHouseManual = ({ property, propertyId, onPropertyUpdated }) => {
    ceilingfan: 'fa-fan',
    tablefan: 'fa-fan-table',
    fingerprint: 'fa-fingerprint',
-   lockbox: 'fa-lock-hashtag',
    parkingaccess: 'fa-square-parking',
    wifi: 'fa-wifi',
    dedicatedworkspace: 'fa-chair-office',

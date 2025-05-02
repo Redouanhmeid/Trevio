@@ -19,6 +19,7 @@ import {
  Spin,
  message,
  Image,
+ Grid,
 } from 'antd';
 import {
  DownloadOutlined,
@@ -27,7 +28,7 @@ import {
  PlusOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import Changepassword from './sign/changepassword';
 import Logo from '../../assets/logo-icon.png';
@@ -74,6 +75,8 @@ const downloadQRCode = () => {
 const Account = () => {
  const { t } = useTranslation();
  const [form] = Form.useForm();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const { user } = useAuthContext();
  const {
   isLoading,
@@ -244,7 +247,7 @@ const Account = () => {
  }
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Row gutter={[16, 16]}>
      <Col xs={24} sm={14}>
@@ -347,10 +350,7 @@ const Account = () => {
 
      <Col xs={24} sm={10}>
       <Flex justify="center" align="center" style={{ height: 'auto' }}>
-       <Card
-        title={t('account.quickLinks')}
-        style={{ width: '80%', textAlign: 'center' }}
-       >
+       <Card title={t('account.quickLinks')} style={{ textAlign: 'center' }}>
         <Space size="small" direction="vertical">
          {/* <p>
           <Link to="/">Gérer l'abonnement</Link>
@@ -394,7 +394,7 @@ const Account = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
    <ShareModal
     isVisible={isShareModalVisible}
     onClose={hideShareModal}

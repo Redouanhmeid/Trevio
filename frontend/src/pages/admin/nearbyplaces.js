@@ -12,10 +12,11 @@ import {
  Popconfirm,
  Image,
  Rate,
+ Grid,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import { useNavigate } from 'react-router-dom';
 import useNearbyPlace from '../../hooks/useNearbyPlace';
@@ -29,6 +30,8 @@ const NearbyPlaces = () => {
  const { error, getAllNearbyPlaces, deleteNearbyPlace } = useNearbyPlace();
  const navigate = useNavigate();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
  const [searchText, setSearchText] = useState('');
  const [searchedColumn, setSearchedColumn] = useState('');
  const [dataSource, setDataSource] = useState([]);
@@ -211,7 +214,7 @@ const NearbyPlaces = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"
@@ -234,7 +237,7 @@ const NearbyPlaces = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

@@ -10,6 +10,7 @@ import {
  Radio,
  Spin,
  Grid,
+ Alert,
  message,
 } from 'antd';
 import DashboardHeader from '../../../components/common/DashboardHeader';
@@ -18,6 +19,7 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useUserData } from '../../../hooks/useUserData';
 import useCreateProperty from '../../../hooks/useCreateProperty';
+import useUpdateProperty from '../../../hooks/useUpdateProperty';
 import MapPicker from './MapPicker';
 import airbnb from '../../../assets/airbnb.png';
 import booking from '../../../assets/booking.png';
@@ -26,7 +28,13 @@ import { useTranslation } from '../../../context/TranslationContext';
 const { Content } = Layout;
 const { Title } = Typography;
 
-const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
+const Step1NameAddresse = ({
+ next,
+ handleFormData,
+ values,
+ ProgressSteps,
+ propertyCreated = false,
+}) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData } = useUserData();
@@ -34,8 +42,23 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
  const { useBreakpoint } = Grid;
  const screens = useBreakpoint();
 
- const { loading, error, success, propertyId, createProperty } =
-  useCreateProperty();
+ // Create property hook
+ const {
+  loading: createLoading,
+  error: createError,
+  success: createSuccess,
+  propertyId,
+  createProperty,
+ } = useCreateProperty();
+
+ // Update property hook - use if property already exists
+ const {
+  updatePropertyBasicInfo,
+  isLoading: updateLoading,
+  error: updateError,
+  success: updateSuccess,
+ } = useUpdateProperty(values.propertyId);
+
  const [form] = Form.useForm();
  const [checkedType, setCheckedType] = useState(null);
  const [mapValues, setMapValues] = useState({
@@ -43,6 +66,29 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
   longitude: null,
   placeName: null,
  });
+ const [isLoading, setIsLoading] = useState(false);
+
+ useEffect(() => {
+  if (propertyCreated && values) {
+   form.setFieldsValue({
+    name: values.name || '',
+    description: values.description || '',
+    type: values.type || null,
+    airbnbUrl: values.airbnbUrl || '',
+    bookingUrl: values.bookingUrl || '',
+   });
+   setCheckedType(values.type || null);
+
+   // Initialize map values if they exist
+   if (values.latitude && values.longitude && values.placeName) {
+    setMapValues({
+     latitude: values.latitude,
+     longitude: values.longitude,
+     placeName: values.placeName,
+    });
+   }
+  }
+ }, [propertyCreated, values]);
 
  useEffect(() => {
   if (User) {
@@ -93,35 +139,61 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
 
   try {
    await form.validateFields();
+   setIsLoading(true);
 
-   const completeFormData = {
-    name: values.name,
-    description: values.description,
+   const formData = {
+    name: form.getFieldValue('name'),
+    description: form.getFieldValue('description'),
     type: checkedType,
-    airbnbUrl: values.airbnbUrl?.trim() ? values.airbnbUrl : '',
-    bookingUrl: values.bookingUrl?.trim() ? values.bookingUrl : '',
+    airbnbUrl: form.getFieldValue('airbnbUrl')?.trim()
+     ? form.getFieldValue('airbnbUrl')
+     : '',
+    bookingUrl: form.getFieldValue('bookingUrl')?.trim()
+     ? form.getFieldValue('bookingUrl')
+     : '',
     latitude: mapValues.latitude,
     longitude: mapValues.longitude,
     placeName: mapValues.placeName,
     clientId: userData.id,
    };
 
-   // Create the property
-   const newProperty = await createProperty(completeFormData);
+   // If property already exists, update it instead of creating a new one
+   if (propertyCreated && values.propertyId) {
+    try {
+     // Update the existing property
+     await updatePropertyBasicInfo(formData);
 
-   if (newProperty) {
-    // Update form data as before
-    Object.entries(completeFormData).forEach(([key, value]) => {
-     handleFormData(key)({ target: { value } });
-    });
-    // Store the property ID for later use
-    handleFormData('propertyId')({ target: { value: newProperty.id } });
-    next();
+     // Update form values for the next steps
+     Object.entries(formData).forEach(([key, value]) => {
+      handleFormData(key)({ target: { value } });
+     });
+
+     message.success(t('property.updated'));
+     next();
+    } catch (error) {
+     console.error('Error updating property:', error);
+     message.error(t('property.updateError'));
+    }
    } else {
-    message.error(t('validation.createProperty'));
+    // Create a new property
+    const newProperty = await createProperty(formData);
+
+    if (newProperty) {
+     // Update form data
+     Object.entries(formData).forEach(([key, value]) => {
+      handleFormData(key)({ target: { value } });
+     });
+     // Store the property ID for later use
+     handleFormData('propertyId')({ target: { value: newProperty.id } });
+     next();
+    } else {
+     message.error(t('validation.createProperty'));
+    }
    }
   } catch (info) {
    console.log('Validate Failed:', info);
+  } finally {
+   setIsLoading(false);
   }
  };
 
@@ -137,7 +209,25 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
      onFinish={submitFormData}
      size="large"
     >
-     <Title level={4}>{t('property.basic.title')}</Title>
+     <Title level={4}>
+      {propertyCreated
+       ? t('property.actions.edit') || 'Edit Property'
+       : t('property.basic.title')}
+     </Title>
+     {propertyCreated && (
+      <Alert
+       message={
+        t('property.actions.editMode') || "You're editing an existing property"
+       }
+       description={
+        t('property.actions.editModeDescription') ||
+        'Changes will update the existing property rather than creating a new one.'
+       }
+       type="info"
+       showIcon
+       style={{ marginBottom: 16 }}
+      />
+     )}
      <Row gutter={[24, 0]}>
       <Col xs={24} md={24}>
        <Form.Item
@@ -271,7 +361,15 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
          },
         ]}
        >
-        <MapPicker onPlaceSelected={handlePlaceSelected} />
+        <MapPicker
+         onPlaceSelected={handlePlaceSelected}
+         initialPosition={
+          propertyCreated && values.latitude && values.longitude
+           ? { lat: values.latitude, lng: values.longitude }
+           : undefined
+         }
+         initialPlaceName={propertyCreated ? values.placeName : undefined}
+        />
        </Form.Item>
       </Col>
      </Row>
@@ -279,8 +377,16 @@ const Step1NameAddresse = ({ next, handleFormData, values, ProgressSteps }) => {
      <Row justify="center">
       <Col xs={12} md={12}>
        <Form.Item>
-        <Button type="primary" htmlType="submit" block>
-         {t('button.continue')} {<ArrowRightOutlined />}
+        <Button
+         type="primary"
+         htmlType="submit"
+         block
+         loading={isLoading || createLoading || updateLoading}
+        >
+         {propertyCreated
+          ? t('button.update') || 'Update'
+          : t('button.continue') || 'Continue'}{' '}
+         {<ArrowRightOutlined />}
         </Button>
        </Form.Item>
       </Col>

@@ -18,6 +18,7 @@ import {
  Drawer,
  Image,
  Empty,
+ Tooltip,
 } from 'antd';
 import useProperty from '../../hooks/useProperty';
 import { useConcierge } from '../../hooks/useConcierge';
@@ -178,105 +179,139 @@ const PropertiesDashboard = () => {
  // Property action menu
  const getPropertyActionMenu = (property) => {
   const actions = [
-   <Button
-    key={`view-${property.id}`}
-    icon={<i className="Dashicon fa-light fa-pen-to-square" />}
-    onClick={() => navigate(`/property-management?hash=${property.hashId}`)}
-    type="link"
-    shape="circle"
-   />,
-   <Button
-    key={`guide-${property.id}`}
-    icon={<i className="Dashicon fa-light fa-book" />}
-    onClick={() => navigate(`/digitalguidebook?hash=${property.hashId}`)}
-    type="link"
-    shape="circle"
-   />,
-   <Button
-    key={`task-${property.id}`}
-    icon={
-     <i
-      className="Dashicon fa-light fa-list-check"
-      style={{ color: '#2b2c32' }}
-     />
-    }
-    onClick={() =>
-     navigate(`/propertytaskdashboard?id=${property.id}&name=${property.name}`)
-    }
-    type="link"
-    shape="circle"
-   />,
-   <Button
-    key={`revenue-${property.id}`}
-    icon={
-     <i
-      className="Dashicon fa-light fa-dollar-sign"
-      style={{ color: '#389e0d' }}
-     />
-    }
-    onClick={() =>
-     navigate(
-      `/propertyrevenuedashboard?id=${property.id}&name=${property.name}`
-     )
-    }
-    type="link"
-    shape="circle"
-   />,
-
-   <Button
-    key={`contracts-${property.id}`}
-    icon={<i className="PrimaryColor Dashicon fa-light fa-file-signature" />}
-    onClick={() => navigate(`/contractslist?hash=${property.hashId}`)}
-    type="link"
-    shape="circle"
-   />,
-   <Popconfirm
-    key={`toggle-${property.id}`}
+   <Tooltip
+    key={`edit-tooltip-${property.id}`}
+    title={t('property.actions.edit')}
+   >
+    <Button
+     key={`view-${property.id}`}
+     icon={<i className="Dashicon fa-light fa-pen-to-square" />}
+     onClick={() => navigate(`/property-management?hash=${property.hashId}`)}
+     type="link"
+     shape="circle"
+    />
+   </Tooltip>,
+   <Tooltip
+    key={`guide-tooltip-${property.id}`}
+    title={t('property.actions.guidebook')}
+   >
+    <Button
+     key={`guide-${property.id}`}
+     icon={<i className="Dashicon fa-light fa-book" />}
+     onClick={() => navigate(`/digitalguidebook?hash=${property.hashId}`)}
+     type="link"
+     shape="circle"
+    />
+   </Tooltip>,
+   <Tooltip key={`task-tooltip-${property.id}`} title={t('tasks.title')}>
+    <Button
+     key={`task-${property.id}`}
+     icon={
+      <i
+       className="Dashicon fa-light fa-list-check"
+       style={{ color: '#2b2c32' }}
+      />
+     }
+     onClick={() =>
+      navigate(`/propertytaskdashboard?id=${property.id}&name=${property.name}`)
+     }
+     type="link"
+     shape="circle"
+    />
+   </Tooltip>,
+   <Tooltip key={`revenue-tooltip-${property.id}`} title={t('revenue.title')}>
+    <Button
+     key={`revenue-${property.id}`}
+     icon={
+      <i
+       className="Dashicon fa-light fa-dollar-sign"
+       style={{ color: '#389e0d' }}
+      />
+     }
+     onClick={() =>
+      navigate(
+       `/propertyrevenuedashboard?id=${property.id}&name=${property.name}`
+      )
+     }
+     type="link"
+     shape="circle"
+    />
+   </Tooltip>,
+   <Tooltip
+    key={`contracts-tooltip-${property.id}`}
+    title={t('contracts.title')}
+   >
+    <Button
+     key={`contracts-${property.id}`}
+     icon={<i className="PrimaryColor Dashicon fa-light fa-file-signature" />}
+     onClick={() => navigate(`/contractslist?hash=${property.hashId}`)}
+     type="link"
+     shape="circle"
+    />
+   </Tooltip>,
+   <Tooltip
+    key={`toggle-tooltip-${property.id}`}
     title={
      property.status === 'enable' ? t('property.disable') : t('property.enable')
     }
-    description={t('property.confirmToggle')}
-    onConfirm={() => handleToggleProperty(property.id)}
-    okText={t('common.yes')}
-    cancelText={t('common.no')}
-    trigger="click"
-    icon={
-     property.status === 'enable' ? (
-      <i
-       className="Dashicon Pointer fa-light fa-lock"
-       style={{ color: '#F5222D', marginRight: 6 }}
-      />
-     ) : (
-      <i
-       className="Dashicon Pointer fa-light fa-lock-open"
-       style={{ color: '#52C41A', marginRight: 6 }}
-      />
-     )
-    }
    >
-    <Button
-     type="link"
-     shape="circle"
+    <Popconfirm
+     key={`toggle-${property.id}`}
+     title={
+      property.status === 'enable'
+       ? t('property.disable')
+       : t('property.enable')
+     }
+     description={t('property.confirmToggle')}
+     onConfirm={() => handleToggleProperty(property.id)}
+     okText={t('common.yes')}
+     cancelText={t('common.no')}
+     trigger="click"
      icon={
       property.status === 'enable' ? (
        <i
-        className="Dashicon Pointer fa-light fa-lock-open"
-        style={{ color: '#52C41A' }}
+        className="Dashicon Pointer fa-light fa-lock"
+        style={{ color: '#F5222D', marginRight: 6 }}
        />
       ) : (
-       <i className="Dashicon fa-light fa-lock" style={{ color: '#F5222D' }} />
+       <i
+        className="Dashicon Pointer fa-light fa-lock-open"
+        style={{ color: '#52C41A', marginRight: 6 }}
+       />
       )
      }
+    >
+     <Button
+      type="link"
+      shape="circle"
+      icon={
+       property.status === 'enable' ? (
+        <i
+         className="Dashicon Pointer fa-light fa-lock-open"
+         style={{ color: '#52C41A' }}
+        />
+       ) : (
+        <i className="Dashicon fa-light fa-lock" style={{ color: '#F5222D' }} />
+       )
+      }
+     />
+    </Popconfirm>
+   </Tooltip>,
+   <Tooltip
+    key={`delete-tooltip-${property.id}`}
+    title={t('property.actions.delete')}
+   >
+    <Button
+     key={`delete-${property.id}`}
+     danger
+     icon={
+      <i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />
+     }
+     type="link"
+     shape="circle"
+     onClick={() => showDeleteConfirmation(property)}
     />
-   </Popconfirm>,
-   <Button
-    key={`delete-${property.id}`}
-    danger
-    icon={<i className="Dashicon fa-light fa-trash" style={{ color: 'red' }} />}
-    type="link"
-    shape="circle"
-    onClick={() => showDeleteConfirmation(property)}
-   />,
+   </Tooltip>,
   ];
 
   return actions;
@@ -366,6 +401,7 @@ const PropertiesDashboard = () => {
   {
    title: t('property.status'),
    dataIndex: 'status',
+   width: 140,
    key: 'status',
    render: (status) => {
     const statusColors = {
@@ -391,13 +427,21 @@ const PropertiesDashboard = () => {
    title: t('property.basic.price'),
    dataIndex: 'price',
    key: 'price',
-   width: 164,
-   render: (price) => `${price} ${t('property.basic.priceNight')}`,
-   sorter: (a, b) => a.price - b.price,
+   width: 140,
+   render: (price) =>
+    price ? `${price} ${t('property.basic.priceNight')}` : '-',
+   sorter: (a, b) => {
+    // Handle null values in sorting
+    if (a.price === null && b.price === null) return 0;
+    if (a.price === null) return -1;
+    if (b.price === null) return 1;
+    return a.price - b.price;
+   },
   },
   {
    title: t('dashboard.lastUpdate'),
    dataIndex: 'updatedAt',
+   width: 140,
    key: 'updatedAt',
    render: (updatedAt) => new Date(updatedAt).toLocaleDateString(),
    sorter: (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt),

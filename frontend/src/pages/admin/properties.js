@@ -11,10 +11,11 @@ import {
  Popconfirm,
  Image,
  Checkbox,
+ Grid,
  message,
 } from 'antd';
 import { SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import useProperty from '../../hooks/useProperty';
 import { useUserData } from '../../hooks/useUserData';
@@ -37,6 +38,8 @@ const Properties = () => {
  const { fetchUserById } = useUserData();
  const navigate = useNavigate();
  const { t } = useTranslation();
+ const { useBreakpoint } = Grid;
+ const screens = useBreakpoint();
 
  const [usersMap, setUsersMap] = useState({});
  const [searchText, setSearchText] = useState('');
@@ -471,7 +474,7 @@ const Properties = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Content className="container">
     <Button
      type="link"
@@ -492,7 +495,7 @@ const Properties = () => {
      </Col>
     </Row>
    </Content>
-   <Foot />
+   {!screens.xs && <Foot />}
   </Layout>
  );
 };

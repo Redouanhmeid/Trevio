@@ -104,6 +104,9 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    setSelectedKey(matchingItem.key);
   } else if (currentPath === '/') {
    setSelectedKey('reservations');
+  } else {
+   // If path doesn't match any menu item, set selectedKey to null or empty string
+   setSelectedKey('');
   }
  }, [location.pathname]);
 
@@ -127,53 +130,65 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  };
 
  // User menu items for dropdown and drawer
- const getMenuItems = () => [
-  {
-   key: 'account',
-   label: (
-    <Link to="/account">
-     <Text strong>{t('header.account')}</Text>
-    </Link>
-   ),
-   icon: <i className="PrimaryColor HeaderIcon fa-light fa-user" />,
-   onClick: () => {
-    onClick();
-    navigate('/account');
+ const getMenuItems = () => {
+  const items = [
+   {
+    key: 'account',
+    label: (
+     <Link to="/account">
+      <Text strong>{t('header.account')}</Text>
+     </Link>
+    ),
+    icon: <i className="PrimaryColor HeaderIcon fa-light fa-user" />,
+    onClick: () => {
+     onClick();
+     navigate('/account');
+    },
    },
-  },
-  {
-   key: 'adminpanel',
-   label: (
-    <Link to="/adminpanel">
-     <Text strong>{t('header.dashboard')}</Text>
-    </Link>
-   ),
-   icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt" />,
-  },
-  {
-   key: 'referral',
-   label: <Text strong>{t('header.referral')}</Text>,
-   icon: <i className="PrimaryColor HeaderIcon fa-light fa-user-plus" />,
-   onClick: () => {
-    handleReferFriend(t);
+  ];
+
+  // Only add admin panel option if user is an admin
+  if (userData && userData.role === 'admin') {
+   items.push({
+    key: 'adminpanel',
+    label: (
+     <Link to="/adminpanel">
+      <Text strong>{t('header.dashboard')}</Text>
+     </Link>
+    ),
+    icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt" />,
+   });
+  }
+
+  // Add remaining items
+  items.push(
+   {
+    key: 'referral',
+    label: <Text strong>{t('header.referral')}</Text>,
+    icon: <i className="PrimaryColor HeaderIcon fa-light fa-user-plus" />,
+    onClick: () => {
+     handleReferFriend(t);
+    },
    },
-  },
-  {
-   type: 'divider',
-  },
-  {
-   key: 'logout',
-   label: (
-    <Link onClick={handleLogOut}>
-     <Text strong>{t('header.logout')}</Text>
-    </Link>
-   ),
-   icon: (
-    <i className="PrimaryColor HeaderIcon fa-light fa-right-from-bracket"></i>
-   ),
-   onClick: handleLogOut,
-  },
- ];
+   {
+    type: 'divider',
+   },
+   {
+    key: 'logout',
+    label: (
+     <Link onClick={handleLogOut}>
+      <Text strong>{t('header.logout')}</Text>
+     </Link>
+    ),
+    icon: (
+     <i className="PrimaryColor HeaderIcon fa-light fa-right-from-bracket"></i>
+    ),
+    onClick: handleLogOut,
+   }
+  );
+
+  return items;
+ };
 
  const handleLogOut = () => {
   logout();
