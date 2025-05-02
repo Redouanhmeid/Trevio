@@ -5,23 +5,39 @@ A Digital Concierge and Rental Management Application
 
 ## 📖 Overview
 
-Trevio is a modern application designed to simplify rental management and enhance guest experiences with digital concierge services. It offers features for clients, concierge services and admins, making property listings, bookings, and guest interactions seamless.
+Trevio streamlines the entire rental lifecycle from property listing to guest check-out, with specialized features for electronic access management and legal compliance through digital contracts.
 
 ## 🚀 Features
 
-- Property Management: Add, edit, and manage property listings.
-- Digital Concierge: Enhance guest stays with tailored recommendations and services.
+- Comprehensive property management with detailed listings, photo galleries, amenity tracking, and location-based search functionality.
+- Reservation System: Create, manage, and track reservations with detailed guest information, contract generation, and electronic lock code management.
 - Admin Verification: Ensure properties meet quality standards before publication.
 - Multi-Step Forms: User-friendly forms for adding and updating property details.
 - Nearby Places: Display nearby attractions with Google Maps integration.
--
+- Guest Contracts: Generate and manage legally-binding rental agreements with electronic signature capabilities.
+- Revenue Tracking: Monitor and analyze property revenue with detailed reporting and visualization tools.
+- Task Management: Assign and track property-related tasks for maintenance and guest services.
+- Service Worker Directory: Maintain a database of service professionals (plumbers, electricians, housekeepers) for each property.
+- Notification System: Real-time notifications via email for important property and reservation events.
+- Multi-role Access: Specialized interfaces for property owners, managers, and guests with appropriate permission controls.
 
 ## 📂 Project Structure
 
 - **Frontend**: React.js with Ant Design for a modern and intuitive user interface.
 - **Backend**: Node.js with Express.js for API handling.
 - **Database**: MySQL and Sequelize ORM.
+- **Models**: Comprehensive data models for properties, reservations, contracts, tasks, service workers, and users with well-defined relationships.
+- **Controllers**: Business logic handling for all primary entities with efficient database interactions.
+- **Authentication**: Secure user authentication with JWT tokens and password reset capabilities.
+- **Form Handling**: Complex multi-step forms with validation for property management and reservation creation.
 - **Deployment**: Docker for containerization and process management, hosted on a secure platform
+
+## 💻 Technical Stack
+
+- **Frontend**: React.js with context-based state management, custom hooks for data fetching, and Ant Design for UI components.
+- **Localization**: Multi-language support using a custom translation context.
+- **Maps Integration**: Location-based services using Google Maps API.
+- **Responsive Design**: Mobile-first approach ensuring functionality across all device sizes.
 
 ## 🖼️ Screenshots
 
