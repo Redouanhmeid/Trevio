@@ -513,7 +513,7 @@ const CreateReservationForm = () => {
        >
         <Select placeholder={t('reservation.create.selectSource')}>
          <Option value="direct">{t('reservation.sources.direct')}</Option>
-         <Option value="airbnb">Airbnb</Option>
+         <Option value="Airbnb">Airbnb</Option>
          <Option value="booking">Booking.com</Option>
          <Option value="expedia">Expedia</Option>
          <Option value="other">{t('reservation.sources.other')}</Option>

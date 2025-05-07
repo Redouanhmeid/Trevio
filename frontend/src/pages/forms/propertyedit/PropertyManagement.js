@@ -20,6 +20,7 @@ import {
  LoginOutlined,
  LogoutOutlined,
  TeamOutlined,
+ CalendarOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -39,6 +40,7 @@ import PropertyCheckIn from './tabs/PropertyCheckIn';
 import PropertyCheckOut from './tabs/PropertyCheckOut';
 import PropertyHouseManual from './tabs/PropertyHouseManual';
 import ServiceWorkerManagement from '../ServiceWorkerManagement';
+import PropertyICalTab from './tabs/PropertyICalTab';
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
@@ -175,6 +177,16 @@ const PropertyManagement = () => {
       key={`services-${refreshKey}`}
      />
     );
+
+   case 'icals':
+    return (
+     <PropertyICalTab
+      property={property}
+      propertyId={numericId}
+      onPropertyUpdated={refreshPropertyData}
+      key={`icals-${refreshKey}`}
+     />
+    );
    default:
     return (
      <PropertyInformation
@@ -228,6 +240,12 @@ const PropertyManagement = () => {
    key: 'services',
    icon: <TeamOutlined />,
    label: t('serviceWorker.title'),
+  },
+
+  {
+   key: 'icals',
+   icon: <CalendarOutlined />,
+   label: 'iCals',
   },
  ];
 

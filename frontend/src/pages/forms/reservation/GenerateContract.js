@@ -23,6 +23,8 @@ import {
  Image,
  Popconfirm,
  Grid,
+ Form,
+ InputNumber,
 } from 'antd';
 import {
  ArrowLeftOutlined,
@@ -33,6 +35,9 @@ import {
  LockOutlined,
  CopyOutlined,
  ExclamationCircleOutlined,
+ EditOutlined,
+ SaveOutlined,
+ CloseOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
@@ -79,6 +84,11 @@ const GenerateContract = () => {
  const [lockSettingsChanged, setLockSettingsChanged] = useState(false);
 
  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+
+ const [isDesktopFormVisible, setIsDesktopFormVisible] = useState(false);
+ const [editMode, setEditMode] = useState(false);
+ const [editForm] = Form.useForm();
+ const [editingReservation, setEditingReservation] = useState(null);
 
  const handleUserData = (userData) => {
   setUserId(userData);
@@ -250,6 +260,90 @@ const GenerateContract = () => {
   hideDeleteConfirm();
  };
 
+ const handleEditReservation = () => {
+  setEditingReservation({
+   ...reservation,
+   totalPrice: reservation.totalPrice,
+  });
+  editForm.setFieldsValue({
+   totalPrice: reservation.totalPrice,
+  });
+  setEditMode(true);
+ };
+
+ const handleSaveReservation = async () => {
+  try {
+   const values = await editForm.validateFields();
+
+   // Call API to update reservation
+   const response = await fetch(`/api/v1/reservations/${id}`, {
+    method: 'PUT',
+    headers: {
+     'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+     totalPrice: values.totalPrice,
+    }),
+   });
+
+   if (!response.ok) {
+    throw new Error('Failed to update reservation');
+   }
+
+   message.success(t('reservation.updateSuccess'));
+
+   // Refresh the reservation data
+   await fetchReservation(id);
+   setEditMode(false);
+  } catch (error) {
+   message.error(t('reservation.updateError'));
+  }
+ };
+
+ const handleCancelEdit = () => {
+  setEditMode(false);
+ };
+
+ const showDesktopEditForm = () => {
+  editForm.setFieldsValue({
+   totalPrice: reservation.totalPrice,
+  });
+  setIsDesktopFormVisible(true);
+ };
+
+ const hideDesktopEditForm = () => {
+  setIsDesktopFormVisible(false);
+ };
+
+ const handleDesktopFormSave = async () => {
+  try {
+   const values = await editForm.validateFields();
+
+   // Call API to update reservation
+   const response = await fetch(`/api/v1/reservations/${id}`, {
+    method: 'PUT',
+    headers: {
+     'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+     totalPrice: values.totalPrice,
+    }),
+   });
+
+   if (!response.ok) {
+    throw new Error('Failed to update reservation');
+   }
+
+   message.success(t('reservation.updateSuccess'));
+
+   // Refresh the reservation data
+   await fetchReservation(id);
+   setIsDesktopFormVisible(false);
+  } catch (error) {
+   message.error(t('reservation.updateError'));
+  }
+ };
+
  if (loading) {
   return (
    <Layout className="contentStyle">
@@ -386,99 +480,303 @@ const GenerateContract = () => {
      <>
       {screens.xs ? (
        <Card bordered={false} className="reservation-details-card">
-        <Title level={4} style={{ marginBottom: '12px', color: '#6D5FFA' }}>
-         {t('reservation.details')}
-        </Title>
-        <Row gutter={[8, 0]}>
-         <Col span={12}>
-          <Text type="secondary">Full name</Text>
-          <Paragraph strong className="reservation-paragraph">
-           {reservation.property.name}
-          </Paragraph>
-         </Col>
-         <Col span={12}>
-          <Text type="secondary">Reservation dates</Text>
-          <Paragraph strong className="reservation-paragraph">
-           {dayjs(reservation.startDate).format('DD-MM-YYYY')}
-           <br />
-           {dayjs(reservation.endDate).format('DD-MM-YYYY')}
-          </Paragraph>
-         </Col>
-         <Col span={12}>
-          <Text type="secondary">Price per night</Text>
-          <Paragraph strong className="reservation-paragraph">
-           {Math.round(
-            reservation.totalPrice /
-             dayjs(reservation.endDate).diff(
+        <Flex justify="space-between" align="center">
+         <Title
+          level={4}
+          style={{ marginTop: '8px', marginBottom: '16px', color: '#6D5FFA' }}
+         >
+          {t('reservation.details')}
+         </Title>
+         {!editMode ? (
+          <Button
+           type="text"
+           icon={<EditOutlined />}
+           onClick={handleEditReservation}
+          />
+         ) : (
+          <Space>
+           <Button
+            type="text"
+            danger
+            icon={<CloseOutlined />}
+            onClick={handleCancelEdit}
+           />
+           <Button
+            type="text"
+            icon={<SaveOutlined />}
+            onClick={handleSaveReservation}
+           />
+          </Space>
+         )}
+        </Flex>
+
+        {!editMode ? (
+         <Row gutter={[8, 0]}>
+          <Col span={12}>
+           <Text type="secondary">{t('property.basic.name')}</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {reservation.property.name}
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">{t('reservation.dates')}</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {dayjs(reservation.startDate).format('DD-MM-YYYY')}
+            <br />
+            {dayjs(reservation.endDate).format('DD-MM-YYYY')}
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">{t('reservation.pricePerNight')}</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {Math.round(
+             reservation.totalPrice /
+              dayjs(reservation.endDate).diff(
+               dayjs(reservation.startDate),
+               'day'
+              )
+            )}{' '}
+            Dhs
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">{t('reservation.totalNights')}</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {dayjs(reservation.endDate).diff(
+             dayjs(reservation.startDate),
+             'day'
+            )}
+           </Paragraph>
+          </Col>
+          <Col span={12}>
+           <Text type="secondary">{t('reservation.totalPrice')}</Text>
+           <Paragraph strong className="reservation-paragraph">
+            {reservation.totalPrice} dhs
+           </Paragraph>
+          </Col>
+          {reservation.bookingSource && (
+           <Col span={12}>
+            <Text type="secondary">{t('reservation.bookingSource')}</Text>
+            <Paragraph strong className="reservation-paragraph">
+             {reservation.bookingSource}
+            </Paragraph>
+           </Col>
+          )}
+         </Row>
+        ) : (
+         <Form
+          form={editForm}
+          layout="vertical"
+          initialValues={{
+           totalPrice: editingReservation?.totalPrice,
+          }}
+         >
+          <Row gutter={[8, 0]}>
+           <Col span={12}>
+            <Text type="secondary">{t('property.basic.name')}</Text>
+            <Paragraph strong className="reservation-paragraph">
+             {reservation.property.name}
+            </Paragraph>
+           </Col>
+           <Col span={12}>
+            <Text type="secondary">{t('reservation.dates')}</Text>
+            <Paragraph strong className="reservation-paragraph">
+             {dayjs(reservation.startDate).format('DD-MM-YYYY')}
+             <br />
+             {dayjs(reservation.endDate).format('DD-MM-YYYY')}
+            </Paragraph>
+           </Col>
+           <Col span={12}>
+            <Text type="secondary">{t('reservation.pricePerNight')}</Text>
+            <Paragraph strong className="reservation-paragraph">
+             {Math.round(
+              editForm.getFieldValue('totalPrice') /
+               dayjs(reservation.endDate).diff(
+                dayjs(reservation.startDate),
+                'day'
+               )
+             )}{' '}
+             Dhs
+            </Paragraph>
+           </Col>
+           <Col span={12}>
+            <Text type="secondary">{t('reservation.totalNights')}</Text>
+            <Paragraph strong className="reservation-paragraph">
+             {dayjs(reservation.endDate).diff(
               dayjs(reservation.startDate),
               'day'
-             )
-           )}{' '}
-           Dhs
-          </Paragraph>
-         </Col>
-         <Col span={12}>
-          <Text type="secondary">Total nights</Text>
-          <Paragraph strong className="reservation-paragraph">
-           {dayjs(reservation.endDate).diff(
+             )}
+            </Paragraph>
+           </Col>
+           <Col span={12}>
+            <Form.Item
+             name="totalPrice"
+             label={t('reservation.totalPrice')}
+             rules={[
+              { required: true, message: t('validation.required') },
+              {
+               type: 'number',
+               min: 0,
+               message: t('validation.positiveNumber'),
+              },
+             ]}
+            >
+             <InputNumber
+              min={0}
+              addonAfter="Dhs"
+              style={{ width: '100%' }}
+              onChange={(value) => {
+               // Update form value when changed
+               editForm.setFieldsValue({ totalPrice: value });
+              }}
+             />
+            </Form.Item>
+           </Col>
+           {reservation.bookingSource && (
+            <Col span={12}>
+             <Text type="secondary">{t('reservation.bookingSource')}</Text>
+             <Paragraph strong className="reservation-paragraph">
+              {reservation.bookingSource}
+             </Paragraph>
+            </Col>
+           )}
+          </Row>
+         </Form>
+        )}
+       </Card>
+      ) : (
+       <>
+        <Descriptions
+         title={
+          <Flex
+           justify="space-between"
+           align="center"
+           style={{ width: '100%' }}
+          >
+           <span>{t('reservation.details')}</span>
+           <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={showDesktopEditForm}
+           >
+            {t('common.edit')}
+           </Button>
+          </Flex>
+         }
+         bordered
+         column={{ xs: 1, sm: 2 }}
+        >
+         <Descriptions.Item label={t('property.basic.name')}>
+          {reservation.property.name}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.dates')}>
+          {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
+          {dayjs(reservation.endDate).format('YYYY-MM-DD')}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.pricePerNight')}>
+          {reservation.totalPrice /
+           dayjs(reservation.endDate).diff(
             dayjs(reservation.startDate),
             'day'
            )}{' '}
-           nights
-          </Paragraph>
-         </Col>
-         <Col span={12}>
-          <Text type="secondary">Total price</Text>
-          <Paragraph strong className="reservation-paragraph">
-           {reservation.totalPrice} dhs
-          </Paragraph>
-         </Col>
-         {reservation.bookingSource && (
-          <Col span={12}>
-           <Text type="secondary">Booking source</Text>
-           <Paragraph strong className="reservation-paragraph">
-            {reservation.bookingSource}
-           </Paragraph>
-          </Col>
-         )}
-        </Row>
-       </Card>
-      ) : (
-       <Descriptions
-        title={t('reservation.details')}
-        bordered
-        column={{ xs: 1, sm: 2 }}
-       >
-        <Descriptions.Item label={t('property.basic.name')}>
-         {reservation.property.name}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.dates')}>
-         {dayjs(reservation.startDate).format('YYYY-MM-DD')} -{' '}
-         {dayjs(reservation.endDate).format('YYYY-MM-DD')}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.pricePerNight')}>
-         {reservation.totalPrice /
-          dayjs(reservation.endDate).diff(
-           dayjs(reservation.startDate),
-           'day'
-          )}{' '}
-         Dhs
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.totalNights')}>
-         {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
-        </Descriptions.Item>
-        <Descriptions.Item label={t('reservation.totalPrice')}>
-         {reservation.totalPrice} Dhs
-        </Descriptions.Item>
-        {reservation.bookingSource && (
-         <Descriptions.Item label={t('reservation.bookingSource')}>
-          {reservation.bookingSource}
+          Dhs
          </Descriptions.Item>
-        )}
-        <Descriptions.Item label={t('reservation.status')}>
-         {t(`reservation.statuses.${reservation.status}`)}
-        </Descriptions.Item>
-       </Descriptions>
+         <Descriptions.Item label={t('reservation.totalNights')}>
+          {dayjs(reservation.endDate).diff(dayjs(reservation.startDate), 'day')}
+         </Descriptions.Item>
+         <Descriptions.Item label={t('reservation.totalPrice')}>
+          {reservation.totalPrice} Dhs
+         </Descriptions.Item>
+         {reservation.bookingSource && (
+          <Descriptions.Item label={t('reservation.bookingSource')}>
+           {reservation.bookingSource}
+          </Descriptions.Item>
+         )}
+        </Descriptions>
+
+        <Modal
+         title={t('reservation.edit')}
+         open={isDesktopFormVisible}
+         onCancel={hideDesktopEditForm}
+         footer={[
+          <Button key="cancel" onClick={hideDesktopEditForm}>
+           {t('common.cancel')}
+          </Button>,
+          <Button key="save" type="primary" onClick={handleDesktopFormSave}>
+           {t('common.save')}
+          </Button>,
+         ]}
+         width={600}
+        >
+         <Form
+          form={editForm}
+          layout="vertical"
+          initialValues={{
+           totalPrice: reservation?.totalPrice,
+          }}
+         >
+          <Row gutter={[24, 16]}>
+           <Col span={12}>
+            <Form.Item label={t('property.basic.name')}>
+             <Input value={reservation.property.name} disabled />
+            </Form.Item>
+           </Col>
+           <Col span={12}>
+            <Form.Item label={t('reservation.totalNights')}>
+             <Input
+              value={dayjs(reservation.endDate).diff(
+               dayjs(reservation.startDate),
+               'day'
+              )}
+              disabled
+              suffix={t('reservation.nights')}
+             />
+            </Form.Item>
+           </Col>
+           <Col span={12}>
+            <Form.Item label={t('reservation.dates')}>
+             <Input
+              value={`${dayjs(reservation.startDate).format(
+               'YYYY-MM-DD'
+              )} - ${dayjs(reservation.endDate).format('YYYY-MM-DD')}`}
+              disabled
+             />
+            </Form.Item>
+           </Col>
+           <Col span={12}>
+            <Form.Item
+             label={t('reservation.totalPrice')}
+             name="totalPrice"
+             rules={[
+              { required: true, message: t('validation.required') },
+              {
+               type: 'number',
+               min: 0,
+               message: t('validation.positiveNumber'),
+              },
+             ]}
+            >
+             <InputNumber
+              min={0}
+              addonAfter="Dhs"
+              style={{ width: '100%' }}
+              onChange={(value) => {
+               editForm.setFieldsValue({ totalPrice: value });
+              }}
+             />
+            </Form.Item>
+           </Col>
+           {reservation.bookingSource && (
+            <Col span={12}>
+             <Form.Item label={t('reservation.bookingSource')}>
+              <Input value={reservation.bookingSource} disabled />
+             </Form.Item>
+            </Col>
+           )}
+          </Row>
+         </Form>
+        </Modal>
+       </>
       )}
 
       <br />

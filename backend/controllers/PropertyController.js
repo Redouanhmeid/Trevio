@@ -515,6 +515,24 @@ const getIdFromHash = async (req, res) => {
  }
 };
 
+const updatePropertyICalLinks = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { iCalLinks } = req.body;
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+   return res.status(404).json({ error: 'Property not found' });
+  }
+
+  await property.update({ iCalLinks });
+  res.status(200).json(property);
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Failed to update property iCal links' });
+ }
+};
+
 module.exports = {
  getProperties,
  getPendingProperties,
@@ -536,4 +554,5 @@ module.exports = {
  bulkVerifyProperties,
  toggleEnableProperty,
  getIdFromHash,
+ updatePropertyICalLinks,
 };

@@ -7,6 +7,7 @@ const {
  createReservation,
  sendToGuest,
  getReservationContract,
+ updateReservation,
  updateReservationStatus,
  deleteReservation,
  getReservationByHash,
@@ -16,6 +17,7 @@ const {
  generateContract,
  updateElectronicLock,
  checkAvailability,
+ checkReservationUID,
 } = require('../controllers/ReservationController');
 
 // Get all reservations
@@ -39,6 +41,9 @@ router.get('/:id/contract', getReservationContract);
 // Send reservation to guest
 router.post('/:id/send', sendToGuest);
 
+// Update reservation
+router.put('/:id', updateReservation);
+
 // Update reservation status
 router.put('/:id/status', updateReservationStatus);
 
@@ -61,5 +66,7 @@ router.patch('/:reservationId/electronic-lock', updateElectronicLock);
 
 // Check availability for a property's date range
 router.get('/property/:propertyId/check-availability', checkAvailability);
+
+router.get('/check-uid/:uid', checkReservationUID);
 
 module.exports = router;

@@ -1187,10 +1187,10 @@
         },
         "sources": {
             "direct": "Direct Booking",
-            "airbnb": "AirBnb",
-            "booking": "Booking",
-            "expedia": "Expedia",
-            "other": "Other"
+            "Airbnb": "AirBnb",
+            "Booking.com": "Booking",
+            "Expedia": "Expedia",
+            "other": "Autre"
         },
         "contract": {
             "generation": "Contract Generation",
@@ -1275,6 +1275,11 @@
             "howToUse": "Learn how to use the electronic lock",
             "seeHowToUse": "See how to use",
             "instructions": "Lock Usage Instructions"
+        },
+        "sync": {
+            "button": "Synchronize",
+            "complete": "Sync completed: {{successful}} successful, {{failed}} failed (Total properties: {{total}})",
+            "noIcalLinks": "No iCal links found for syncing. Please add calendar links to your properties first."
         }
     },
     "serviceWorker": {
@@ -1353,5 +1358,27 @@
     "navigation": {
         "leaveWarningTitle": "Leave property creation?",
         "leaveWarningContent": "You have unsaved changes. If you leave now, your progress will be lost. Are you sure you want to leave?"
+    },
+    "ical": {
+        "title": "Calendar Synchronization",
+        "description": "Synchronize your calendar with external booking platforms to avoid double bookings. Add iCal links from your booking platforms below.",
+        "infoTitle": "How to find your iCal links",
+        "airbnbInstruction": "For Airbnb: Go to Calendar → Availability settings → Sync calendars → Copy the link address",
+        "bookingInstruction": "For Booking.com: Go to Property → Calendar → Calendar sync → Copy the iCal export link",
+        "existingLinks": "Existing Calendar Links",
+        "noLinks": "No calendar links added yet.",
+        "addNewLink": "Add New Calendar Link",
+        "sourcePlaceholder": "Select a booking platform",
+        "urlPlaceholder": "iCal URL",
+        "addButton": "Add",
+        "saveSuccess": "Calendar links saved successfully",
+        "confirmRemove": "Delete Calendar Link",
+        "confirmRemoveDescription": "Are you sure you want to delete this calendar link?",
+        "allPlatformsAdded": "All platforms have been added",
+        "validation": {
+            "fieldsRequired": "Both fields are required",
+            "invalidUrl": "Please enter a valid URL",
+            "platformExists": "This booking platform is already added"
+        }
     }
 }

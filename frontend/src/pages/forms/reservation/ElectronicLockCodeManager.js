@@ -63,11 +63,6 @@ const ElectronicLockCodeManager = ({
 
    if (result) {
     setLockEnabled(checked);
-    message.success(
-     checked
-      ? t('reservation.lock.enableSuccess')
-      : t('reservation.lock.disableSuccess')
-    );
    }
   } catch (error) {
    console.error('Error updating electronic lock settings:', error);
@@ -105,11 +100,8 @@ const ElectronicLockCodeManager = ({
     electronicLockCode: lockCode,
     electronicLockEnabled: lockEnabled,
    });
-
-   message.success(t('reservation.lock.codeUpdateSuccess'));
   } catch (error) {
    console.error('Error updating lock code:', error);
-   message.error(t('reservation.lock.codeUpdateError'));
   } finally {
    setIsLoading(false);
   }

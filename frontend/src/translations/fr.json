@@ -1187,9 +1187,9 @@
         },
         "sources": {
             "direct": "Réservation directe",
-            "airbnb": "AirBnb",
-            "booking": "Booking",
-            "expedia": "Expedia",
+            "Airbnb": "AirBnb",
+            "Booking.com": "Booking",
+            "Expedia": "Expedia",
             "other": "Autre"
         },
         "contract": {
@@ -1275,6 +1275,11 @@
             "howToUse": "Apprendre à utiliser la serrure électronique",
             "seeHowToUse": "Voir comment utiliser",
             "instructions": "Instructions d'Utilisation de la Serrure"
+        },
+        "sync": {
+            "button": "Synchroniser",
+            "complete": "Synchronisation terminée : {{successful}} réussie, {{failed}} échouée (Nombre total de propriétés : {{total}})",
+            "noIcalLinks": "Aucun lien iCal trouvé pour la synchronisation. Veuillez d'abord ajouter des liens de calendrier à vos propriétés."
         }
     },
     "serviceWorker": {
@@ -1353,5 +1358,27 @@
     "navigation": {
         "leaveWarningTitle": "Quitter la création de propriété?",
         "leaveWarningContent": "Vous avez des modifications non enregistrées. Si vous quittez maintenant, votre progression sera perdue. Êtes-vous sûr de vouloir quitter?"
+    },
+    "ical": {
+        "title": "Synchronisation du Calendrier",
+        "description": "Synchronisez votre calendrier avec des plateformes de réservation externes pour éviter les doubles réservations. Ajoutez des liens iCal de vos plateformes de réservation ci-dessous.",
+        "infoTitle": "Comment trouver vos liens iCal",
+        "airbnbInstruction": "Pour Airbnb: Allez dans Calendrier → Paramètres de disponibilité → Synchroniser les calendriers → Copiez l'adresse du lien",
+        "bookingInstruction": "Pour Booking.com: Allez dans Propriété → Calendrier → Synchronisation du calendrier → Copiez le lien d'exportation iCal",
+        "existingLinks": "Liens de Calendrier Existants",
+        "noLinks": "Aucun lien de calendrier ajouté pour l'instant.",
+        "addNewLink": "Ajouter un Nouveau Lien de Calendrier",
+        "sourcePlaceholder": "Sélectionnez une plateforme de réservation",
+        "urlPlaceholder": "URL iCal",
+        "addButton": "Ajouter",
+        "saveSuccess": "Liens de calendrier enregistrés avec succès",
+        "confirmRemove": "Supprimer le Lien de Calendrier",
+        "confirmRemoveDescription": "Êtes-vous sûr de vouloir supprimer ce lien de calendrier?",
+        "allPlatformsAdded": "Toutes les plateformes ont été ajoutées",
+        "validation": {
+            "fieldsRequired": "Les deux champs sont requis",
+            "invalidUrl": "Veuillez entrer une URL valide",
+            "platformExists": "Cette plateforme de réservation est déjà ajoutée"
+        }
     }
 }

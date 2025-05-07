@@ -99,6 +99,7 @@ const createReservation = async (req, res) => {
    createdByUserId,
    electronicLockCode,
    electronicLockEnabled,
+   calendarEventUID,
   } = req.body;
 
   // Get the user ID either from req.user (if authenticated) or from the request body
@@ -143,6 +144,7 @@ const createReservation = async (req, res) => {
    hashId: hashId,
    electronicLockCode,
    electronicLockEnabled: electronicLockEnabled || false,
+   calendarEventUID,
   });
 
   // Include the property in the response
@@ -285,6 +287,32 @@ const generateRevenue = async (req, res) => {
   res
    .status(500)
    .json({ error: 'Failed to generate revenue', details: error.message });
+ }
+};
+
+// Update reservation
+const updateReservation = async (req, res) => {
+ try {
+  const { id } = req.params;
+  const { totalPrice } = req.body;
+
+  const reservation = await Reservation.findByPk(id);
+
+  if (!reservation) {
+   return res.status(404).json({ message: 'Reservation not found' });
+  }
+
+  // Update only the fields provided in the request body
+  if (totalPrice !== undefined) {
+   reservation.totalPrice = totalPrice;
+  }
+
+  await reservation.save();
+
+  res.json({ message: 'Reservation updated successfully', reservation });
+ } catch (error) {
+  console.error('Error updating reservation:', error);
+  res.status(500).json({ message: 'Internal server error' });
  }
 };
 
@@ -652,6 +680,19 @@ const checkAvailability = async (req, res) => {
  }
 };
 
+const checkReservationUID = async (req, res) => {
+ const { uid } = req.params;
+ try {
+  const reservation = await Reservation.findOne({
+   where: { calendarEventUID: uid },
+  });
+  res.json({ exists: !!reservation });
+ } catch (error) {
+  console.error('Error checking reservation UID:', error);
+  res.status(500).json({ error: 'Error checking UID' });
+ }
+};
+
 module.exports = {
  getReservation,
  getReservations,
@@ -660,6 +701,7 @@ module.exports = {
  getReservationContract,
  sendToGuest,
  generateRevenue,
+ updateReservation,
  updateReservationStatus,
  getReservationByHash,
  deleteReservation,
@@ -668,4 +710,5 @@ module.exports = {
  generateContract,
  updateElectronicLock,
  checkAvailability,
+ checkReservationUID,
 };

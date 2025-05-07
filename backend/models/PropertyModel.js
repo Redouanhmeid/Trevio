@@ -125,6 +125,10 @@ module.exports = (db, type) => {
     isIn: [['pending', 'enable', 'disable']],
    },
   },
+  iCalLinks: {
+   type: type.JSON,
+   allowNull: true,
+  },
  });
 
  property.beforeValidate(async (property) => {

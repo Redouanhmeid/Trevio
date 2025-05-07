@@ -110,3 +110,18 @@ export const frFormatDate = (date) => {
  const year = d.getFullYear();
  return `${day}/${month}/${year}`;
 };
+
+// Helper function to parse iCal links property
+export const parseICalLinks = (propValue) => {
+ if (!propValue) return [];
+
+ if (typeof propValue === 'string') {
+  try {
+   return JSON.parse(propValue);
+  } catch (e) {
+   console.warn('Failed to parse iCal links:', propValue);
+   return [];
+  }
+ }
+ return Array.isArray(propValue) ? propValue : [];
+};

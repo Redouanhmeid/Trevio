@@ -21,6 +21,7 @@ const {
  bulkVerifyProperties,
  toggleEnableProperty,
  getIdFromHash,
+ updatePropertyICalLinks,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
@@ -55,5 +56,7 @@ router.post('/bulkVerify', bulkVerifyProperties);
 router.put('/:id/toggleenable', toggleEnableProperty);
 
 router.get('/hash/:hashId', getIdFromHash);
+
+router.put('/:id/ical-links', updatePropertyICalLinks);
 
 module.exports = router;

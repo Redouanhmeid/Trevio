@@ -59,6 +59,10 @@ const useUpdateProperty = (propertyId) => {
   await handleUpdate('/photos', data);
  };
 
+ const updatePropertyICalLinks = async (data) => {
+  await handleUpdate('/ical-links', data);
+ };
+
  return {
   isLoading,
   error,
@@ -71,6 +75,7 @@ const useUpdateProperty = (propertyId) => {
   updatePropertyCheckIn,
   updatePropertyCheckOut,
   updatePropertyPhotos,
+  updatePropertyICalLinks,
  };
 };
 

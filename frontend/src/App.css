@@ -223,6 +223,10 @@ body {
   gap: 24px;
 }
 
+.electroniclock {
+  margin-bottom: 16px;
+}
+
 @media only screen and (max-width: 576px) {
   .headerStyle {
     padding: 12px 32px;

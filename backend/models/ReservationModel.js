@@ -60,6 +60,11 @@ module.exports = (db, type) => {
     defaultValue: false,
     allowNull: false,
    },
+   calendarEventUID: {
+    type: type.STRING(190),
+    allowNull: true,
+    unique: true,
+   },
   },
   {
    hooks: {

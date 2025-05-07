@@ -292,6 +292,7 @@ const NotificationRouter = require('./routes/notification');
 const managerInvitationRoutes = require('./routes/managerinvitation');
 const conciergeRoutes = require('./routes/concierge');
 const ServiceWorkerRouter = require('./routes/serviceworker');
+const icalRoutes = require('./routes/ical');
 
 // Routes
 // All of our routes will be prefixed with /api/v1/
@@ -307,6 +308,7 @@ app.use('/api/v1/notifications', NotificationRouter);
 app.use('/api/v1/manager-invitations', managerInvitationRoutes);
 app.use('/api/v1/concierges', conciergeRoutes);
 app.use('/api/v1/serviceworkers', ServiceWorkerRouter);
+app.use('/api/v1/icals', icalRoutes);
 
 // Serve static files from the React app
 const REACT_APP_PATH =

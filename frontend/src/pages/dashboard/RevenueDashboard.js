@@ -408,8 +408,9 @@ const RevenueDashboard = () => {
   }));
  }, [propertyRevenues]);
 
+ const loading = loadingProperties && loadingRevenue;
  // Loading indicator
- if (loadingRevenue) {
+ if (loading) {
   return (
    <Layout className="contentStyle">
     <DashboardHeader onUserData={handleUserData} />
@@ -419,24 +420,11 @@ const RevenueDashboard = () => {
        display: 'flex',
        justifyContent: 'center',
        alignItems: 'center',
-       height: '50vh',
+       height: '60vh',
       }}
      >
       <Spin size="large" />
      </div>
-    </Content>
-    {!screens.xs && <Foot />}
-   </Layout>
-  );
- }
-
- // Ensure properties is always an array and check its length
- if (!Array.isArray(properties) || properties.length === 0) {
-  return (
-   <Layout className="contentStyle">
-    <DashboardHeader onUserData={handleUserData} />
-    <Content className="container">
-     <Empty description={t('revenue.noData')} style={{ marginTop: '20vh' }} />
     </Content>
     {!screens.xs && <Foot />}
    </Layout>

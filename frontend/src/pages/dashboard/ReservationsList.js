@@ -15,14 +15,12 @@ import {
  Spin,
  Flex,
  Divider,
- Row,
- Col,
  Grid,
  Drawer,
 } from 'antd';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../context/TranslationContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import useICal from '../../hooks/useICal';
 import { useReservation } from '../../hooks/useReservation';
 import useProperty from '../../hooks/useProperty';
 import { useConcierge } from '../../hooks/useConcierge';
@@ -30,6 +28,8 @@ import dayjs from 'dayjs';
 import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import ShareModal from '../../components/common/ShareModal';
+import { parseICalLinks } from '../../utils/utils';
+import axios from 'axios';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -41,14 +41,23 @@ const ReservationsList = () => {
  const navigate = useNavigate();
  const { useBreakpoint } = Grid;
  const screens = useBreakpoint();
+
+ const {
+  fetchICalContent,
+  parseICalDates,
+  loading: icalLoading,
+  error: icalError,
+ } = useICal();
  const {
   reservations,
   loading,
+  createReservation,
   fetchReservations,
   getReservationContract,
   sendToGuest,
   generateContract,
   deleteReservation,
+  checkAvailability,
  } = useReservation();
  const {
   properties: ownedProperties,
@@ -72,6 +81,8 @@ const ReservationsList = () => {
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [shareUrl, setShareUrl] = useState('');
  const [filterDrawerVisible, setFilterDrawerVisible] = useState(false);
+
+ const [isSyncing, setIsSyncing] = useState(false);
 
  const handleUserData = (userData) => {
   setUserId(userData);
@@ -148,6 +159,137 @@ const ReservationsList = () => {
    loadContractsData();
   }
  }, [reservations]);
+
+ const checkReservationWithUID = async (uid) => {
+  try {
+   // This is a direct database query
+   const result = await axios.get(`/api/v1/reservations/check-uid/${uid}`);
+   return result.data.exists;
+  } catch (error) {
+   console.error('Error checking reservation UID:', error);
+   return false;
+  }
+ };
+
+ const syncReservationsFromiCal = async () => {
+  setIsSyncing(true);
+  try {
+   const propertiesWithiCal = allProperties.filter(
+    (p) =>
+     p.iCalLinks &&
+     Array.isArray(parseICalLinks(p.iCalLinks)) &&
+     parseICalLinks(p.iCalLinks).length > 0
+   );
+
+   if (propertiesWithiCal.length === 0) {
+    message.info(t('reservation.sync.noIcalLinks'));
+    return;
+   }
+
+   const syncResults = {
+    successful: 0,
+    failed: 0,
+    newReservations: 0,
+    skippedExisting: 0,
+   };
+
+   for (const property of propertiesWithiCal) {
+    const iCalLinks = parseICalLinks(property.iCalLinks);
+
+    for (const link of iCalLinks) {
+     try {
+      // Fetch iCal content through backend proxy
+      const icalContent = await fetchICalContent(link.url);
+
+      const events = parseICalDates(icalContent);
+
+      for (const event of events) {
+       const isReservation =
+        event.summary?.toLowerCase().includes('reserved') ||
+        event.summary?.toLowerCase().includes('booked');
+
+       if (isReservation && event.start && event.end) {
+        // Only proceed if the event has a UID
+        if (!event.uid) {
+         console.warn('Event missing UID, generating fallback ID:', event);
+         // Create a fallback UID if none exists (uncommon but possible)
+         event.uid = `${property.id}-${link.source}-${event.start}-${event.end}`;
+        }
+
+        // Check if a reservation with this UID already exists
+        const existingReservation = reservations.find(
+         (r) => r.calendarEventUID === event.uid
+        );
+
+        if (existingReservation) {
+         syncResults.skippedExisting++;
+         continue;
+        }
+
+        // Then check database via API
+        if (event.uid) {
+         const existingWithUID = await checkReservationWithUID(event.uid);
+         if (existingWithUID) {
+          syncResults.skippedExisting++;
+          continue;
+         }
+        }
+
+        const reservationData = {
+         propertyId: property.id,
+         startDate: dayjs(event.start).format('YYYY-MM-DD'),
+         endDate: dayjs(event.end).format('YYYY-MM-DD'),
+         totalPrice: 0,
+         bookingSource: link.source,
+         createdByUserId: userId,
+         status: 'draft',
+         calendarEventUID: event.uid,
+        };
+        console.log(reservationData);
+        try {
+         const availabilityResult = await checkAvailability(
+          property.id,
+          reservationData.startDate,
+          reservationData.endDate
+         );
+
+         if (availabilityResult.available) {
+          await createReservation(reservationData);
+          syncResults.newReservations++;
+         }
+        } catch (reservationError) {
+         console.error('Error creating reservation:', reservationError);
+         syncResults.failed++;
+        }
+       }
+      }
+
+      syncResults.successful++;
+     } catch (linkError) {
+      console.error(`Error processing iCal link ${link.url}:`, linkError);
+      syncResults.failed++;
+     }
+    }
+   }
+
+   // Show sync results
+   message.success(
+    `Sync completed: 
+     ${syncResults.successful} sources synced, 
+     ${syncResults.failed} sources failed, 
+     ${syncResults.newReservations} new reservations created,
+       ${syncResults.skippedExisting} duplicate reservations skipped`
+   );
+
+   // Refresh reservations list
+   await fetchReservations(userId);
+  } catch (error) {
+   console.error('Error syncing iCal reservations:', error);
+   message.error(t('reservation.sync.error'));
+  } finally {
+   setIsSyncing(false);
+  }
+ };
 
  // Check if a reservation has a contract
  const checkReservationContract = async (reservationId) => {
@@ -306,6 +448,27 @@ const ReservationsList = () => {
   ownedPropertiesLoading &&
   conciergePropertiesLoading;
 
+ if (isLoading) {
+  return (
+   <Layout className="contentStyle">
+    <DashboardHeader onUserData={handleUserData} />
+    <Content className="container">
+     <div
+      style={{
+       display: 'flex',
+       justifyContent: 'center',
+       alignItems: 'center',
+       height: '60vh',
+      }}
+     >
+      <Spin size="large" />
+     </div>
+    </Content>
+    {!screens.xs && <Foot />}
+   </Layout>
+  );
+ }
+
  return (
   <Layout className="contentStyle">
    <DashboardHeader onUserData={handleUserData} />
@@ -335,18 +498,33 @@ const ReservationsList = () => {
        />
        <Button
         type="text"
+        icon={<i className="PrimaryColor fa-regular fa-arrows-rotate fa-xl" />}
+        onClick={syncReservationsFromiCal}
+        loading={isSyncing}
+       />
+       <Button
+        type="text"
         icon={<i className="PrimaryColor fa-regular fa-circle-plus fa-2xl" />}
         onClick={handleCreateReservation}
        />
       </Space>
      ) : (
-      <Button
-       type="primary"
-       icon={<i className="fa-regular fa-plus" />}
-       onClick={handleCreateReservation}
-      >
-       {t('reservation.create.button')}
-      </Button>
+      <Space>
+       <Button
+        onClick={syncReservationsFromiCal}
+        icon={<i className="fa-regular fa-arrows-rotate" />}
+        loading={isSyncing}
+       >
+        {t('reservation.sync.button')}
+       </Button>
+       <Button
+        type="primary"
+        icon={<i className="fa-regular fa-plus" />}
+        onClick={handleCreateReservation}
+       >
+        {t('reservation.create.button')}
+       </Button>
+      </Space>
      )}
     </Flex>
 
@@ -415,83 +593,75 @@ const ReservationsList = () => {
       </Flex>
      )}
 
-     {isLoading ? (
-      <div style={{ textAlign: 'center', padding: '40px 0' }}>
-       <Spin size="large" />
-      </div>
-     ) : (
-      <List
-       dataSource={filteredReservations}
-       locale={{ emptyText: t('reservation.noReservations') }}
-       pagination={{ pageSize: 10 }}
-       renderItem={(reservation) => (
-        <List.Item
-         key={reservation.id}
-         extra={renderActionButtons(reservation)}
-        >
-         <List.Item.Meta
-          title={
+     <List
+      dataSource={filteredReservations}
+      locale={{ emptyText: t('reservation.noReservations') }}
+      loading={isLoading}
+      pagination={{ pageSize: 10 }}
+      renderItem={(reservation) => (
+       <List.Item key={reservation.id} extra={renderActionButtons(reservation)}>
+        <List.Item.Meta
+         title={
+          <Space>
+           <Text fontSize={screens.xs ? 10 : 12}>
+            {screens.xs
+             ? (reservation.property?.name || t('common.unknown')).length > 16
+               ? (reservation.property?.name || t('common.unknown')).substring(
+                  0,
+                  16
+                 ) + '...'
+               : reservation.property?.name || t('common.unknown')
+             : reservation.property?.name || t('common.unknown')}
+           </Text>
+           {getStatusTag(reservation.status)}
+          </Space>
+         }
+         description={
+          <Space direction="vertical" size={1}>
            <Space>
-            <Text fontSize={screens.xs ? 10 : 12}>
-             {screens.xs
-              ? (reservation.property?.name || t('common.unknown')).length > 16
-                ? (reservation.property?.name || t('common.unknown')).substring(
-                   0,
-                   16
-                  ) + '...'
-                : reservation.property?.name || t('common.unknown')
-              : reservation.property?.name || t('common.unknown')}
+            <i className="fa-light fa-calendar"></i>
+            <Text>
+             {dayjs(reservation.startDate).format('YYYY-MM-DD')} |{' '}
+             {dayjs(reservation.endDate).format('YYYY-MM-DD')}
             </Text>
-            {getStatusTag(reservation.status)}
            </Space>
-          }
-          description={
-           <Space direction="vertical" size={1}>
-            <Space>
-             <i className="fa-light fa-calendar"></i>
-             <Text>
-              {dayjs(reservation.startDate).format('YYYY-MM-DD')} |{' '}
-              {dayjs(reservation.endDate).format('YYYY-MM-DD')}
-             </Text>
-            </Space>
 
-            {!screens.xs && (
-             <Space>
+           {!screens.xs && (
+            <Space>
+             <>
+              <Text>
+               {t('reservation.nights')}:{' '}
+               {dayjs(reservation.endDate).diff(
+                dayjs(reservation.startDate),
+                'day'
+               )}
+              </Text>
+              <Divider type="vertical" />
+              <Text>
+               {t('reservation.totalPrice')}: {reservation.totalPrice} Dhs
+              </Text>
+             </>
+             {!screens.xs && reservation.bookingSource && (
               <>
-               <Text>
-                {t('reservation.nights')}:{' '}
-                {dayjs(reservation.endDate).diff(
-                 dayjs(reservation.startDate),
-                 'day'
-                )}
-               </Text>
                <Divider type="vertical" />
                <Text>
-                {t('reservation.totalPrice')}: {reservation.totalPrice} Dhs
+                {t(
+                 'reservation.sources.' +
+                  (reservation.bookingSource === 'direct'
+                   ? 'direct'
+                   : reservation.bookingSource)
+                )}
                </Text>
               </>
-              {!screens.xs && reservation.bookingSource && (
-               <>
-                <Divider type="vertical" />
-                <Text>
-                 {t(
-                  'reservation.sources.' +
-                   (reservation.bookingSource === 'direct'
-                    ? 'direct'
-                    : reservation.bookingSource)
-                 )}
-                </Text>
-               </>
-              )}
-             </Space>
-            )}
-           </Space>
-          }
-         />
-        </List.Item>
-       )}
-      />
-     )}
+             )}
+            </Space>
+           )}
+          </Space>
+         }
+        />
+       </List.Item>
+      )}
+     />
     </Card>
 
     {/* Mobile Filter Drawer */}
