@@ -78,7 +78,7 @@ const corsOptions = {
  origin: [
   'http://localhost:3000',
   'http://localhost:4000',
-  'https://conciergestay.pro',
+  'https://app.trevio.ma',
  ],
 };
 app.use(cors(corsOptions));
