@@ -77,6 +77,7 @@
         "updateError": "Impossible de mettre à jour les informations sur la propriété",
         "disable": "Désactiver la propriété",
         "enable": "Activer la propriété",
+        "pendingApproval": "Propriété en attente d'approbation",
         "addButton": "Ajoutez votre propriété",
         "sections": {
             "info": "Information",
@@ -167,7 +168,8 @@
         "passwordMismatch": "Le nouveau mot de passe que vous avez saisi ne correspond pas!",
         "invalidCoordinates": "Veuillez saisir des nombres valides pour les coordonnées",
         "invalidLatitude": "La latitude doit être comprise entre -90 et 90",
-        "invalidLongitude": "La longitude doit être comprise entre -180 et 180"
+        "invalidLongitude": "La longitude doit être comprise entre -180 et 180",
+        "positiveNumber": "Doit être positif"
     },
     "photo": {
         "photos": "Photos",
@@ -1014,8 +1016,11 @@
         "passwordPlaceholder": "Entrez le mot de passe",
         "phone": "Numéro de téléphone",
         "phonePlaceholder": "Entrez le numéro de téléphone",
-        "active": "actif",
-        "pending": "en attente",
+        "active": "Actif",
+        "pending": "En attente",
+        "invitedOn": "Invité le",
+        "expiresOn": "Expire le",
+        "resendInvitation": "Renvoyer l'invitation",
         "noUserId": "Aucun user sélectionné pour la création du concierge",
         "manageProperties": "Propriétés gérées",
         "noAvailableProperties": "Aucune propriété disponible",
@@ -1065,7 +1070,9 @@
             "updateSuccess": "Le concierge a été mis à jour avec succès",
             "updateError": "Échec de la mise à jour du concierge",
             "fetchError": "Échec de la récupération des concierges",
-            "fetchPropertiesError": "Impossible de récupérer les propriétés attribuées pour ce concierge"
+            "fetchPropertiesError": "Impossible de récupérer les propriétés attribuées pour ce concierge",
+            "invitationResent": "Invitation renvoyée à :",
+            "resendError": "Échec du renvoi de l'invitation"
         },
         "completeProfile": "Complétez votre profil",
         "confirmPassword": "Confirmez le mot de passe",
@@ -1082,6 +1089,11 @@
             "expired": "Cette invitation a expiré",
             "invalid": "Invitation non valide",
             "signupSuccess": "Compte créé avec succès. Veuillez vous connecter pour continuer."
+        },
+        "pendingInvitation": {
+            "title": "Invitation en attente",
+            "description": "Une invitation est déjà en attente!",
+            "instructions": "Le Concierge invité doit accepter ou refuser cette invitation avant que vous puissiez lui en envoyer une nouvelle. Veuillez vérifier auprès de lui s'il a bien reçu l'e-mail d'invitation ou attendre l'expiration de l'invitation actuelle."
         }
     },
     "contract": {
@@ -1274,7 +1286,8 @@
             "codeValidation": "Le code ne peut pas dépasser 10 chiffres",
             "howToUse": "Apprendre à utiliser la serrure électronique",
             "seeHowToUse": "Voir comment utiliser",
-            "instructions": "Instructions d'Utilisation de la Serrure"
+            "instructions": "Instructions d'Utilisation de la Serrure",
+            "codePlaceholder": "Entrez le code (10 chiffres maximum)"
         },
         "sync": {
             "button": "Synchroniser",

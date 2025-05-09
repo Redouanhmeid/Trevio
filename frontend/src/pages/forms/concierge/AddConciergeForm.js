@@ -1,5 +1,5 @@
 // components/AddManagerForm.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
  Form,
  Input,
@@ -10,6 +10,7 @@ import {
  Divider,
  Spin,
  Grid,
+ Alert,
 } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../../context/TranslationContext';
@@ -19,7 +20,7 @@ import DashboardHeader from '../../../components/common/DashboardHeader';
 import { useConcierge } from '../../../hooks/useConcierge';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const AddConciergeForm = () => {
  const { t } = useTranslation();
@@ -32,20 +33,29 @@ const AddConciergeForm = () => {
  const { useBreakpoint } = Grid;
  const screens = useBreakpoint();
 
+ // State to track if there's a pending invitation
+ const [pendingInvitation, setPendingInvitation] = useState(false);
+ const [invitedEmail, setInvitedEmail] = useState('');
+
  const onFinish = async (values) => {
   try {
    await sendManagerInvitation(values.email);
    message.success(t('managers.addSuccess'));
-   navigate('/dashboard');
+   navigate('/concierges');
   } catch (err) {
-   message.error(error?.message || t('managers.addError'));
+   if (err.response?.data?.error?.includes('invitation is already pending')) {
+    setPendingInvitation(true);
+    setInvitedEmail(values.email);
+   } else {
+    message.error(error?.message || t('managers.addError'));
+   }
   }
  };
 
  useEffect(() => {
   if (!clientId) {
    message.error(t('managers.noUserId'));
-   navigate('/dashboard');
+   navigate('/concierges');
   }
  }, [clientId, navigate]);
 
@@ -54,6 +64,25 @@ const AddConciergeForm = () => {
    <DashboardHeader />
    <Content className="container">
     <Title level={3}>{t('managers.addTitle')}</Title>
+
+    {pendingInvitation && (
+     <Alert
+      type="info"
+      showIcon
+      message={t('managers.pendingInvitation.title')}
+      description={
+       <>
+        <Text>
+         {t('managers.pendingInvitation.description', { email: invitedEmail })}
+        </Text>
+        <br />
+        <br />
+        <Text>{t('managers.pendingInvitation.instructions')}</Text>
+       </>
+      }
+      style={{ marginBottom: 24 }}
+     />
+    )}
 
     <Spin spinning={isLoading}>
      <Form

@@ -203,21 +203,27 @@ const PropertyActions = () => {
   {
    key: 'toggle',
    icon:
-    property.status === 'enable' ? (
+    property.status === 'pending' ? (
+     <i className="fa-light fa-clock" style={{ color: '#d9d9d9' }} />
+    ) : property.status === 'enable' ? (
      <i className="fa-light fa-lock-open" style={{ color: '#52C41A' }} />
     ) : (
      <i className="fa-light fa-lock" style={{ color: '#F5222D' }} />
     ),
    text:
-    property.status === 'enable'
+    property.status === 'pending'
+     ? t('property.pendingApproval')
+     : property.status === 'enable'
      ? t('property.actions.disable')
      : t('property.actions.enable'),
    danger: property.status === 'enable',
-   isPopconfirm: true,
+   isPopconfirm: property.status !== 'pending',
+   disabled: property.status === 'pending',
    confirmTitle:
     property.status === 'enable' ? t('property.disable') : t('property.enable'),
    confirmDescription: t('property.confirmToggle'),
    onConfirm: () => handleToggleProperty(property.id),
+   color: property.status === 'pending' ? '#d9d9d9' : undefined,
   },
   {
    key: 'delete',
@@ -232,6 +238,24 @@ const PropertyActions = () => {
 
  // Render button or popconfirm button based on config
  const renderButton = (button) => {
+  if (button.disabled && !button.isPopconfirm) {
+   return (
+    <Button
+     key={button.key}
+     type="text"
+     icon={button.icon}
+     disabled={true}
+     style={{
+      width: '100%',
+      textAlign: 'left',
+      color: '#d9d9d9',
+     }}
+    >
+     {button.text}
+    </Button>
+   );
+  }
+
   if (button.isPopconfirm) {
    return (
     <Popconfirm
@@ -241,15 +265,17 @@ const PropertyActions = () => {
      onConfirm={button.onConfirm}
      okText={t('common.yes')}
      cancelText={t('common.no')}
+     disabled={button.disabled}
     >
      <Button
       type="text"
       icon={button.icon}
       danger={button.danger}
+      disabled={button.disabled}
       style={{
        width: '100%',
        textAlign: 'left',
-       color: button.color,
+       color: button.disabled ? '#d9d9d9' : button.color,
       }}
      >
       {button.text}

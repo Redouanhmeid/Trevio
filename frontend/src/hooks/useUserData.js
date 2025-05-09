@@ -363,6 +363,30 @@ export const useUserData = () => {
   }
  };
 
+ const getPendingManagerInvitations = async (clientId) => {
+  try {
+   const response = await axios.get(
+    `/api/v1/manager-invitations/pending/${clientId}`
+   );
+   return response.data;
+  } catch (error) {
+   console.error('Error fetching pending manager invitations:', error);
+   return [];
+  }
+ };
+
+ const resendManagerInvitation = async (invitationId) => {
+  try {
+   const response = await axios.post(
+    `/api/v1/manager-invitations/resend/${invitationId}`
+   );
+   return response.data;
+  } catch (error) {
+   console.error('Error resending manager invitation:', error);
+   throw error;
+  }
+ };
+
  return {
   isLoading,
   userData,
@@ -383,6 +407,8 @@ export const useUserData = () => {
   verifyManagerInvitation,
   acceptManagerInvitation,
   verifyUserPassword,
+  getPendingManagerInvitations,
+  resendManagerInvitation,
   success,
   error,
   errorMsg,

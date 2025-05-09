@@ -96,6 +96,7 @@ export const PropertiesSection = withPropertiesGuard(
      onConfirm={() => onToggleEnable(property.id)}
      okText={t('common.yes')}
      cancelText={t('common.no')}
+     disabled={property.status === 'pending'}
      icon={
       property.status === 'enable' ? (
        <i
@@ -110,7 +111,9 @@ export const PropertiesSection = withPropertiesGuard(
       )
      }
     >
-     {property.status === 'enable' ? (
+     {property.status === 'pending' ? (
+      <i className="Dashicon fa-light fa-clock" style={{ color: '#d9d9d9' }} />
+     ) : property.status === 'enable' ? (
       <i
        className="Dashicon Pointer fa-light fa-lock-open"
        style={{ color: '#52C41A' }}

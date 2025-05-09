@@ -290,13 +290,13 @@ const GenerateContract = () => {
     throw new Error('Failed to update reservation');
    }
 
-   message.success(t('reservation.updateSuccess'));
+   message.success(t('messages.updateSuccess'));
 
    // Refresh the reservation data
    await fetchReservation(id);
    setEditMode(false);
   } catch (error) {
-   message.error(t('reservation.updateError'));
+   message.error(t('messages.updateError'));
   }
  };
 
@@ -334,13 +334,13 @@ const GenerateContract = () => {
     throw new Error('Failed to update reservation');
    }
 
-   message.success(t('reservation.updateSuccess'));
+   message.success(t('messages.updateSuccess'));
 
    // Refresh the reservation data
    await fetchReservation(id);
    setIsDesktopFormVisible(false);
   } catch (error) {
-   message.error(t('reservation.updateError'));
+   message.error(t('messages.updateError'));
   }
  };
 
@@ -695,7 +695,7 @@ const GenerateContract = () => {
         </Descriptions>
 
         <Modal
-         title={t('reservation.edit')}
+         title={t('common.edit')}
          open={isDesktopFormVisible}
          onCancel={hideDesktopEditForm}
          footer={[
@@ -753,6 +753,8 @@ const GenerateContract = () => {
                type: 'number',
                min: 0,
                message: t('validation.positiveNumber'),
+               transform: (value) =>
+                value === '' || value === undefined ? 0 : Number(value),
               },
              ]}
             >

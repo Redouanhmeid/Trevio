@@ -252,16 +252,22 @@ const PropertiesDashboard = () => {
    <Tooltip
     key={`toggle-tooltip-${property.id}`}
     title={
-     property.status === 'enable' ? t('property.disable') : t('property.enable')
+     property.status === 'pending'
+      ? t('property.pendingApproval')
+      : property.status === 'enable'
+      ? t('property.disable')
+      : t('property.enable')
     }
    >
     <Popconfirm
      key={`toggle-${property.id}`}
+     disabled={property.status === 'pending'}
      title={
       property.status === 'enable'
        ? t('property.disable')
        : t('property.enable')
      }
+     placement="topLeft"
      description={t('property.confirmToggle')}
      onConfirm={() => handleToggleProperty(property.id)}
      okText={t('common.yes')}
@@ -285,7 +291,12 @@ const PropertiesDashboard = () => {
       type="link"
       shape="circle"
       icon={
-       property.status === 'enable' ? (
+       property.status === 'pending' ? (
+        <i
+         className="Dashicon fa-light fa-clock"
+         style={{ color: '#d9d9d9' }}
+        />
+       ) : property.status === 'enable' ? (
         <i
          className="Dashicon Pointer fa-light fa-lock-open"
          style={{ color: '#52C41A' }}

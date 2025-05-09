@@ -7,6 +7,8 @@ const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
 const os = require('os');
+const cron = require('node-cron');
+const { ManagerInvitation } = require('./models');
 
 // Create our App
 const app = express();
@@ -325,6 +327,16 @@ app.get('/proxy', async (req, res) => {
  } catch (error) {
   console.error('Error fetching image:', error);
   res.status(500).send('Error fetching image');
+ }
+});
+
+// Run once daily at midnight to purge expired invitations
+cron.schedule('0 0 * * *', async () => {
+ try {
+  const count = await ManagerInvitation.purgeExpiredInvitations();
+  console.log(`Daily maintenance: Purged ${count} expired manager invitations`);
+ } catch (error) {
+  console.error('Error purging expired invitations:', error);
  }
 });
 

@@ -77,6 +77,7 @@
         "updateError": "Unable to update property information",
         "disable": "Disable property",
         "enable": "Enable property",
+        "pendingApproval": "Property pending approval",
         "addButton": "Add your property",
         "sections": {
             "info": "Information",
@@ -167,7 +168,8 @@
         "passwordMismatch": "The passwords you entered do not match!",
         "invalidCoordinates": "Please enter valid numbers for coordinates",
         "invalidLatitude": "Latitude must be between -90 and 90",
-        "invalidLongitude": "Longitude must be between -180 and 180"
+        "invalidLongitude": "Longitude must be between -180 and 180",
+        "positiveNumber": "Must be positive"
     },
     "photo": {
         "photos": "Photos",
@@ -1014,8 +1016,11 @@
         "passwordPlaceholder": "Enter password",
         "phone": "Phone Number",
         "phonePlaceholder": "Enter phone number",
-        "active": "active",
-        "pending": "pending",
+        "active": "Active",
+        "pending": "Pending",
+        "invitedOn": "Invited on",
+        "expiresOn": "Expires on",
+        "resendInvitation": "Resend the invitation",
         "noUserId": "No user selected for concierge creation",
         "manageProperties": "Managed properties",
         "noAvailableProperties": "No available properties",
@@ -1065,7 +1070,9 @@
             "updateSuccess": "Manager updated successfully",
             "updateError": "Failed to update concierge",
             "fetchError": "Failed to fetch concierges",
-            "fetchPropertiesError": "Failed to fetch assigned properties for this concierge"
+            "fetchPropertiesError": "Failed to fetch assigned properties for this concierge",
+            "invitationResent": "Invitation resent to:",
+            "resendError": "Failed to resend invitation"
         },
         "completeProfile": "Complete your profile",
         "confirmPassword": "Confirm password",
@@ -1082,6 +1089,11 @@
             "expired": "This invitation has expired",
             "invalid": "Invalid invitation",
             "signupSuccess": "Account created successfully. Please log in to continue."
+        },
+        "pendingInvitation": {
+            "title": "Pending Invitation",
+            "description": "There is already a pending invitation!",
+            "instructions": "The invited concierge needs to accept or decline this invitation before you can send a new one. Please check with them if they received the invitation email or wait until the current invitation expires."
         }
     },
     "contract": {
@@ -1274,7 +1286,8 @@
             "codeValidation": "Code cannot exceed 10 digits",
             "howToUse": "Learn how to use the electronic lock",
             "seeHowToUse": "See how to use",
-            "instructions": "Lock Usage Instructions"
+            "instructions": "Lock Usage Instructions",
+            "codePlaceholder": "Enter code (max 10 digits)"
         },
         "sync": {
             "button": "Synchronize",

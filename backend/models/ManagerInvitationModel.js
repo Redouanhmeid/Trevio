@@ -1,4 +1,5 @@
 module.exports = (db, type) => {
+ const { Op } = require('sequelize');
  const managerInvitation = db.define('managerinvitation', {
   id: {
    type: type.INTEGER,
@@ -36,6 +37,20 @@ module.exports = (db, type) => {
    defaultValue: type.NOW,
   },
  });
+
+ // Static method to purge expired invitations
+ managerInvitation.purgeExpiredInvitations = async function () {
+  const now = new Date();
+  // Find and delete all expired invitations
+  const result = await this.destroy({
+   where: {
+    expiresAt: { [Op.lt]: now },
+    status: 'pending',
+   },
+  });
+
+  return result; // Return number of deleted invitations
+ };
 
  return managerInvitation;
 };

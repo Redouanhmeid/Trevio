@@ -11,17 +11,12 @@ import {
  Popover,
  Divider,
 } from 'antd';
-import {
- LockOutlined,
- EyeOutlined,
- EyeInvisibleOutlined,
- InfoCircleOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useTranslation } from '../../../context/TranslationContext';
 import { useReservation } from '../../../hooks/useReservation';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const ElectronicLockCodeManager = ({
  reservationId,
@@ -29,7 +24,7 @@ const ElectronicLockCodeManager = ({
  initialLockCode = null,
 }) => {
  const { t } = useTranslation();
- const { updateElectronicLock, loading: lockUpdateLoading } = useReservation();
+ const { updateElectronicLock } = useReservation();
  const [form] = Form.useForm();
 
  const [lockEnabled, setLockEnabled] = useState(initialLockEnabled);
@@ -180,14 +175,6 @@ const ElectronicLockCodeManager = ({
          visible: codeVisible,
          onVisibleChange: setCodeVisible,
         }}
-        addonAfter={
-         <Button
-          type="text"
-          icon={codeVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-          onClick={() => setCodeVisible(!codeVisible)}
-          style={{ border: 'none', padding: 0 }}
-         />
-        }
         style={{ width: '100%' }}
        />
       </Form.Item>

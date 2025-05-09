@@ -53,7 +53,6 @@ import AddConciergeForm from './pages/forms/concierge/AddConciergeForm';
 import ConciergeProperties from './pages/manager/ConciergeProperties';
 import AssignConciergeForm from './pages/forms/concierge/AssignConciergeForm';
 import ManagerVerification from './pages/forms/concierge/ManagerVerification';
-import ManagerDashboard from './pages/manager/ManagerDashboard';
 import GuestContractView from './pages/guest/GuestContractView';
 import EmailVerificationMessage from './pages/forms/sign/EmailVerificationMessage';
 import CreateReservationForm from './pages/forms/reservation/CreateReservationForm';
@@ -170,14 +169,6 @@ const router = createBrowserRouter([
  {
   path: '/manager/verify/:token',
   element: <ManagerVerification />,
- },
- {
-  path: '/manager/dashboard',
-  element: (
-   <ProtectedRoute>
-    <ManagerDashboard />
-   </ProtectedRoute>
-  ),
  },
 
  {

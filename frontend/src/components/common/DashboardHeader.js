@@ -85,6 +85,24 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    path: '/concierges',
    pathPatterns: ['/add-concierge', '/assign-concierge', '/concierges'],
   },
+  // Add admin panel to main menu items - only shown if user is an admin
+  ...(userData && userData.role === 'admin'
+   ? [
+      {
+       key: 'adminpanel',
+       label: t('header.dashboard'),
+       path: '/adminpanel',
+       pathPatterns: [
+        '/adminpanel',
+        '/clients',
+        '/properties',
+        '/nearbyplaces',
+        '/pendingproperties',
+        '/pendingnearbyplaces',
+       ],
+      },
+     ]
+   : []),
  ];
 
  useEffect(() => {
@@ -108,7 +126,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    // If path doesn't match any menu item, set selectedKey to null or empty string
    setSelectedKey('');
   }
- }, [location.pathname]);
+ }, [location.pathname, menuItems]);
 
  // Drawer functions
  const showDrawer = () => {
@@ -146,21 +164,6 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
     },
    },
   ];
-
-  // Only add admin panel option if user is an admin
-  if (userData && userData.role === 'admin') {
-   items.push({
-    key: 'adminpanel',
-    label: (
-     <Link to="/adminpanel">
-      <Text strong>{t('header.dashboard')}</Text>
-     </Link>
-    ),
-    icon: <i className="PrimaryColor HeaderIcon fa-light fa-bolt" />,
-   });
-  }
-
-  // Add remaining items
   items.push(
    {
     key: 'referral',

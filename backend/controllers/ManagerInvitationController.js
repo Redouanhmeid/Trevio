@@ -95,7 +95,7 @@ const verifyManagerInvitation = async (req, res) => {
   }
 
   if (new Date() > invitation.expiresAt) {
-   await invitation.update({ status: 'expired' });
+   await invitation.destroy();
    return res.status(400).json({ error: 'Invitation has expired' });
   }
 
@@ -265,9 +265,89 @@ const completeInvitationAfterSignup = async (req, res) => {
  }
 };
 
+// Get pending invitations for a client
+const getPendingInvitations = async (req, res) => {
+ const { clientId } = req.params;
+
+ try {
+  const pendingInvitations = await ManagerInvitation.findAll({
+   where: {
+    clientId,
+    status: 'pending',
+   },
+   order: [['createdAt', 'DESC']],
+  });
+
+  res.status(200).json(pendingInvitations);
+ } catch (error) {
+  console.error('Error fetching pending invitations:', error);
+  res.status(500).json({
+   error: 'Failed to fetch pending invitations',
+   details: error.message,
+  });
+ }
+};
+
+// Resend invitation
+const resendInvitation = async (req, res) => {
+ const { invitationId } = req.params;
+
+ try {
+  const invitation = await ManagerInvitation.findByPk(invitationId, {
+   include: [
+    {
+     model: User,
+     as: 'client',
+     attributes: ['id', 'firstname', 'lastname', 'email'],
+    },
+   ],
+  });
+
+  if (!invitation) {
+   return res.status(404).json({ error: 'Invitation not found' });
+  }
+
+  if (invitation.status !== 'pending') {
+   return res
+    .status(400)
+    .json({ error: 'Only pending invitations can be resent' });
+  }
+
+  // Update expiration date
+  const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000); // 72 hours
+  await invitation.update({ expiresAt });
+
+  // Generate invitation link
+  const invitationLink = `${process.env.FRONTEND_URL}/manager/verify/${invitation.token}`;
+
+  // Create client name from found client
+  const clientFullName = `${invitation.client.firstname} ${invitation.client.lastname}`;
+
+  // Send invitation email again
+  await sendInvitationMail(
+   invitation.invitedEmail,
+   invitationLink,
+   clientFullName
+  );
+
+  res.status(200).json({
+   message: 'Invitation resent successfully',
+   invitation,
+  });
+ } catch (error) {
+  console.error('Error resending invitation:', error);
+  res.status(500).json({
+   error: 'Failed to resend invitation',
+   details: error.message,
+  });
+ }
+};
+
 module.exports = {
  sendManagerInvitation,
  verifyManagerInvitation,
  acceptManagerInvitation,
  completeInvitationAfterSignup,
+ getPendingInvitations,
+ resendInvitation,
 };
