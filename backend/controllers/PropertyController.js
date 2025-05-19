@@ -2,8 +2,8 @@ const haversine = require('haversine-distance');
 const {
  Property,
  Equipment,
- PropertyTask,
  UserProperty,
+ ServiceWorker,
 } = require('../models');
 const { deletePropertyFiles } = require('../helpers/utils');
 const { Sequelize, Op } = require('sequelize');
@@ -533,6 +533,106 @@ const updatePropertyICalLinks = async (req, res) => {
  }
 };
 
+// GET /api/proprietes/:propertyId (for chatbot)
+const getPropertyForChatbot = async (req, res) => {
+ try {
+  const { propertyId } = req.params;
+
+  // Fetch property details first
+  const property = await Property.findByPk(propertyId);
+
+  if (!property) {
+   return res.status(404).json({
+    status: 'error',
+    message: 'Property not found',
+   });
+  }
+
+  // Fetch equipments separately to avoid association issues
+  const equipments = await Equipment.findAll({
+   where: { propertyId },
+   attributes: ['id', 'name', 'description', 'wifiName', 'wifiPassword'],
+  });
+
+  // Fetch guest-visible service workers separately
+  const serviceWorkers = await ServiceWorker.findAll({
+   where: {
+    propertyId,
+    isVisibleToGuests: true,
+   },
+   attributes: ['id', 'name', 'category', 'phone', 'email'],
+  });
+
+  // Parse JSON fields if they are strings
+  const parseJsonField = (field) => {
+   if (typeof field === 'string') {
+    try {
+     return JSON.parse(field);
+    } catch (e) {
+     return field;
+    }
+   }
+   return field;
+  };
+
+  // Prepare response with all relevant information for chatbot
+  const propertyData = {
+   id: property.id,
+   name: property.name,
+   description: property.description,
+   type: property.type,
+   placeName: property.placeName,
+   price: property.price,
+   capacity: property.capacity,
+   rooms: property.rooms,
+   beds: property.beds,
+
+   // Check-in information
+   checkIn: {
+    time: property.checkInTime,
+    earlyCheckIn: parseJsonField(property.earlyCheckIn),
+    accessToProperty: parseJsonField(property.accessToProperty),
+    guestAccessInfo: property.guestAccessInfo,
+    videoCheckIn: property.videoCheckIn,
+   },
+
+   // Check-out information
+   checkOut: {
+    time: property.checkOutTime,
+    lateCheckOutPolicy: parseJsonField(property.lateCheckOutPolicy),
+    beforeCheckOut: parseJsonField(property.beforeCheckOut),
+    additionalCheckOutInfo: property.additionalCheckOutInfo,
+   },
+
+   // House rules and amenities
+   houseRules: parseJsonField(property.houseRules),
+   basicEquipements: parseJsonField(property.basicEquipements),
+
+   // Equipment details
+   equipments: equipments || [],
+
+   // Service workers (guest-visible only)
+   serviceWorkers: serviceWorkers || [],
+
+   // Photos
+   photos: parseJsonField(property.photos),
+   frontPhoto: property.frontPhoto,
+  };
+
+  res.status(200).json({
+   status: 'success',
+   propriete: propertyData,
+  });
+ } catch (error) {
+  console.error('Error in getPropertyForChatbot:', error);
+  res.status(500).json({
+   status: 'error',
+   message: 'Failed to retrieve property details',
+   details: error.message,
+  });
+ }
+};
+
 module.exports = {
  getProperties,
  getPendingProperties,
@@ -555,4 +655,5 @@ module.exports = {
  toggleEnableProperty,
  getIdFromHash,
  updatePropertyICalLinks,
+ getPropertyForChatbot,
 };

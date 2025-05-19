@@ -279,8 +279,6 @@ export const useReservation = () => {
    if (getReservationContract) {
     await getReservationContract(reservationId);
    }
-
-   message.success(t('reservation.sentToGuestSuccess'));
    return data;
   } catch (error) {
    setError(error.message);

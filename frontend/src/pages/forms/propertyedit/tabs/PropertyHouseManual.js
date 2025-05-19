@@ -322,7 +322,11 @@ const PropertyHouseManual = ({ property, propertyId, onPropertyUpdated }) => {
  };
 
  if (loading) {
-  return <Spin size="large" />;
+  return (
+   <div className="loading">
+    <Spin size="large" />
+   </div>
+  );
  }
 
  const parsedBasicEquipements = parseArrayProperty(property.basicEquipements);

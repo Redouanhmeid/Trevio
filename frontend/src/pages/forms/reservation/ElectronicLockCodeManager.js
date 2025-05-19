@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
  Card,
  Form,
@@ -12,7 +12,6 @@ import {
  Divider,
 } from 'antd';
 import { LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import { useTranslation } from '../../../context/TranslationContext';
 import { useReservation } from '../../../hooks/useReservation';
 
@@ -22,54 +21,120 @@ const ElectronicLockCodeManager = ({
  reservationId,
  initialLockEnabled = false,
  initialLockCode = null,
+ onSettingsChange,
 }) => {
  const { t } = useTranslation();
  const { updateElectronicLock } = useReservation();
  const [form] = Form.useForm();
 
+ // Use refs to track the current values to avoid stale closures
+ const lockEnabledRef = useRef(initialLockEnabled);
+ const lockCodeRef = useRef(initialLockCode);
+
+ // State management
  const [lockEnabled, setLockEnabled] = useState(initialLockEnabled);
- const [lockCode, setLockCode] = useState(initialLockCode);
+ const [lockCode, setLockCode] = useState(initialLockCode || '');
  const [codeVisible, setCodeVisible] = useState(false);
  const [isLoading, setIsLoading] = useState(false);
 
- useEffect(() => {
-  setLockEnabled(initialLockEnabled);
-  setLockCode(initialLockCode);
+ // Track if component is mounted to prevent state updates after unmount
+ const isMountedRef = useRef(true);
 
-  form.setFieldsValue({
-   lockCode: initialLockCode || '',
-  });
+ useEffect(() => {
+  return () => {
+   isMountedRef.current = false;
+  };
+ }, []);
+
+ // Sync props with state when they change
+ useEffect(() => {
+  if (lockEnabledRef.current !== initialLockEnabled) {
+   lockEnabledRef.current = initialLockEnabled;
+   setLockEnabled(initialLockEnabled);
+  }
+
+  if (lockCodeRef.current !== initialLockCode) {
+   lockCodeRef.current = initialLockCode;
+   const newCode = initialLockCode || '';
+   setLockCode(newCode);
+   form.setFieldsValue({ lockCode: newCode });
+  }
  }, [initialLockEnabled, initialLockCode, form]);
 
- const toggleLockEnabled = async (checked) => {
-  try {
-   setIsLoading(true);
+ // Debounced update function to prevent rapid API calls
+ const updateLockSettings = async (enabled, code = null) => {
+  if (!isMountedRef.current) return;
 
-   // If enabling the lock, ensure there's a code or generate one
-   let code = lockCode;
-   if (checked && !code) {
-    code = generateRandomCode();
-    setLockCode(code);
-    form.setFieldsValue({ lockCode: code });
+  setIsLoading(true);
+
+  try {
+   // Validate inputs before making API call
+   if (enabled && (!code || code.trim() === '')) {
+    throw new Error(t('reservation.lock.codeRequired'));
    }
 
-   // Update the reservation with the new lock settings
-   const result = await updateElectronicLock(reservationId, checked, code);
+   if (enabled && code && !/^\d+$/.test(code)) {
+    throw new Error(t('reservation.lock.codeFormat'));
+   }
 
-   if (result) {
-    setLockEnabled(checked);
+   if (enabled && code && code.length > 10) {
+    throw new Error(t('reservation.lock.codeMaxLength'));
+   }
+
+   const result = await updateElectronicLock(reservationId, enabled, code);
+
+   if (result && isMountedRef.current) {
+    // Update refs and state only if the API call was successful
+    lockEnabledRef.current = enabled;
+    lockCodeRef.current = enabled ? code : null;
+    setLockEnabled(enabled);
+    setLockCode(enabled ? code : '');
+
+    // Update form values
+    form.setFieldsValue({
+     lockCode: enabled ? code : '',
+    });
+
+    // Trigger parent update callback
+    if (onSettingsChange) {
+     onSettingsChange();
+    }
    }
   } catch (error) {
    console.error('Error updating electronic lock settings:', error);
-   message.error(t('reservation.lock.updateError'));
+
+   if (isMountedRef.current) {
+    // Revert state to previous values on error
+    setLockEnabled(lockEnabledRef.current);
+    setLockCode(lockCodeRef.current || '');
+    form.setFieldsValue({
+     lockCode: lockCodeRef.current || '',
+    });
+
+    // Show user-friendly error message
+    const errorMessage = error.message || t('reservation.lock.updateError');
+    message.error(errorMessage);
+   }
   } finally {
-   setIsLoading(false);
+   if (isMountedRef.current) {
+    setIsLoading(false);
+   }
   }
  };
 
+ const toggleLockEnabled = async (checked) => {
+  let codeToUse = lockCodeRef.current;
+
+  // If enabling the lock and no code exists, generate one
+  if (checked && (!codeToUse || codeToUse.trim() === '')) {
+   codeToUse = generateRandomCode();
+  }
+
+  await updateLockSettings(checked, codeToUse);
+ };
+
  const generateRandomCode = () => {
-  // Generate a random code (6 digits by default)
-  const length = 6; // Default length
+  const length = 6;
   return Math.floor(
    Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1)
   ).toString();
@@ -81,25 +146,23 @@ const ElectronicLockCodeManager = ({
   form.setFieldsValue({ lockCode: newCode });
  };
 
- const handleCodeChange = (e) => {
-  setLockCode(e.target.value);
- };
-
  const handleSubmit = async () => {
   try {
-   await form.validateFields();
-   setIsLoading(true);
+   const values = await form.validateFields();
+   const newCode = values.lockCode?.trim() || '';
 
-   // Update only the lock code
-   await axios.patch(`/api/v1/reservations/${reservationId}/electronic-lock`, {
-    electronicLockCode: lockCode,
-    electronicLockEnabled: lockEnabled,
-   });
+   // Only update if the code has actually changed
+   if (newCode !== lockCodeRef.current) {
+    await updateLockSettings(lockEnabled, newCode);
+   }
   } catch (error) {
-   console.error('Error updating lock code:', error);
-  } finally {
-   setIsLoading(false);
+   console.error('Form validation error:', error);
   }
+ };
+
+ const handleCodeChange = (e) => {
+  const value = e.target.value;
+  setLockCode(value);
  };
 
  // Information content for the Popover
@@ -124,78 +187,95 @@ const ElectronicLockCodeManager = ({
       content={lockInfoContent}
       title={t('reservation.lock.infoTitle')}
       trigger="click"
+      placement="bottomLeft"
      >
       <InfoCircleOutlined style={{ cursor: 'pointer', color: '#1890ff' }} />
      </Popover>
     </Space>
    }
    className="electroniclock"
+   loading={isLoading}
   >
-   <Space>
-    <Text>{t('reservation.lock.enabled')}</Text>
-    <Switch
-     checked={lockEnabled}
-     onChange={toggleLockEnabled}
-     loading={isLoading}
-     className="custom-switch-purple"
-    />
-    <Text>
-     {lockEnabled
-      ? t('reservation.lock.active')
-      : t('reservation.lock.inactive')}
-    </Text>
-   </Space>
+   <Space direction="vertical" style={{ width: '100%' }}>
+    <Space>
+     <Text>{t('reservation.lock.enabled')}</Text>
+     <Switch
+      checked={lockEnabled}
+      onChange={toggleLockEnabled}
+      loading={isLoading}
+      className="custom-switch-purple"
+     />
+     <Text>
+      {lockEnabled
+       ? t('reservation.lock.active')
+       : t('reservation.lock.inactive')}
+     </Text>
+    </Space>
 
-   {lockEnabled && (
-    <>
-     <Divider style={{ margin: '12px 0' }} />
-     <Form form={form} layout="vertical" onFinish={handleSubmit}>
-      <Form.Item
-       name="lockCode"
-       label={t('reservation.lock.code')}
-       className="hide-required-mark"
-       rules={[
-        { required: true, message: t('reservation.lock.codeRequired') },
-        {
-         pattern: /^\d+$/,
-         message: t('reservation.lock.codeFormat'),
-        },
-        {
-         max: 10,
-         message: t('reservation.lock.codeMaxLength'),
-        },
-       ]}
+    {lockEnabled && (
+     <>
+      <Divider style={{ margin: '12px 0' }} />
+      <Form
+       form={form}
+       layout="vertical"
+       onFinish={handleSubmit}
+       initialValues={{ lockCode: lockCode }}
       >
-       <Input.Password
-        value={lockCode}
-        onChange={handleCodeChange}
-        placeholder="Access code (max 10 digits)"
-        maxLength={10}
-        visibilityToggle={{
-         visible: codeVisible,
-         onVisibleChange: setCodeVisible,
-        }}
-        style={{ width: '100%' }}
-       />
-      </Form.Item>
+       <Form.Item
+        name="lockCode"
+        label={t('reservation.lock.code')}
+        className="hide-required-mark"
+        rules={[
+         { required: true, message: t('reservation.lock.codeRequired') },
+         {
+          pattern: /^\d+$/,
+          message: t('reservation.lock.codeFormat'),
+         },
+         {
+          max: 10,
+          message: t('reservation.lock.codeMaxLength'),
+         },
+        ]}
+       >
+        <Input.Password
+         value={lockCode}
+         onChange={handleCodeChange}
+         placeholder={
+          t('reservation.lock.codePlaceholder') || 'Access code (max 10 digits)'
+         }
+         maxLength={10}
+         visibilityToggle={{
+          visible: codeVisible,
+          onVisibleChange: setCodeVisible,
+         }}
+         style={{ width: '100%' }}
+         disabled={isLoading}
+        />
+       </Form.Item>
 
-      <Space>
-       <Button onClick={handleGenerateCode}>
-        {t('reservation.lock.generateCode')}
-       </Button>
-       <Button type="primary" htmlType="submit" loading={isLoading}>
-        {t('common.save')}
-       </Button>
-      </Space>
-     </Form>
+       <Space>
+        <Button onClick={handleGenerateCode} disabled={isLoading}>
+         {t('reservation.lock.generateCode')}
+        </Button>
+        <Button
+         type="primary"
+         htmlType="submit"
+         loading={isLoading}
+         disabled={form.getFieldValue('lockCode') === lockCodeRef.current}
+        >
+         {t('common.save')}
+        </Button>
+       </Space>
+      </Form>
 
-     {lockCode && (
-      <div style={{ marginTop: 16 }}>
-       <Text type="secondary">{t('reservation.lock.validityInfo')}</Text>
-      </div>
-     )}
-    </>
-   )}
+      {lockCode && (
+       <div style={{ marginTop: 16 }}>
+        <Text type="secondary">{t('reservation.lock.validityInfo')}</Text>
+       </div>
+      )}
+     </>
+    )}
+   </Space>
   </Card>
  );
 };

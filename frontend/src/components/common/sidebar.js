@@ -39,14 +39,14 @@ const Sidebar = ({ reservationCode, onCollapse }) => {
    label: <LanguageSelectorSideBar />,
   },
   {
-   key: 'FAQs',
+   key: '/faqs',
    icon: <i className="fa-regular fa-square-question" />,
    label: t('common.FAQs'),
   },
   {
-   key: 'privacyPolicy',
+   key: '/privacy-policy',
    icon: <i className="fa-regular fa-shield-halved" />,
-   label: t('guestForm.privacyPolicy.title'),
+   label: t('privacyPolicy.title'),
   },
  ];
 

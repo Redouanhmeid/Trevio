@@ -27,6 +27,7 @@ const { Title, Text, Paragraph } = Typography;
 // Helper function to get the icon for each service worker category
 const getCategoryIcon = (category) => {
  const icons = {
+  'co-host': <i className="PrimaryColor fa-regular fa-headset fa-xl" />,
   plumber: <i className="PrimaryColor fa-regular fa-pipe-valve fa-xl" />,
   technician: <i className="PrimaryColor fa-regular fa-toolbox fa-xl" />,
   housekeeper: <i className="PrimaryColor fa-regular fa-broom fa-xl" />,

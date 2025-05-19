@@ -25,8 +25,8 @@ const { Title, Text } = Typography;
 const AddConciergeForm = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
- const { assignConcierge, isLoading, error } = useConcierge();
- const { sendManagerInvitation } = useUserData();
+ const { assignConcierge, isLoading } = useConcierge();
+ const { sendManagerInvitation, error: userDataError } = useUserData();
  const [form] = Form.useForm();
  const location = useLocation();
  const clientId = location.state?.clientId;
@@ -36,8 +36,13 @@ const AddConciergeForm = () => {
  // State to track if there's a pending invitation
  const [pendingInvitation, setPendingInvitation] = useState(false);
  const [invitedEmail, setInvitedEmail] = useState('');
+ const [formError, setFormError] = useState(null);
+ const [loading, setLoading] = useState(false);
 
  const onFinish = async (values) => {
+  setLoading(true);
+  setFormError(null);
+
   try {
    await sendManagerInvitation(values.email);
    message.success(t('managers.addSuccess'));
@@ -47,17 +52,21 @@ const AddConciergeForm = () => {
     setPendingInvitation(true);
     setInvitedEmail(values.email);
    } else {
-    message.error(error?.message || t('managers.addError'));
+    setFormError(err.response?.data?.error || t('managers.addError'));
    }
+  } finally {
+   setLoading(false);
   }
  };
 
  useEffect(() => {
   if (!clientId) {
-   message.error(t('managers.noUserId'));
-   navigate('/concierges');
+   setFormError(t('managers.noUserId'));
+   setTimeout(() => {
+    navigate('/concierges');
+   }, 2000);
   }
- }, [clientId, navigate]);
+ }, [clientId, navigate, t]);
 
  return (
   <Layout className="contentStyle">
@@ -84,7 +93,17 @@ const AddConciergeForm = () => {
      />
     )}
 
-    <Spin spinning={isLoading}>
+    {formError && (
+     <Alert
+      type="error"
+      showIcon
+      message={t('common.error')}
+      description={formError}
+      style={{ marginBottom: 24 }}
+     />
+    )}
+
+    <Spin spinning={loading || isLoading}>
      <Form
       form={form}
       layout="vertical"

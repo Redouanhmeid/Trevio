@@ -18,6 +18,8 @@ const {
  updateElectronicLock,
  checkAvailability,
  checkReservationUID,
+ identifierUtilisateur,
+ listUserReservations,
 } = require('../controllers/ReservationController');
 
 // Get all reservations
@@ -68,5 +70,9 @@ router.patch('/:reservationId/electronic-lock', updateElectronicLock);
 router.get('/property/:propertyId/check-availability', checkAvailability);
 
 router.get('/check-uid/:uid', checkReservationUID);
+
+// route for chatbot user identification
+router.post('/identifierUtilisateur', identifierUtilisateur);
+router.post('/listUserReservations', listUserReservations);
 
 module.exports = router;

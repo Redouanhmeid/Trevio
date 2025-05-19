@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Button } from 'antd';
-import Logo from '../assets/logo.png';
+import Logo from '../assets/Trevio-10.png';
 
 const PDFContractGenerator = ({ formData, signature, t }) => {
  const [isGenerating, setIsGenerating] = useState(false);
@@ -85,6 +85,8 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
    });
 
    const currentDate = new Date().toLocaleDateString();
+   const reference = Math.random().toString(36).substr(2, 9).toUpperCase();
+
    const firstPageContent = `
         <div style="font-family: Arial, sans-serif; color: #333;">
           <!-- Header -->
@@ -92,9 +94,9 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
           <div style="margin-bottom: 20px">
           <img src="${Logo}" style="width: 160px">
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #aa7e42; padding-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #6D5FFA; padding-bottom: 10px;">
             <div>
-              <h1 style="color: #aa7e42; margin: 0; font-size: 24px;">${t(
+              <h1 style="color: #6D5FFA; margin: 0; font-size: 24px;">${t(
                'guestForm.pdfTitle'
               )}</h1>
               <p style="margin: 5px 0 0 0; font-size: 12px;">${t(
@@ -102,10 +104,7 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
               )}: ${currentDate}</p>
             </div>
             <div>
-              <p style="margin: 0; font-size: 12px;">REF: #${Math.random()
-               .toString(36)
-               .substr(2, 9)
-               .toUpperCase()}</p>
+              <p style="margin: 0; font-size: 12px;">REF: #${reference}</p>
             </div>
           </div>
 
@@ -115,10 +114,10 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
             <div>
               <!-- Personal Information -->
               <div style="margin-bottom: 25px;">
-                <h2 style="color: #aa7e42; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <h2 style="color: #6D5FFA; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
                 ${t('guestForm.personalData.pdfTitle')}
                 </h2>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <div style="background: #F8F7FE; padding: 15px; border-radius: 12px;">
                 <p style="margin: 8px 0;"><strong>${t(
                  'guestForm.personalData.firstName'
                 )}:</strong> ${formData.firstname}</p>
@@ -142,10 +141,10 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
 
               <!-- Contact Information -->
               <div style="margin-bottom: 25px;">
-                <h2 style="color: #aa7e42; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <h2 style="color: #6D5FFA; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
                 ${t('guestForm.contact.title')}
                 </h2>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <div style="background: #F8F7FE; padding: 15px; border-radius: 12px;">
                   <p style="margin: 8px 0;"><strong>${t(
                    'guestForm.contact.email'
                   )}</strong> ${formData.email}</p>
@@ -160,10 +159,10 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
             <div>
               <!-- Residence Information -->
               <div style="margin-bottom: 25px;">
-                <h2 style="color: #aa7e42; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <h2 style="color: #6D5FFA; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
                    ${t('guestForm.personalData.residence')}
                 </h2>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <div style="background: #F8F7FE; padding: 15px; border-radius: 12px;">
                 <p style="margin: 8px 0;"><strong>${t(
                  'guestForm.personalData.residenceCountry'
                 )}:</strong> ${formData.residenceCountry}</p>
@@ -181,10 +180,10 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
 
               <!-- Document Information -->
               <div style="margin-bottom: 25px;">
-                <h2 style="color: #aa7e42; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                <h2 style="color: #6D5FFA; font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
                    ${t('guestForm.identity.title')}
                 </h2>
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <div style="background: #F8F7FE; padding: 15px; border-radius: 12px;">
                   <p style="margin: 8px 0;"><strong>${t(
                    'guestForm.identity.documentType.label'
                   )}:</strong> ${formData.documentType}</p>
@@ -211,146 +210,146 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
 
    const secondPageContent = `
     
- <div style="font-family: Arial, sans-serif; color: #333;">
+ <div style="font-family: Arial, sans-serif; color: #181D27;">
     <!-- Logo -->
     <div style="margin-top: 10px, margin-bottom: 30px">
        <img src="${Logo}" style="width: 160px">
      </div>
 	 <div>
-       <h1 style="color: rgb(170, 126, 66); font-size: 20px; margin-bottom: 15px;">${t(
-        'guestForm.privacyPolicy.title'
+       <h1 style="color: #6D5FFA; font-size: 20px; margin-bottom: 15px;">${t(
+        'guestForm.contractTerms.title'
        )}</h1>
-       <div style="width: 100%; border-top: 1px solid rgb(170, 126, 66);">
+       <div style="width: 100%; border-top: 1px solid #6D5FFA;">
       </div>
 
     <!-- Content -->
 
     <div>
-    <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-     'guestForm.privacyPolicy.contract.title'
+    <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+     'guestForm.contractTerms.contract.title'
     )}</h2>
     <p style="margin-bottom: 20px; font-size: 12px; line-height: 1.6;">${t(
-     'guestForm.privacyPolicy.contract.content'
+     'guestForm.contractTerms.contract.content'
     )}</p>
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.arrival.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.arrival.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.arrival.guestNotify'
+         'guestForm.contractTerms.arrival.guestNotify'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.arrival.departure'
+         'guestForm.contractTerms.arrival.departure'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.behavior.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.behavior.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.behavior.noise'
+         'guestForm.contractTerms.behavior.noise'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.behavior.care'
+         'guestForm.contractTerms.behavior.care'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.behavior.smoking'
+         'guestForm.contractTerms.behavior.smoking'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.behavior.pets'
+         'guestForm.contractTerms.behavior.pets'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.facilities.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.facilities.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.facilities.usage'
+         'guestForm.contractTerms.facilities.usage'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.facilities.responsibility'
+         'guestForm.contractTerms.facilities.responsibility'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.cleanliness.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.cleanliness.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.cleanliness.maintain'
+         'guestForm.contractTerms.cleanliness.maintain'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.cleanliness.service'
+         'guestForm.contractTerms.cleanliness.service'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.security.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.security.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.security.lock'
+         'guestForm.contractTerms.security.lock'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.security.emergency'
+         'guestForm.contractTerms.security.emergency'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.morocco.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.morocco.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.morocco.laws'
+         'guestForm.contractTerms.morocco.laws'
         )}</li>
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.morocco.consequences'
+         'guestForm.contractTerms.morocco.consequences'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.internet.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.internet.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.internet.content'
+         'guestForm.contractTerms.internet.content'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.disputes.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.disputes.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.disputes.content'
+         'guestForm.contractTerms.disputes.content'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.cancellation.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.cancellation.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.cancellation.content'
+         'guestForm.contractTerms.cancellation.content'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.unauthorized.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.unauthorized.title'
       )}</h2>
       <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px;">
         <li style="margin-bottom: 8px; font-size: 12px;">• ${t(
-         'guestForm.privacyPolicy.unauthorized.content'
+         'guestForm.contractTerms.unauthorized.content'
         )}</li>
       </ul>
 
-      <h2 style="color: #aa7e42; font-size: 16px; margin: 25px 0 15px;">${t(
-       'guestForm.privacyPolicy.signature.title'
+      <h2 style="color: #6D5FFA; font-size: 16px; margin: 25px 0 15px;">${t(
+       'guestForm.contractTerms.signature.title'
       )}</h2>
       <p style="font-size: 12px; line-height: 1.6;">${t(
-       'guestForm.privacyPolicy.signature.content'
+       'guestForm.contractTerms.signature.content'
       )}</p>
     </div>
 
@@ -359,7 +358,7 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
       <div style="position: absolute; bottom: 0; right: 0; width: auto">
         <p style="margin: 5px 0; font-size: 12px;">${t(
          'guestForm.signature.date'
-        )}: ${currentDate}</p>
+        )}: ${new Date(formData.submissionDate).toLocaleDateString()}</p>
           <img src="${signatureImageData}" style="width: auto; height: 220px; object-fit: contain; margin: 15px 0;">
           <p style="margin: 5px 0; font-size: 12px; color: #666;">${t(
            'guestForm.signature.confirmation'
@@ -376,7 +375,7 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
    const url = URL.createObjectURL(pdfOutput);
    const link = document.createElement('a');
    link.href = url;
-   link.download = `guest-form-${formData.firstname}-${formData.lastname}.pdf`;
+   link.download = `reservation-contract-${reference}-${formData.firstname}-${formData.lastname}.pdf`;
    link.click();
    URL.revokeObjectURL(url);
 
@@ -390,11 +389,12 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
 
  return (
   <Button
-   type="default"
+   type="primary"
    key="download"
+   icon={<i className="fa-regular fa-arrow-down-to-line"></i>}
    onClick={generatePDF}
    disabled={isGenerating}
-   size="large"
+   block
   >
    {isGenerating
     ? t('guestForm.success.downloadingPdf')

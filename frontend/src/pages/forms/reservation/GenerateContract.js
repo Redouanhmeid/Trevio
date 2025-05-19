@@ -50,6 +50,7 @@ import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import useReservationContract from '../../../hooks/useReservationContract';
 import ElectronicLockCodeManager from './ElectronicLockCodeManager';
+import PDFContractGenerator from '../../../utils/PDFContractGenerator';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -938,7 +939,7 @@ const GenerateContract = () => {
          <Col xs={24} md={14}>
           <Card className="reservation-guest-card">
            <Title level={3}>{t('contracts.guestInformation')}</Title>
-           <Space direction="vertical" size="small" style={{ width: '100%' }}>
+           <Space direction="vertical" style={{ width: '100%' }}>
             <Flex justify="space-between">
              <Space>
               <i className="fa-regular fa-user PrimaryColor" />
@@ -1325,6 +1326,36 @@ const GenerateContract = () => {
          </Card>
         )}
         <Space>
+         <PDFContractGenerator
+          formData={{
+           firstname: contract.firstname,
+           lastname: contract.lastname,
+           middlename: contract.middlename,
+           birthDate: dayjs(contract.birthDate),
+           sex: contract.sex,
+           Nationality: contract.nationality,
+           email: contract.email,
+           phone: contract.phone,
+           residenceCountry: contract.residenceCountry,
+           residenceCity: contract.residenceCity,
+           residenceAddress: contract.residenceAddress,
+           residencePostalCode: contract.residencePostalCode,
+           documentType: contract.documentType,
+           documentNumber: contract.documentNumber,
+           documentIssueDate: dayjs(contract.documentIssueDate),
+           submissionDate: contract.updatedAt,
+          }}
+          signature={
+           contract.signatureImageUrl
+            ? {
+               toDataURL: () => contract.signatureImageUrl,
+               isEmpty: () => false,
+              }
+            : null
+          }
+          filelist={[]} // Empty since contracts don't have attached files
+          t={t}
+         />
          <Button
           onClick={() =>
            navigate(`/contractslist?hash=${reservation.property.hashId}`)

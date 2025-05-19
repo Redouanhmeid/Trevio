@@ -68,6 +68,7 @@ const useServiceWorker = () => {
 
  // Create a new service worker
  const createServiceWorker = async (workerData) => {
+  console.log(workerData);
   setLoading(true);
   setError(null);
   try {

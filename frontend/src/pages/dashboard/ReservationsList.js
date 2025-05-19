@@ -274,11 +274,13 @@ const ReservationsList = () => {
 
    // Show sync results
    message.success(
-    `Sync completed: 
-     ${syncResults.successful} sources synced, 
-     ${syncResults.failed} sources failed, 
-     ${syncResults.newReservations} new reservations created,
-       ${syncResults.skippedExisting} duplicate reservations skipped`
+    `${t('reservation.sync.completed')}: ${syncResults.successful} ${t(
+     'reservation.sync.sourcesSynced'
+    )}, ${syncResults.failed} ${t('reservation.sync.sourcesFailed')}, ${
+     syncResults.newReservations
+    } ${t('reservation.sync.newReservations')}, ${
+     syncResults.skippedExisting
+    } ${t('reservation.sync.duplicatesSkipped')}`
    );
 
    // Refresh reservations list

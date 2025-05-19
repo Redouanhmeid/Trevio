@@ -19,6 +19,7 @@ module.exports = (db, type) => {
   },
   category: {
    type: type.ENUM(
+    'co-host',
     'plumber',
     'technician',
     'housekeeper',

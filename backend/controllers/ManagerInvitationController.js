@@ -28,6 +28,7 @@ const sendManagerInvitation = async (req, res) => {
   // Check if there's already a pending invitation
   const existingInvitation = await ManagerInvitation.findOne({
    where: {
+    clientId,
     invitedEmail,
     status: 'pending',
    },
@@ -69,6 +70,75 @@ const sendManagerInvitation = async (req, res) => {
   res
    .status(500)
    .json({ error: 'Failed to send invitation', details: error.message });
+ }
+};
+
+const sendManagerInvitationDirect = async (req, res) => {
+ const { invitedEmail, clientId, email } = req.body;
+
+ if (!invitedEmail || !clientId || !email) {
+  return res.status(400).json({ error: 'Missing required fields' });
+ }
+
+ try {
+  // Verify the client exists and matches the provided email
+  const client = await User.findOne({
+   where: {
+    id: clientId,
+    email: email,
+   },
+  });
+
+  if (!client) {
+   return res
+    .status(403)
+    .json({ error: 'Unauthorized to send manager invitations' });
+  }
+
+  // Check if there's already a pending invitation
+  const existingInvitation = await ManagerInvitation.findOne({
+   where: {
+    clientId,
+    invitedEmail,
+    status: 'pending',
+   },
+  });
+
+  if (existingInvitation) {
+   return res
+    .status(400)
+    .json({ error: 'An invitation is already pending for this email' });
+  }
+
+  // Generate token and create invitation
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000); // 72 hours
+
+  const invitation = await ManagerInvitation.create({
+   clientId,
+   invitedEmail,
+   token,
+   expiresAt,
+  });
+
+  // Generate invitation link
+  const invitationLink = `${process.env.FRONTEND_URL}/manager/verify/${token}`;
+  // Create client name from found client
+  const clientFullName = `${client.firstname} ${client.lastname}`;
+
+  // Send invitation email using template
+  await sendInvitationMail(invitedEmail, invitationLink, clientFullName);
+
+  res.status(200).json({
+   message: 'Invitation sent successfully',
+   invitation,
+  });
+ } catch (error) {
+  console.error('Error sending manager invitation:', error);
+  res.status(500).json({
+   error: 'Failed to send invitation',
+   details: error.message,
+  });
  }
 };
 
@@ -345,6 +415,7 @@ const resendInvitation = async (req, res) => {
 
 module.exports = {
  sendManagerInvitation,
+ sendManagerInvitationDirect,
  verifyManagerInvitation,
  acceptManagerInvitation,
  completeInvitationAfterSignup,

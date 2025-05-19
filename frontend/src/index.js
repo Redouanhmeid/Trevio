@@ -5,10 +5,8 @@ import './App.css';
 import './components/common/CustomSpinner';
 import { AuthContextProvider } from './context/AuthContext';
 import { TranslationProvider } from './context/TranslationContext';
-import themeConfig from './utils/themeConfig';
 import trevioThemeConfig from './utils/trevioThemeConfig';
 import frFR from 'antd/locale/fr_FR';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -25,13 +23,10 @@ import Signup from './pages/forms/sign/signup';
 import Account from './pages/forms/account';
 import Guestform from './pages/forms/guestform';
 import MapPicker from './pages/forms/propertypost/MapPicker';
-import Dashboard from './pages/Dashboard';
 import PropertyDetails from './pages/components/PropertyDetails';
 import CreateNearbyPlace from './pages/forms/createnearbyplace';
-import AddProperty from './pages/forms/propertypost/AddProperty';
 import EditProperty from './pages/forms/propertyedit/EditProperty';
 import EditBasicInfo from './pages/forms/propertyedit/EditBasicInfo';
-import EditEquipements from './pages/forms/propertyedit/EditEquipements';
 import EditPhotos from './pages/forms/propertyedit/EditPhotos';
 import EditHouseRules from './pages/forms/propertyedit/EditHouseRules';
 import EditCheckIn from './pages/forms/propertyedit/EditCheckIn';
@@ -50,7 +45,7 @@ import RevTasksDashboard from './pages/RevTasksDashboard';
 import PropertyRevenueDashboard from './pages/admin/PropertyRevenueDashboard';
 import PropertyTaskDashboard from './pages/dashboard/PropertyTaskDashboard';
 import AddConciergeForm from './pages/forms/concierge/AddConciergeForm';
-import ConciergeProperties from './pages/manager/ConciergeProperties';
+import ConciergeProperties from './pages/dashboard/ConciergeProperties';
 import AssignConciergeForm from './pages/forms/concierge/AssignConciergeForm';
 import ManagerVerification from './pages/forms/concierge/ManagerVerification';
 import GuestContractView from './pages/guest/GuestContractView';
@@ -67,6 +62,13 @@ import PropertyManagement from './pages/forms/propertyedit/PropertyManagement';
 import Home from './pages/home';
 import PropertyActions from './pages/dashboard/PropertyActions';
 import ProtectedAddProperty from './pages/forms/propertypost/ProtectedAddProperty';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import FAQPage from './pages/FAQPage';
+import ConciergeArea from './pages/dashboard/concierge/ConciergeArea';
+import ConciergeAreaProperties from './pages/dashboard/concierge/ConciergeAreaProperties';
+import ConciergeAreaReservations from './pages/dashboard/concierge/ConciergeAreaReservations';
+import ConciergeAreaTasks from './pages/dashboard/concierge/ConciergeAreaTasks';
+import ConciergeAreaRevenue from './pages/dashboard/concierge/ConciergeAreaRevenue';
 
 const router = createBrowserRouter([
  {
@@ -393,6 +395,54 @@ const router = createBrowserRouter([
   element: (
    <ProtectedRoute>
     <ManageServiceWorkers />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/privacy-policy',
+  element: <PrivacyPolicyPage />,
+ },
+ {
+  path: '/faqs',
+  element: <FAQPage />,
+ },
+ {
+  path: '/concierge/dashboard',
+  element: (
+   <ProtectedRoute>
+    <ConciergeArea />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/concierge/properties',
+  element: (
+   <ProtectedRoute>
+    <ConciergeAreaProperties />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/concierge/reservations',
+  element: (
+   <ProtectedRoute>
+    <ConciergeAreaReservations />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/concierge/tasks',
+  element: (
+   <ProtectedRoute>
+    <ConciergeAreaTasks />
+   </ProtectedRoute>
+  ),
+ },
+ {
+  path: '/concierge/revenue',
+  element: (
+   <ProtectedRoute>
+    <ConciergeAreaRevenue />
    </ProtectedRoute>
   ),
  },

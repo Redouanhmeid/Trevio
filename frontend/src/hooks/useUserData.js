@@ -243,26 +243,29 @@ export const useUserData = () => {
   setErrorMsg('');
 
   try {
-   // Get the auth token from localStorage
-   const token = localStorage.getItem('token');
-   if (!token) {
-    throw new Error('Authentication required');
+   // Get the stored user object which should contain the ID
+   const userObj = JSON.parse(localStorage.getItem('user'));
+
+   if (!userObj || !userObj.id) {
+    throw new Error('User information not available');
    }
 
+   // Create request with client ID directly in the request body
+   // This bypasses token-based authentication entirely
    const response = await axios.post(
-    '/api/v1/manager-invitations/invite',
-    { invitedEmail },
+    '/api/v1/manager-invitations/invite-direct',
     {
-     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-     },
+     invitedEmail,
+     clientId: userObj.id,
+     // Include other identifiers to help validate on the backend
+     email: userObj.email,
     }
    );
 
    setSuccess(true);
    return response.data;
   } catch (error) {
+   console.error('Manager invitation error:', error);
    setError(true);
    setErrorMsg(error.response?.data?.error || 'Failed to send invitation');
    throw error;

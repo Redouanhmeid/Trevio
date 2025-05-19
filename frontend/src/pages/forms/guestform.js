@@ -29,7 +29,7 @@ import {
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import SignatureCanvas from 'react-signature-canvas';
 import { Nationalities } from '../../utils/nationalities';
@@ -40,7 +40,6 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import ShareModal from '../../components/common/ShareModal';
 import { useTranslation } from '../../context/TranslationContext';
-import PDFContractGenerator from '../../utils/PDFContractGenerator';
 import dayjs from 'dayjs';
 
 const { Title, Paragraph, Link, Text } = Typography;
@@ -302,7 +301,7 @@ const Guestform = () => {
 
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout className="container">
     <Flex gap="middle" align="start" justify="space-between">
      <Button
@@ -670,7 +669,7 @@ const Guestform = () => {
    </Modal>
 
    <Modal
-    title={t('guestForm.privacyPolicy.title')}
+    title={t('guestForm.contractTerms.title')}
     open={isPrivacyModalOpen}
     onCancel={() => setIsPrivacyModalOpen(false)}
     onOk={() => setIsPrivacyModalOpen(false)}
@@ -678,69 +677,69 @@ const Guestform = () => {
     width={800}
    >
     <div className="privacy-policy" style={{ whiteSpace: 'pre-line' }}>
-     <Title level={4}>{t('guestForm.privacyPolicy.contract.title')}</Title>
-     <Paragraph>{t('guestForm.privacyPolicy.contract.content')}</Paragraph>
+     <Title level={4}>{t('guestForm.contractTerms.contract.title')}</Title>
+     <Paragraph>{t('guestForm.contractTerms.contract.content')}</Paragraph>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.arrival.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.arrival.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.arrival.guestNotify')}</li>
-      <li>{t('guestForm.privacyPolicy.arrival.departure')}</li>
+      <li>{t('guestForm.contractTerms.arrival.guestNotify')}</li>
+      <li>{t('guestForm.contractTerms.arrival.departure')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.behavior.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.behavior.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.behavior.noise')}</li>
-      <li>{t('guestForm.privacyPolicy.behavior.care')}</li>
-      <li>{t('guestForm.privacyPolicy.behavior.smoking')}</li>
-      <li>{t('guestForm.privacyPolicy.behavior.pets')}</li>
+      <li>{t('guestForm.contractTerms.behavior.noise')}</li>
+      <li>{t('guestForm.contractTerms.behavior.care')}</li>
+      <li>{t('guestForm.contractTerms.behavior.smoking')}</li>
+      <li>{t('guestForm.contractTerms.behavior.pets')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.facilities.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.facilities.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.facilities.usage')}</li>
-      <li>{t('guestForm.privacyPolicy.facilities.responsibility')}</li>
+      <li>{t('guestForm.contractTerms.facilities.usage')}</li>
+      <li>{t('guestForm.contractTerms.facilities.responsibility')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.cleanliness.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.cleanliness.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.cleanliness.maintain')}</li>
-      <li>{t('guestForm.privacyPolicy.cleanliness.service')}</li>
+      <li>{t('guestForm.contractTerms.cleanliness.maintain')}</li>
+      <li>{t('guestForm.contractTerms.cleanliness.service')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.security.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.security.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.security.lock')}</li>
-      <li>{t('guestForm.privacyPolicy.security.emergency')}</li>
+      <li>{t('guestForm.contractTerms.security.lock')}</li>
+      <li>{t('guestForm.contractTerms.security.emergency')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.morocco.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.morocco.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.morocco.laws')}</li>
-      <li>{t('guestForm.privacyPolicy.morocco.consequences')}</li>
+      <li>{t('guestForm.contractTerms.morocco.laws')}</li>
+      <li>{t('guestForm.contractTerms.morocco.consequences')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.internet.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.internet.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.internet.content')}</li>
+      <li>{t('guestForm.contractTerms.internet.content')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.disputes.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.disputes.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.disputes.content')}</li>
+      <li>{t('guestForm.contractTerms.disputes.content')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.cancellation.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.cancellation.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.cancellation.content')}</li>
+      <li>{t('guestForm.contractTerms.cancellation.content')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.unauthorized.title')}</Title>
+     <Title level={4}>{t('guestForm.contractTerms.unauthorized.title')}</Title>
      <ul>
-      <li>{t('guestForm.privacyPolicy.unauthorized.content')}</li>
+      <li>{t('guestForm.contractTerms.unauthorized.content')}</li>
      </ul>
 
-     <Title level={4}>{t('guestForm.privacyPolicy.signature.title')}</Title>
-     <Paragraph>{t('guestForm.privacyPolicy.signature.content')}</Paragraph>
+     <Title level={4}>{t('guestForm.contractTerms.signature.title')}</Title>
+     <Paragraph>{t('guestForm.contractTerms.signature.content')}</Paragraph>
     </div>
    </Modal>
   </Layout>

@@ -22,6 +22,7 @@ const {
  toggleEnableProperty,
  getIdFromHash,
  updatePropertyICalLinks,
+ getPropertyForChatbot,
 } = require('../controllers/PropertyController');
 
 // Route to get all properties
@@ -58,5 +59,8 @@ router.put('/:id/toggleenable', toggleEnableProperty);
 router.get('/hash/:hashId', getIdFromHash);
 
 router.put('/:id/ical-links', updatePropertyICalLinks);
+
+// Use /proprietes instead of /properties to match the French API spec
+router.get('/proprietes/:propertyId', getPropertyForChatbot);
 
 module.exports = router;

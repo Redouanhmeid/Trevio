@@ -392,7 +392,8 @@
         "passwordRequired": "Password is required to confirm this action",
         "more": "more",
         "stay": "Stay",
-        "leave": "Leave"
+        "leave": "Leave",
+        "navigation": "Navigation"
     },
     "timePicker": {
         "defaultCheckIn": "Default time: 11:00",
@@ -724,8 +725,8 @@
             "datesNoLongerAvailable": "These dates are no longer available. Please select different dates.",
             "conflictingBookings": "Property is already booked during these dates"
         },
-        "privacyPolicy": {
-            "title": "Privacy Policy",
+        "contractTerms": {
+            "title": "Contract Terms",
             "contract": {
                 "title": "1. Contract Purpose",
                 "content": "This contract concerns the rental of a property for a determined period. The guest agrees to respect the house rules throughout the duration of the stay."
@@ -1042,6 +1043,7 @@
         "assignSuccess": "Properties assigned successfully",
         "assignError": "Failed to assign properties",
         "propertyAlreadyAssigned": "Already assigned to another concierge",
+        "noPendingInvitations": "No pending invitations found",
         "properties": {
             "available": "Available properties",
             "assigned": "Properties assigned",
@@ -1291,13 +1293,18 @@
         },
         "sync": {
             "button": "Synchronize",
-            "complete": "Sync completed: {{successful}} successful, {{failed}} failed (Total properties: {{total}})",
+            "completed": "Sync completed",
+            "sourcesSynced": "sources synced",
+            "sourcesFailed": "sources failed",
+            "newReservations": "new reservations created",
+            "duplicatesSkipped": "duplicate reservations skipped",
             "noIcalLinks": "No iCal links found for syncing. Please add calendar links to your properties first."
         }
     },
     "serviceWorker": {
         "title": "Service Providers",
         "categories": {
+            "co-host": "Co-host",
             "plumber": "Plumber",
             "technician": "Technician",
             "housekeeper": "Housekeeper",
@@ -1392,6 +1399,237 @@
             "fieldsRequired": "Both fields are required",
             "invalidUrl": "Please enter a valid URL",
             "platformExists": "This booking platform is already added"
+        }
+    },
+    "privacyPolicy": {
+        "title": "Privacy Policy",
+        "lastUpdated": "Last updated:",
+        "introduction": {
+            "title": "Introduction",
+            "content": "This Privacy Policy explains how Trevio collects, uses, stores, and protects your personal information when you use our services to book and stay at properties listed on our platform."
+        },
+        "dataCollection": {
+            "title": "Information We Collect",
+            "personal": {
+                "subtitle": "Personal Information",
+                "content": "We collect personal information you provide when creating a reservation, including your name, email address, phone number, date of birth, nationality, and residence address."
+            },
+            "identification": {
+                "subtitle": "Identification Documents",
+                "content": "In accordance with local laws and regulations, we collect copies of identification documents (passport, national ID, etc.) for guest registration purposes."
+            },
+            "booking": {
+                "subtitle": "Booking Information",
+                "content": "We collect information about your reservations, including check-in/check-out dates, property preferences, and special requests."
+            },
+            "communication": {
+                "subtitle": "Communication Data",
+                "content": "We collect information from communications between you, us, and property hosts, including messages and support interactions."
+            }
+        },
+        "dataUse": {
+            "title": "How We Use Your Information",
+            "purposes": [
+                "Process and manage your reservations",
+                "Verify your identity as required by local laws",
+                "Communicate with you about your booking",
+                "Provide customer support and assistance",
+                "Comply with legal and regulatory requirements",
+                "Improve our services and platform",
+                "Send important updates about your reservation"
+            ]
+        },
+        "dataSharing": {
+            "title": "Information Sharing",
+            "hosts": {
+                "subtitle": "With Property Hosts",
+                "content": "We share necessary booking and guest information with property hosts to facilitate your stay and ensure legal compliance."
+            },
+            "authorities": {
+                "subtitle": "With Authorities",
+                "content": "We may share information with local authorities when required by law, particularly for guest registration and tax compliance."
+            },
+            "services": {
+                "subtitle": "With Service Providers",
+                "content": "We share information with trusted service providers who help us operate our platform and provide services to you."
+            }
+        },
+        "dataProtection": {
+            "title": "Data Protection and Security",
+            "security": {
+                "subtitle": "Security Measures",
+                "content": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction."
+            },
+            "retention": {
+                "subtitle": "Data Retention",
+                "content": "We retain your personal information only as long as necessary for the purposes described in this policy or as required by law."
+            },
+            "encryption": {
+                "subtitle": "Data Encryption",
+                "content": "All sensitive data is encrypted both in transit and at rest using industry-standard encryption protocols."
+            }
+        },
+        "yourRights": {
+            "title": "Your Rights",
+            "content": "Under applicable data protection laws, you have the right to:",
+            "rights": [
+                "Access your personal information",
+                "Correct inaccurate information",
+                "Request deletion of your data",
+                "Object to processing of your data",
+                "Data portability",
+                "Withdraw consent (where applicable)"
+            ]
+        },
+        "cookies": {
+            "title": "Cookies and Tracking",
+            "content": "We use cookies and similar technologies to improve your experience on our platform. You can control cookie settings through your browser preferences."
+        },
+        "legalBasis": {
+            "title": "Legal Basis for Processing",
+            "content": "We process your personal information based on:",
+            "bases": [
+                "Contract performance (to provide booking services)",
+                "Legal obligations (guest registration requirements)",
+                "Legitimate interests (platform improvement, fraud prevention)",
+                "Your consent (marketing communications)"
+            ]
+        },
+        "childrenPrivacy": {
+            "title": "Children's Privacy",
+            "content": "Our services are not intended for children under 16 years of age. We do not knowingly collect personal information from children under 16."
+        },
+        "contact": {
+            "title": "Contact Information",
+            "content": "If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at:",
+            "email": "privacy@trevio.ma",
+            "address": "Trevio Privacy Team, [Your Address]"
+        },
+        "changes": {
+            "title": "Changes to This Policy",
+            "content": "We may update this Privacy Policy from time to time. We will notify you of any material changes by email or through our platform."
+        }
+    },
+    "faq": {
+        "title": "Frequently Asked Questions",
+        "description": "Find answers to the most frequently asked questions about Trevio",
+        "searchPlaceholder": "Search FAQs...",
+        "noResults": "No results found for your search.",
+        "categories": {
+            "general": "General",
+            "booking": "Booking & Reservations",
+            "property": "Property Management",
+            "guest": "Guest Services",
+            "technical": "Technical Support",
+            "billing": "Billing & Payments"
+        },
+        "questions": {
+            "general": [
+                {
+                    "question": "What is Trevio?",
+                    "answer": "Trevio is a comprehensive digital concierge and rental management platform that streamlines the entire rental lifecycle from property listing to guest check-out, with specialized features for electronic access management and legal compliance."
+                },
+                {
+                    "question": "How does Trevio work?",
+                    "answer": "Property owners list their properties on Trevio, manage reservations, create digital contracts with guests, and use our electronic lock system for secure keyless access. Guests receive digital guidebooks and can complete check-in processes online."
+                },
+                {
+                    "question": "Is Trevio available in multiple languages?",
+                    "answer": "Yes, Trevio supports both English and French interfaces to serve our diverse user base."
+                }
+            ],
+            "booking": [
+                {
+                    "question": "How do I create a reservation?",
+                    "answer": "Go to the Reservations section, click 'Create New Reservation', select your property, choose dates, set pricing, and add guest details. The system will generate a contract for the guest to complete."
+                },
+                {
+                    "question": "Can I sync my calendar with other platforms?",
+                    "answer": "Yes, you can sync your calendar with Airbnb, Booking.com, and other platforms using iCal links to prevent double bookings."
+                },
+                {
+                    "question": "What happens after I create a reservation?",
+                    "answer": "Once created, you can generate a contract and send it to the guest. The guest will receive an email with a link to complete their registration and sign the contract digitally."
+                },
+                {
+                    "question": "Can I modify a reservation after it's created?",
+                    "answer": "Yes, you can edit reservation details such as total price before the contract is completed. Once signed, major changes require creating a new reservation."
+                }
+            ],
+            "property": [
+                {
+                    "question": "How do I add a new property?",
+                    "answer": "Click 'Add Property' in the Properties section. Complete the multi-step form including basic information, photos, amenities, house rules, and check-in/check-out details. Properties require admin approval before being published."
+                },
+                {
+                    "question": "What are digital guidebooks?",
+                    "answer": "Digital guidebooks provide guests with comprehensive information about your property, including check-in instructions, house rules, amenities, and nearby attractions. They're automatically generated from your property details."
+                },
+                {
+                    "question": "How do I manage property equipment cards?",
+                    "answer": "In the Property Management section, you can create equipment cards for WiFi, appliances, and other amenities. Each card can include instructions, photos, or videos to help guests use the equipment properly."
+                },
+                {
+                    "question": "Can I assign properties to managers?",
+                    "answer": "Yes, you can invite concierges/managers and assign specific properties to them. They'll have access to manage assigned properties, reservations, and guest communications."
+                }
+            ],
+            "guest": [
+                {
+                    "question": "How do guests complete check-in?",
+                    "answer": "Guests receive an email link to complete their registration online. They provide personal information, upload ID documents, and sign the rental contract electronically before arrival."
+                },
+                {
+                    "question": "What is the electronic lock system?",
+                    "answer": "Our electronic lock system allows secure keyless access. You can generate access codes for each reservation that work only during the guest's stay period."
+                },
+                {
+                    "question": "Can guests access property information?",
+                    "answer": "Yes, guests receive access to a digital guidebook with property details, check-in instructions, house rules, and information about nearby attractions and services."
+                },
+                {
+                    "question": "How do guests sign contracts?",
+                    "answer": "Contracts are signed electronically through our platform. Guests can review terms, provide their information, and sign with a digital signature on any device."
+                }
+            ],
+            "technical": [
+                {
+                    "question": "What browsers are supported?",
+                    "answer": "Trevio works best on modern browsers including Chrome, Firefox, Safari, and Edge. Mobile devices are fully supported with responsive design."
+                },
+                {
+                    "question": "How do I reset my password?",
+                    "answer": "Click 'Forgot Password' on the login page, enter your email, and follow the instructions in the reset email. You'll receive a verification code to create a new password."
+                },
+                {
+                    "question": "Can I access Trevio on mobile devices?",
+                    "answer": "Yes, Trevio is fully responsive and optimized for mobile devices. You can manage properties, reservations, and guest communications from your smartphone or tablet."
+                },
+                {
+                    "question": "What if I encounter technical issues?",
+                    "answer": "Contact our support team through the platform or email support@trevio.ma. Provide details about the issue and any error messages you're seeing."
+                }
+            ],
+            "billing": [
+                {
+                    "question": "How does Trevio pricing work?",
+                    "answer": "Contact our sales team for detailed pricing information based on your needs. We offer various plans depending on the number of properties and features required."
+                },
+                {
+                    "question": "Can I track revenue through Trevio?",
+                    "answer": "Yes, our revenue tracking system allows you to record and analyze property income by month and year, with detailed reporting and visualization tools."
+                },
+                {
+                    "question": "Are there any setup fees?",
+                    "answer": "Setup fees vary depending on your plan and requirements. Contact our sales team for a personalized quote."
+                }
+            ]
+        },
+        "contactSupport": {
+            "title": "Still need help?",
+            "description": "Can't find what you're looking for? Our support team is here to help.",
+            "button": "Contact Support",
+            "email": "support@trevio.ma"
         }
     }
 }
