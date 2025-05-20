@@ -9,7 +9,6 @@ import {
  Input,
  Button,
  Steps,
- Divider,
  Descriptions,
  Result,
  Alert,
@@ -17,23 +16,16 @@ import {
  Spin,
  message,
  Modal,
- Tag,
- Tooltip,
- Empty,
  Image,
- Popconfirm,
  Grid,
  Form,
  InputNumber,
 } from 'antd';
 import {
  ArrowLeftOutlined,
- MailOutlined,
  LinkOutlined,
  CheckCircleOutlined,
  CloseCircleOutlined,
- LockOutlined,
- CopyOutlined,
  ExclamationCircleOutlined,
  EditOutlined,
  SaveOutlined,
@@ -74,7 +66,7 @@ const GenerateContract = () => {
  } = useReservation();
  const { loading, updateContractStatus } = useReservationContract();
 
- const { createRevenueFromReservation, loading: revenueLoading } = useRevenue();
+ const { createRevenueFromReservation } = useRevenue();
  const { createNotification } = useNotification();
  const [userId, setUserId] = useState(null);
 
@@ -90,6 +82,7 @@ const GenerateContract = () => {
  const [editMode, setEditMode] = useState(false);
  const [editForm] = Form.useForm();
  const [editingReservation, setEditingReservation] = useState(null);
+ const [isLoading, setIsLoading] = useState(false);
 
  const handleUserData = (userData) => {
   setUserId(userData);
@@ -172,8 +165,8 @@ const GenerateContract = () => {
 
  const markContractComplete = async (contractId) => {
   try {
+   setIsLoading(true);
    await updateContractStatus(contractId, 'COMPLETED');
-   message.success(t('reservation.contract.completeSuccess'));
 
    const revenueData = {
     propertyId: reservation.propertyId,
@@ -203,27 +196,31 @@ const GenerateContract = () => {
     await createNotification(notificationData);
    } catch (notificationError) {
     console.error('Error creating notification:', notificationError);
-    // Continue execution even if notification creation fails
    }
    // Refresh data to update UI
    await getReservationContract(id);
    setCurrentStep(3);
+   message.success(t('reservation.contract.completeSuccess'));
   } catch (error) {
    message.error(t('reservation.contract.completeError'));
+  } finally {
+   setIsLoading(false);
   }
  };
 
  const markContractRejected = async (contractId) => {
-  console.log(contractId);
   try {
+   setIsLoading(true);
    await updateContractStatus(contractId, 'REJECTED');
-   message.success(t('reservation.contract.rejectSuccess'));
 
    // Refresh data to update UI
    await getReservationContract(id);
    setCurrentStep(0); // Reset to draft state after rejection
+   message.success(t('reservation.contract.rejectSuccess'));
   } catch (error) {
    message.error(t('reservation.contract.rejectError'));
+  } finally {
+   setIsLoading(false);
   }
  };
 
@@ -1085,6 +1082,7 @@ const GenerateContract = () => {
           type="primary"
           onClick={() => markContractComplete(contract.id)}
           icon={<CheckCircleOutlined />}
+          loading={isLoading}
          >
           {t('reservation.contract.markComplete')}
          </Button>
@@ -1093,6 +1091,7 @@ const GenerateContract = () => {
           danger
           onClick={() => markContractRejected(contract.id)}
           icon={<CloseCircleOutlined />}
+          loading={isLoading}
          >
           {t('reservation.contract.markRejected')}
          </Button>

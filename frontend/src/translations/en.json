@@ -449,7 +449,7 @@
         "createError": "Failed to create task",
         "updateError": "Failed to update task",
         "fetchError": "Failed to fetch tasks",
-        "emptyText": "Empty text ",
+        "emptyText": "No task",
         "confirmDelete": {
             "title": "Confirm Delete",
             "content": "Are you sure you want to delete this task?",

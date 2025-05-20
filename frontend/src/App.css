@@ -2598,3 +2598,74 @@ body {
     break-inside: avoid;
   }
 }
+
+.mobile-menu-trigger {
+  position: fixed;
+  right: 0;
+  top: 33%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  width: 25px;
+  height: 100px;
+  background-color: #6D5FFA;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  box-shadow: -4px -1 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.mobile-menu-close-trigger {
+  position: absolute;
+  left: -25px;
+  top: 33%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  width: 25px;
+  height: 100px;
+  background-color: #6D5FFA;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  box-shadow: -4px -1 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.property-mobile-drawer .ant-drawer-content-wrapper {
+  width: 85% !important;
+}
+
+.property-mobile-drawer .ant-drawer-content {
+  background-color: #6D5FFA;
+}
+
+.property-mobile-menu-item {
+  color: white !important;
+}
+
+.property-mobile-drawer .ant-menu {
+  background: #6D5FFA;
+}
+
+.property-mobile-drawer .ant-menu-item {
+  color: white !important;
+}
+
+.property-mobile-drawer .ant-menu-item:hover,
+.property-mobile-drawer .ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.property-mobile-drawer .ant-menu-item-icon {
+  color: white !important;
+}
+
+.property-mobile-drawer .ant-menu-title-content {
+  color: white !important;
+}

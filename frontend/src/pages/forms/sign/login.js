@@ -17,7 +17,6 @@ import {
 } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
 import Logo from '../../../assets/Trevio-10.png';
 import LoginSignup from '../../../assets/treviologinsignup.png';
@@ -113,7 +112,6 @@ const Login = () => {
 
  return (
   <Layout className="contentStyle">
-   <DashboardHeader />
    <Layout className="container">
     <Row
      justify="center"

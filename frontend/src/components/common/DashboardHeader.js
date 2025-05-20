@@ -34,7 +34,6 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  const { user } = useAuthContext();
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData, isLoading } = useUserData();
- const [selectedKey, setSelectedKey] = useState('reservations');
  const [open, setOpen] = useState(false);
  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
 
@@ -90,7 +89,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    ? [
       {
        key: 'adminpanel',
-       label: t('header.dashboard'),
+       label: t('header.adminPanel'),
        path: '/adminpanel',
        pathPatterns: [
         '/adminpanel',
@@ -104,29 +103,6 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
      ]
    : []),
  ];
-
- useEffect(() => {
-  const currentPath = location.pathname;
-
-  // Find matching menu item based on pathPatterns
-  const matchingItem = menuItems.find((item) => {
-   // Make sure pathPatterns exists before calling .some()
-   if (item.pathPatterns && Array.isArray(item.pathPatterns)) {
-    return item.pathPatterns.some((pattern) => currentPath.includes(pattern));
-   }
-   // Fallback to simple path matching if pathPatterns is not defined
-   return currentPath.includes(item.path);
-  });
-
-  if (matchingItem) {
-   setSelectedKey(matchingItem.key);
-  } else if (currentPath === '/') {
-   setSelectedKey('reservations');
-  } else {
-   // If path doesn't match any menu item, set selectedKey to null or empty string
-   setSelectedKey('');
-  }
- }, [location.pathname, menuItems]);
 
  // Drawer functions
  const showDrawer = () => {
@@ -165,6 +141,27 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
    },
   ];
   items.push(
+   ...(userData && userData.role === 'admin' && isMobile
+    ? [
+       {
+        type: 'divider',
+       },
+       {
+        key: 'adminpanel',
+        label: <Text strong>{t('header.adminPanel')}</Text>,
+        icon: (
+         <i className="PrimaryColor HeaderIcon fa-light fa-chart-simple" />
+        ),
+        onClick: () => {
+         onClick();
+         navigate('/adminpanel');
+        },
+       },
+      ]
+    : []),
+   {
+    type: 'divider',
+   },
    {
     key: 'referral',
     label: <Text strong>{t('header.referral')}</Text>,
@@ -212,6 +209,50 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
   }
  }, [User?.email, User?.status, userData, getUserData]);
 
+ const getInitialSelectedKey = () => {
+  const currentPath = location.pathname;
+
+  const matchingItem = menuItems.find((item) => {
+   if (item.pathPatterns && Array.isArray(item.pathPatterns)) {
+    return item.pathPatterns.some((pattern) => currentPath.includes(pattern));
+   }
+   return currentPath.includes(item.path);
+  });
+
+  if (matchingItem) {
+   return matchingItem.key;
+  } else if (currentPath === '/') {
+   return 'reservations';
+  } else {
+   return '';
+  }
+ };
+
+ const [selectedKey, setSelectedKey] = useState(getInitialSelectedKey());
+
+ useEffect(() => {
+  const currentPath = location.pathname;
+
+  // Find matching menu item based on pathPatterns
+  const matchingItem = menuItems.find((item) => {
+   // Make sure pathPatterns exists before calling .some()
+   if (item.pathPatterns && Array.isArray(item.pathPatterns)) {
+    return item.pathPatterns.some((pattern) => currentPath.includes(pattern));
+   }
+   // Fallback to simple path matching if pathPatterns is not defined
+   return currentPath.includes(item.path);
+  });
+
+  if (matchingItem) {
+   setSelectedKey(matchingItem.key);
+  } else if (currentPath === '/') {
+   setSelectedKey('reservations');
+  } else {
+   // If path doesn't match any menu item, set selectedKey to null or empty string
+   setSelectedKey('');
+  }
+ }, [location.pathname, menuItems]);
+
  useEffect(() => {
   fetchUserData();
  }, [fetchUserData]);
@@ -225,9 +266,6 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  // Import Typography for drawer items
  const { Text } = Typography;
 
- // Check if user exists
- const userExists = User && userData && Object.keys(userData).length > 0;
-
  return (
   <>
    <Helmet>
@@ -236,91 +274,89 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
      href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css"
     />
    </Helmet>
-   {userExists && (
-    <Header className="dashboard-header">
-     {/* Mobile top navigation section */}
-     {isMobile ? (
-      <Flex className="mobile-top-nav">
-       {/* Left side - Menu button with avatar */}
-       <div className="mobile-menu-avatar">
+   <Header className="dashboard-header">
+    {/* Mobile top navigation section */}
+    {isMobile ? (
+     <Flex className="mobile-top-nav">
+      {/* Left side - Menu button with avatar */}
+      <div className="mobile-menu-avatar">
+       <Button
+        type="text"
+        className="mobile-avatar-button"
+        onClick={showDrawer}
+       >
+        <Space>
+         <i className="fa-solid fa-bars" />
+         <Avatar size={38} src={userData?.avatar} />
+        </Space>
+       </Button>
+      </div>
+
+      {/* Center - Logo */}
+      <div className="mobile-logo-container">
+       <Link to="/reservations">
+        <img src={MobileLogo} alt="Trevio Logo" className="mobile-logo" />
+       </Link>
+      </div>
+
+      {/* Right side - Language and Notifications */}
+      <div className="mobile-actions">
+       <LanguageSelector />
+       <NotificationBell userId={userData?.id} />
+      </div>
+     </Flex>
+    ) : (
+     <>
+      {/* Desktop header */}
+      <div className="logo-container">
+       <Link to="/reservations">
+        <img src={Logo} alt="Trevio Logo" className="logo" />
+       </Link>
+      </div>
+
+      <Menu
+       mode="horizontal"
+       selectedKeys={[selectedKey]}
+       className="nav-menu"
+       items={menuItems.map((item) => ({
+        key: item.key,
+        label: (
+         <Link to={item.path}>
+          <Space>
+           {item.icon}
+           <span>{item.label}</span>
+          </Space>
+         </Link>
+        ),
+       }))}
+      />
+
+      <div className="right-section">
+       <LanguageSelector />
+       <NotificationBell userId={userData?.id} />
+       <div className="avatar-container">
         <Button
          type="text"
-         className="mobile-avatar-button"
+         icon={
+          <i className="fa-light fa-bars fa-lg" style={{ color: '#fff' }} />
+         }
+         className="HeaderAvatar"
+         size="large"
          onClick={showDrawer}
         >
-         <Space>
-          <i className="fa-solid fa-bars" />
-          <Avatar size={38} src={userData?.avatar} />
-         </Space>
+         <Avatar
+          size={{ xs: 40, sm: 44, md: 44, lg: 44, xl: 44, xxl: 44 }}
+          src={userData?.avatar}
+         />
         </Button>
        </div>
-
-       {/* Center - Logo */}
-       <div className="mobile-logo-container">
-        <Link to="/reservations">
-         <img src={MobileLogo} alt="Trevio Logo" className="mobile-logo" />
-        </Link>
-       </div>
-
-       {/* Right side - Language and Notifications */}
-       <div className="mobile-actions">
-        <LanguageSelector />
-        <NotificationBell userId={userData?.id} />
-       </div>
-      </Flex>
-     ) : (
-      <>
-       {/* Desktop header */}
-       <div className="logo-container">
-        <Link to="/reservations">
-         <img src={Logo} alt="Trevio Logo" className="logo" />
-        </Link>
-       </div>
-
-       <Menu
-        mode="horizontal"
-        selectedKeys={[selectedKey]}
-        className="nav-menu"
-        items={menuItems.map((item) => ({
-         key: item.key,
-         label: (
-          <Link to={item.path}>
-           <Space>
-            {item.icon}
-            <span>{item.label}</span>
-           </Space>
-          </Link>
-         ),
-        }))}
-       />
-
-       <div className="right-section">
-        <LanguageSelector />
-        <NotificationBell userId={userData?.id} />
-        <div className="avatar-container">
-         <Button
-          type="text"
-          icon={
-           <i className="fa-light fa-bars fa-lg" style={{ color: '#fff' }} />
-          }
-          className="HeaderAvatar"
-          size="large"
-          onClick={showDrawer}
-         >
-          <Avatar
-           size={{ xs: 40, sm: 44, md: 44, lg: 44, xl: 44, xxl: 44 }}
-           src={userData?.avatar}
-          />
-         </Button>
-        </div>
-       </div>
-      </>
-     )}
-    </Header>
-   )}
+      </div>
+     </>
+    )}
+   </Header>
 
    {/* Mobile Navigation Bar - Only show on mobile */}
-   {isMobile && userExists && <MobileNavigationBar />}
+   {isMobile && <MobileNavigationBar />}
 
    {/* Avatar Drawer */}
    <Drawer
@@ -328,6 +364,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
     onClose={onClose}
     open={open}
     placement={isMobile ? 'left' : 'right'}
+    width={isMobile ? '90%' : 378}
    >
     <List
      dataSource={[{ id: 1, name: userData?.firstname || 'User' }]}
@@ -347,7 +384,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
       </List.Item>
      )}
     />
-    <Divider />
+    <Divider style={{ margin: 0 }} />
     <Menu
      onClick={onClick}
      mode="vertical"

@@ -449,7 +449,7 @@
         "updateError": "Échec de la mise à jour de la tâche",
         "fetchError": "Échec de la récupération des tâches",
         "selectProperty": "Sélectionner une propriété",
-        "emptyText": "Texte vide",
+        "emptyText": "Aucune tâche",
         "confirmDelete": {
             "title": "Confirmer la suppression",
             "content": "Êtes-vous sûr de vouloir supprimer cette tâche ?",

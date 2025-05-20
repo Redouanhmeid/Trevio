@@ -6,7 +6,6 @@ const MobileNavigationBar = () => {
  const { t } = useTranslation();
  const location = useLocation();
  const navigate = useNavigate();
- const [selectedKey, setSelectedKey] = useState('reservations');
 
  // Define navigation items with icons and routes
  const navItems = [
@@ -55,6 +54,26 @@ const MobileNavigationBar = () => {
    pathPatterns: ['/add-concierge', '/assign-concierge', '/concierges'],
   },
  ];
+
+ const getInitialSelectedKey = () => {
+  const currentPath = location.pathname;
+
+  const matchingItem = navItems.find((item) => {
+   if (item.pathPatterns && Array.isArray(item.pathPatterns)) {
+    return item.pathPatterns.some((pattern) => currentPath.includes(pattern));
+   }
+   return currentPath.includes(item.path);
+  });
+
+  if (matchingItem) {
+   return matchingItem.key;
+  } else if (currentPath === '/') {
+   return 'reservations';
+  } else {
+   return '';
+  }
+ };
+ const [selectedKey, setSelectedKey] = useState(getInitialSelectedKey());
 
  useEffect(() => {
   const currentPath = location.pathname;

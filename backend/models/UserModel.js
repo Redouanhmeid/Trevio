@@ -28,7 +28,7 @@ module.exports = (db, type) => {
    type: type.STRING(50),
   },
   avatar: {
-   type: type.STRING,
+   type: type.STRING(500),
    defaultValue: '/avatars/default.png',
    allowNull: true,
   },

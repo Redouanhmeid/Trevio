@@ -453,7 +453,6 @@ const ReservationsList = () => {
  if (isLoading) {
   return (
    <Layout className="contentStyle">
-    <DashboardHeader onUserData={handleUserData} />
     <Content className="container">
      <div
       style={{

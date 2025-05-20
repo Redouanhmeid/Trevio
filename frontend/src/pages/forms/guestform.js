@@ -17,19 +17,15 @@ import {
  Tooltip,
  Result,
  Space,
- Alert,
- Card,
  message,
 } from 'antd';
 import {
  SyncOutlined,
- PlusOutlined,
  ArrowLeftOutlined,
  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
-import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import SignatureCanvas from 'react-signature-canvas';
 import { Nationalities } from '../../utils/nationalities';
@@ -38,14 +34,10 @@ import useReservationContract from '../../hooks/useReservationContract';
 import { useReservation } from '../../hooks/useReservation';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
-import ShareModal from '../../components/common/ShareModal';
 import { useTranslation } from '../../context/TranslationContext';
-import dayjs from 'dayjs';
 
-const { Title, Paragraph, Link, Text } = Typography;
+const { Title, Paragraph, Link } = Typography;
 const { Option } = Select;
-const { Content } = Layout;
-const { RangePicker } = DatePicker;
 
 const filterOption = (input, option) =>
  (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -55,9 +47,8 @@ const Guestform = () => {
  const location = useLocation();
  const { hash } = queryString.parse(location.search);
  const { user } = useAuthContext();
- const storedUser = user || JSON.parse(localStorage.getItem('user'));
  const [form] = Form.useForm();
- const { loading, checkAvailability, updateContract, getContractByHash } =
+ const { loading, updateContract, getContractByHash } =
   useReservationContract();
  const { fetchReservation, updateReservationStatus } = useReservation();
  const { uploadSignature } = useUploadPhotos();
@@ -71,10 +62,7 @@ const Guestform = () => {
  const [isperDataModalOpen, setIsperDataModalOpen] = useState(false);
  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
- const [formValues, setFormValues] = useState({});
- const [propertyId, setPropertyId] = useState();
  const [reservation, setReservation] = useState(null);
- const [fetchingReservation, setFetchingReservation] = useState(false);
 
  const perDataPrivacyLink = () => {
   setIsperDataModalOpen(false);
@@ -93,7 +81,6 @@ const Guestform = () => {
      if (contract.reservationId) {
       const reservationData = await fetchReservation(contract.reservationId);
       setReservation(reservationData);
-      setPropertyId(reservationData.propertyId);
      }
     }
    } catch (error) {
@@ -203,13 +190,7 @@ const Guestform = () => {
     status: 'SIGNED',
     signatureImageUrl: signatureUrl,
    };
-   console.log(existingContract, contractData);
    const response = await updateContract(existingContract.id, contractData);
-   setFormValues({
-    ...contractData,
-    checkInDate: existingContract.checkInDate,
-    checkOutDate: existingContract.checkOutDate,
-   });
 
    // Also update the reservation status to confirmed if needed
    if (reservation?.id) {
@@ -291,7 +272,7 @@ const Guestform = () => {
   </>
  );
 
- if (fetchingReservation) {
+ if (!reservation) {
   return (
    <div className="loading">
     <Spin size="large" />
@@ -301,7 +282,6 @@ const Guestform = () => {
 
  return (
   <Layout className="contentStyle">
-   <DashboardHeader />
    <Layout className="container">
     <Flex gap="middle" align="start" justify="space-between">
      <Button

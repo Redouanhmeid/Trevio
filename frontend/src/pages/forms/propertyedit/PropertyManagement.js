@@ -6,24 +6,21 @@ import {
  Spin,
  Button,
  message,
- Card,
- Row,
- Col,
- Breadcrumb,
  Grid,
+ Drawer,
 } from 'antd';
 import {
  ArrowLeftOutlined,
- HomeOutlined,
  InfoCircleOutlined,
  ToolOutlined,
  LoginOutlined,
  LogoutOutlined,
  TeamOutlined,
  CalendarOutlined,
+ RightOutlined,
+ LeftOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import queryString from 'query-string';
 import { useTranslation } from '../../../context/TranslationContext';
 import useProperty from '../../../hooks/useProperty';
@@ -43,7 +40,7 @@ import ServiceWorkerManagement from '../ServiceWorkerManagement';
 import PropertyICalTab from './tabs/PropertyICalTab';
 
 const { Content, Sider } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const PropertyManagement = () => {
  const { t } = useTranslation();
@@ -57,6 +54,7 @@ const PropertyManagement = () => {
  const { useBreakpoint } = Grid;
  const screens = useBreakpoint();
  const [refreshKey, setRefreshKey] = useState(0);
+ const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
 
  const refreshPropertyData = useCallback(() => {
   if (numericId) {
@@ -97,7 +95,60 @@ const PropertyManagement = () => {
  // Handle menu selection
  const handleMenuSelect = ({ key }) => {
   setActiveSection(key);
+  if (screens.xs) {
+   setMobileMenuVisible(false);
+  }
  };
+
+ // Menu items
+ const menuItems = [
+  {
+   key: 'info',
+   icon: <InfoCircleOutlined />,
+   label: t('property.tabs.information'),
+  },
+  {
+   key: 'photos',
+   icon: <i className="fa-light fa-images" />,
+   label: t('photo.photos'),
+  },
+  {
+   key: 'rules',
+   icon: <i className="fa-light fa-list-check" />,
+   label: t('property.sections.rules'),
+  },
+  {
+   key: 'equipments',
+   icon: <ToolOutlined />,
+   label: t('property.tabs.equipments'),
+  },
+  {
+   key: 'housemanual',
+   icon: <i className="fa-light fa-cards" />,
+   label: t('manual.title'),
+  },
+  {
+   key: 'checkin',
+   icon: <LoginOutlined />,
+   label: t('checkIn.title'),
+  },
+  {
+   key: 'checkout',
+   icon: <LogoutOutlined />,
+   label: t('checkOut.title'),
+  },
+  {
+   key: 'services',
+   icon: <TeamOutlined />,
+   label: t('serviceWorker.title'),
+  },
+
+  {
+   key: 'icals',
+   icon: <CalendarOutlined />,
+   label: 'iCals',
+  },
+ ];
 
  // Render the appropriate content based on the active section
  const renderContent = () => {
@@ -199,56 +250,6 @@ const PropertyManagement = () => {
   }
  };
 
- // Menu items
- const menuItems = [
-  {
-   key: 'info',
-   icon: <InfoCircleOutlined />,
-   label: t('property.tabs.information'),
-  },
-  {
-   key: 'photos',
-   icon: <i className="fa-light fa-images" />,
-   label: t('photo.photos'),
-  },
-  {
-   key: 'rules',
-   icon: <i className="fa-light fa-list-check" />,
-   label: t('property.sections.rules'),
-  },
-  {
-   key: 'equipments',
-   icon: <ToolOutlined />,
-   label: t('property.tabs.equipments'),
-  },
-  {
-   key: 'housemanual',
-   icon: <i className="fa-light fa-cards" />,
-   label: t('manual.title'),
-  },
-  {
-   key: 'checkin',
-   icon: <LoginOutlined />,
-   label: t('checkIn.title'),
-  },
-  {
-   key: 'checkout',
-   icon: <LogoutOutlined />,
-   label: t('checkOut.title'),
-  },
-  {
-   key: 'services',
-   icon: <TeamOutlined />,
-   label: t('serviceWorker.title'),
-  },
-
-  {
-   key: 'icals',
-   icon: <CalendarOutlined />,
-   label: 'iCals',
-  },
- ];
-
  // If loading, show spinner
  if (loading) {
   return (
@@ -285,63 +286,137 @@ const PropertyManagement = () => {
   );
  }
 
+ // Render the semi-circular trigger for mobile
+ const MobileTrigger = () => (
+  <div
+   className="mobile-menu-trigger"
+   onClick={() => setMobileMenuVisible(true)}
+  >
+   <LeftOutlined />
+  </div>
+ );
+
+ // Render the close trigger for mobile drawer
+ const MobileCloseTrigger = () => (
+  <div
+   className="mobile-menu-close-trigger"
+   onClick={() => setMobileMenuVisible(false)}
+  >
+   <RightOutlined />
+  </div>
+ );
+
  return (
   <Layout>
    <DashboardHeader />
    <Layout>
-    {/* Left Side Menu */}
-    <Sider
-     width={280}
-     theme="dark"
-     collapsible
-     collapsed={collapsed}
-     onCollapse={setCollapsed}
-     breakpoint="lg"
-     collapsedWidth={screens.xs ? 0 : 80}
-     style={{ backgroundColor: '#303342' }}
-     className="sidebar-desktop"
-     trigger={
-      <div className="custom-trigger">
-       <i
-        className={`fa-regular ${
-         collapsed ? 'fa-arrow-right-long' : 'fa-arrow-left-long'
-        }`}
-       />
-      </div>
-     }
-    >
-     {/* Property name and info */}
-     {!collapsed && (
+    {screens.xs && !mobileMenuVisible && <MobileTrigger />}
+    {screens.xs && (
+     <Drawer
+      placement="right"
+      onClose={() => setMobileMenuVisible(false)}
+      open={mobileMenuVisible}
+      width="85%"
+      headerStyle={{ display: 'none' }}
+      bodyStyle={{ padding: 0, backgroundColor: '#6D5FFA' }}
+      maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+      closable={false}
+      className="property-mobile-drawer"
+     >
+      {/* Close trigger for mobile */}
+      <MobileCloseTrigger />
+
+      {/* Property name and info */}
       <div
        style={{
         padding: '16px',
-        borderBottom: '1px solid #f0f0f0',
+        borderBottom: '1px solid #3D3F52',
         color: '#fff',
+        backgroundColor: '#2D2F3E',
        }}
       >
        <Title level={5} ellipsis style={{ color: '#fff', margin: 0 }}>
         {property.name}
        </Title>
-       <Typography.Text type="secondary" style={{ color: '#fff' }}>
+       <Text type="secondary" style={{ color: '#fff' }}>
         <i className="fa-light fa-location-dot" style={{ marginRight: 4 }} />
         {property.placeName}
-       </Typography.Text>
+       </Text>
       </div>
-     )}
 
-     {/* Menu */}
-     <Menu
+      {/* Menu */}
+      <Menu
+       theme="dark"
+       mode="inline"
+       selectedKeys={[activeSection]}
+       onSelect={handleMenuSelect}
+       style={{
+        borderRight: 0,
+        backgroundColor: '#6D5FFA',
+       }}
+       items={menuItems.map((item) => ({
+        ...item,
+        className: 'property-mobile-menu-item',
+       }))}
+      />
+     </Drawer>
+    )}
+
+    {/* Desktop Sidebar */}
+    {!screens.xs && (
+     <Sider
+      width={280}
       theme="dark"
-      mode="inline"
-      selectedKeys={[activeSection]}
-      onSelect={handleMenuSelect}
-      style={{
-       borderRight: 0,
-       backgroundColor: '#303342',
-      }}
-      items={menuItems}
-     />
-    </Sider>
+      collapsible
+      collapsed={collapsed}
+      onCollapse={setCollapsed}
+      breakpoint="lg"
+      collapsedWidth={screens.xs ? 0 : 80}
+      style={{ backgroundColor: '#303342' }}
+      className="sidebar-desktop"
+      trigger={
+       <div className="custom-trigger">
+        <i
+         className={`fa-regular ${
+          collapsed ? 'fa-arrow-right-long' : 'fa-arrow-left-long'
+         }`}
+        />
+       </div>
+      }
+     >
+      {/* Property name and info */}
+      {!collapsed && (
+       <div
+        style={{
+         padding: '16px',
+         borderBottom: '1px solid #f0f0f0',
+         color: '#fff',
+        }}
+       >
+        <Title level={5} ellipsis style={{ color: '#fff', margin: 0 }}>
+         {property.name}
+        </Title>
+        <Typography.Text type="secondary" style={{ color: '#fff' }}>
+         <i className="fa-light fa-location-dot" style={{ marginRight: 4 }} />
+         {property.placeName}
+        </Typography.Text>
+       </div>
+      )}
+
+      {/* Menu */}
+      <Menu
+       theme="dark"
+       mode="inline"
+       selectedKeys={[activeSection]}
+       onSelect={handleMenuSelect}
+       style={{
+        borderRight: 0,
+        backgroundColor: '#303342',
+       }}
+       items={menuItems}
+      />
+     </Sider>
+    )}
     <Layout className="contentStyle">
      <Content className="container" style={{ padding: 0 }}>
       <Layout style={{ minHeight: 'calc(100vh - 200px)', background: '#fff' }}>

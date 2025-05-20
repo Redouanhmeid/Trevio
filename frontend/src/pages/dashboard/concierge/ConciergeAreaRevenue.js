@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
  Spin,
  Layout,
@@ -65,9 +65,11 @@ import {
 } from 'recharts';
 import DashboardHeader from '../../../components/common/DashboardHeader';
 import Foot from '../../../components/common/footer';
-import { useReservation } from '../../../hooks/useReservation';
-import { useConcierge } from '../../../hooks/useConcierge';
+import { useNavigate } from 'react-router-dom';
 import useRevenue from '../../../hooks/useRevenue';
+import { useConcierge } from '../../../hooks/useConcierge';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -127,7 +129,7 @@ const RevenueStats = ({ revenues, properties }) => {
      <Statistic
       title="Total Revenue"
       value={stats.totalRevenue}
-      prefix="€"
+      suffix="Dh"
       precision={0}
       valueStyle={{ color: '#1890ff' }}
      />
@@ -138,7 +140,7 @@ const RevenueStats = ({ revenues, properties }) => {
      <Statistic
       title="This Month"
       value={stats.currentMonthRevenue}
-      prefix="€"
+      suffix="Dh"
       precision={0}
       valueStyle={{ color: monthGrowth >= 0 ? '#52c41a' : '#ff4d4f' }}
       suffix={
@@ -157,7 +159,7 @@ const RevenueStats = ({ revenues, properties }) => {
      <Statistic
       title="Year to Date"
       value={yearToDateRevenue}
-      prefix="€"
+      suffix="Dh"
       precision={0}
       valueStyle={{ color: yearGrowth >= 0 ? '#52c41a' : '#ff4d4f' }}
       suffix={
@@ -176,7 +178,7 @@ const RevenueStats = ({ revenues, properties }) => {
      <Statistic
       title="Avg. per Property"
       value={stats.avgRevenuePerProperty}
-      prefix="€"
+      suffix="Dh"
       precision={0}
       valueStyle={{ color: '#722ed1' }}
      />
@@ -251,7 +253,7 @@ const RevenueChart = ({ revenues, type = 'line' }) => {
      <XAxis dataKey="period" />
      <YAxis />
      <RechartsTooltip
-      formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']}
+      formatter={(value) => [`${value.toLocaleString()} Dh`, 'Revenue']}
      />
      <Legend />
      <Line
@@ -274,7 +276,7 @@ const RevenueChart = ({ revenues, type = 'line' }) => {
      <XAxis dataKey="period" />
      <YAxis />
      <RechartsTooltip
-      formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']}
+      formatter={(value) => [`${value.toLocaleString()} Dh`, 'Revenue']}
      />
      <Legend />
      <Area
@@ -302,7 +304,7 @@ const RevenueChart = ({ revenues, type = 'line' }) => {
      <XAxis dataKey="period" />
      <YAxis />
      <RechartsTooltip
-      formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']}
+      formatter={(value) => [`${value.toLocaleString()} Dh`, 'Revenue']}
      />
      <Legend />
      <Bar dataKey="total" fill="#1890ff" />
@@ -329,7 +331,7 @@ const RevenueChart = ({ revenues, type = 'line' }) => {
      ))}
     </Pie>
     <RechartsTooltip
-     formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']}
+     formatter={(value) => [`${value.toLocaleString()} Dh`, 'Revenue']}
     />
    </PieChart>
   </ResponsiveContainer>
@@ -395,13 +397,13 @@ const PropertyPerformance = ({ revenues, properties }) => {
       title={
        <Space>
         <Text strong>{property.name}</Text>
-        <Tag color="blue">€{property.totalRevenue.toLocaleString()}</Tag>
+        <Tag color="blue">{property.totalRevenue.toLocaleString()} Dh</Tag>
        </Space>
       }
       description={
        <Space direction="vertical" size="small" style={{ width: '100%' }}>
         <Text type="secondary">
-         Avg. Monthly: €{property.avgMonthly.toLocaleString()}
+         Avg. Monthly: {property.avgMonthly.toLocaleString()} Dh
         </Text>
         <Progress
          percent={Math.min(
@@ -456,7 +458,7 @@ const RevenueCard = ({ revenue, onAction }) => {
   <Card
    title={
     <Space>
-     <Text strong>€{revenue.amount.toLocaleString()}</Text>
+     <Text strong>{revenue.amount.toLocaleString()} Dh</Text>
      <Tag color="blue">
       {new Date(revenue.year, revenue.month - 1).toLocaleDateString('en-US', {
        month: 'short',
@@ -502,7 +504,8 @@ const RevenueCard = ({ revenue, onAction }) => {
 };
 
 // Revenue Filters Component
-const RevenueFilters = ({ onFilter, onDateRangeChange }) => {
+const RevenueFilters = ({ onFilter, onDateRangeChange, properties }) => {
+ const { t } = useTranslation();
  const [filters, setFilters] = useState({
   property: 'all',
   year: new Date().getFullYear(),
@@ -523,20 +526,23 @@ const RevenueFilters = ({ onFilter, onDateRangeChange }) => {
     <Col xs={12} sm={8} md={6}>
      <Select
       style={{ width: '100%' }}
-      placeholder="Property"
+      placeholder={t('property.title')}
       value={filters.property}
       onChange={(value) => handleFilterChange('property', value)}
      >
-      <Option value="all">All Properties</Option>
-      <Option value="villa-azure">Villa Azure</Option>
-      <Option value="ocean-view">Ocean View</Option>
-      <Option value="sunset-villa">Sunset Villa</Option>
+      <Option value="all">{t('common.all')}</Option>
+      {/* Map through real properties from API */}
+      {properties.map((property) => (
+       <Option key={property.id} value={property.id.toString()}>
+        {property.name}
+       </Option>
+      ))}
      </Select>
     </Col>
     <Col xs={12} sm={8} md={6}>
      <Select
       style={{ width: '100%' }}
-      placeholder="Year"
+      placeholder={t('revenue.year')}
       value={filters.year}
       onChange={(value) => handleFilterChange('year', value)}
      >
@@ -554,11 +560,7 @@ const RevenueFilters = ({ onFilter, onDateRangeChange }) => {
       onChange={onDateRangeChange}
      />
     </Col>
-    <Col xs={24} sm={24} md={4}>
-     <Button type="primary" icon={<PlusOutlined />} block>
-      Add Revenue
-     </Button>
-    </Col>
+    {/* Remove the "Add Revenue" button as per your request */}
    </Row>
   </Card>
  );
@@ -646,7 +648,7 @@ const RevenueFormModal = ({
      <Col span={12}>
       <Form.Item
        name="amount"
-       label="Amount (€)"
+       label="Amount (Dh)"
        rules={[{ required: true, message: 'Please enter amount' }]}
       >
        <InputNumber
@@ -654,7 +656,7 @@ const RevenueFormModal = ({
         min={0}
         precision={2}
         formatter={(value) =>
-         `€ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+         `${value} Dhs`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         }
         parser={(value) => value.replace(/\€\s?|(,*)/g, '')}
        />
@@ -712,6 +714,8 @@ const RevenueFormModal = ({
 
 // Main Concierge Revenue Component
 const ConciergeAreaRevenue = () => {
+ const { t } = useTranslation();
+ const screens = useBreakpoint();
  const [loading, setLoading] = useState(false);
  const [revenues, setRevenues] = useState([]);
  const [filteredRevenues, setFilteredRevenues] = useState([]);
@@ -722,95 +726,123 @@ const ConciergeAreaRevenue = () => {
   visible: false,
   revenue: null,
  });
- const screens = useBreakpoint();
+ const [userId, setUserId] = useState(null);
+ const [propertyRevenues, setPropertyRevenues] = useState({});
+ const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
  // Hooks
  const { getConciergeProperties } = useConcierge();
- const { getPropertyRevenue, addRevenue, updateRevenue, deleteRevenue } =
-  useRevenue();
+ const { getPropertyRevenue, getAnnualRevenue } = useRevenue();
+
+ useEffect(() => {
+  const fetchManagedProperties = async () => {
+   if (!userId) return;
+
+   setLoading(true);
+   try {
+    // Get properties managed by this concierge
+    const assignedProperties = await getConciergeProperties(userId);
+
+    // Extract actual property details from the assignments
+    const managedProperties = assignedProperties
+     .filter((assignment) => assignment.status === 'active')
+     .map((assignment) => ({
+      id: assignment.property.id,
+      name: assignment.property.name,
+     }));
+
+    setProperties(managedProperties);
+   } catch (error) {
+    console.error('Error fetching managed properties:', error);
+    message.error(t('managers.fetchPropertiesError'));
+   } finally {
+    setLoading(false);
+   }
+  };
+
+  if (userId) {
+   fetchManagedProperties();
+  }
+ }, [userId]);
+
+ useEffect(() => {
+  if (properties.length > 0) {
+   getPropertyRevenue(properties);
+  }
+ }, [properties, selectedYear]);
 
  // Mock data - replace with actual API calls
  useEffect(() => {
-  setLoading(true);
-  // Simulate API call
-  setTimeout(() => {
-   const mockProperties = [
-    { id: 1, name: 'Villa Azure' },
-    { id: 2, name: 'Ocean View Apartment' },
-    { id: 3, name: 'Sunset Villa' },
-   ];
+  const fetchData = async () => {
+   setLoading(true);
+   try {
+    // Get the concierge's managed properties
+    const conciergeProperties = await getConciergeProperties(userId);
 
-   const mockRevenues = [
-    {
-     id: 1,
-     propertyId: 1,
-     property: { id: 1, name: 'Villa Azure' },
-     amount: 3600,
-     month: 2,
-     year: 2024,
-     notes: 'February bookings',
-     reservation: { id: 123 },
-     createdAt: '2024-02-28',
-    },
-    {
-     id: 2,
-     propertyId: 2,
-     property: { id: 2, name: 'Ocean View Apartment' },
-     amount: 2500,
-     month: 2,
-     year: 2024,
-     notes: 'February bookings',
-     createdAt: '2024-02-28',
-    },
-    {
-     id: 3,
-     propertyId: 1,
-     property: { id: 1, name: 'Villa Azure' },
-     amount: 4200,
-     month: 3,
-     year: 2024,
-     notes: 'March bookings - high season',
-     createdAt: '2024-03-31',
-    },
-    {
-     id: 4,
-     propertyId: 3,
-     property: { id: 3, name: 'Sunset Villa' },
-     amount: 4500,
-     month: 3,
-     year: 2024,
-     notes: 'March bookings',
-     createdAt: '2024-03-31',
-    },
-    // Add more mock data for different months and years
-    {
-     id: 5,
-     propertyId: 1,
-     property: { id: 1, name: 'Villa Azure' },
-     amount: 3800,
-     month: 1,
-     year: 2024,
-     notes: 'January bookings',
-     createdAt: '2024-01-31',
-    },
-    {
-     id: 6,
-     propertyId: 2,
-     property: { id: 2, name: 'Ocean View Apartment' },
-     amount: 2200,
-     month: 1,
-     year: 2024,
-     notes: 'January bookings',
-     createdAt: '2024-01-31',
-    },
-   ];
+    // Extract property information
+    const propertyList = conciergeProperties.map((assignment) => ({
+     id: assignment.property.id,
+     name: assignment.property.name,
+    }));
 
-   setProperties(mockProperties);
-   setRevenues(mockRevenues);
-   setFilteredRevenues(mockRevenues);
-   setLoading(false);
-  }, 1000);
- }, []);
+    setProperties(propertyList);
+
+    // Fetch revenue data for all managed properties
+    if (propertyList.length > 0) {
+     const currentYear = new Date().getFullYear();
+
+     // Fetch revenue for each property
+     const revenuePromises = propertyList.map((property) =>
+      getPropertyRevenue(property.id, currentYear)
+     );
+
+     const revenueResults = await Promise.all(revenuePromises);
+
+     // Flatten and format revenue data
+     const allRevenues = revenueResults.flatMap((result, index) => {
+      // Skip null results (failed API calls)
+      if (!result) return [];
+
+      return result.map((revenue) => ({
+       id: revenue.id,
+       propertyId: revenue.propertyId,
+       property: {
+        id: revenue.propertyId,
+        name:
+         propertyList.find((p) => p.id === revenue.propertyId)?.name ||
+         'Unknown',
+       },
+       amount: parseFloat(revenue.amount),
+       month: new Date(revenue.startDate).getMonth() + 1,
+       year: new Date(revenue.startDate).getFullYear(),
+       notes: revenue.notes,
+       reservation: revenue.reservationId
+        ? { id: revenue.reservationId }
+        : null,
+       createdAt: revenue.createdAt,
+      }));
+     });
+
+     setRevenues(allRevenues);
+     setFilteredRevenues(allRevenues);
+    }
+   } catch (error) {
+    console.error('Error fetching data:', error);
+    message.error('Failed to load revenue data');
+   } finally {
+    setLoading(false);
+   }
+  };
+
+  if (userId) {
+   fetchData();
+  }
+ }, [userId]);
+
+ // Handle user data from header component
+ const handleUserData = (userData) => {
+  setUserId(userData);
+ };
 
  const handleAction = (action, revenue = null) => {
   console.log(`Action: ${action}`, revenue);
@@ -830,7 +862,7 @@ const ConciergeAreaRevenue = () => {
         <strong>Property:</strong> {revenue.property.name}
        </p>
        <p>
-        <strong>Amount:</strong> €{revenue.amount.toLocaleString()}
+        <strong>Amount:</strong> {revenue.amount.toLocaleString()} Dh
        </p>
        <p>
         <strong>Period:</strong>{' '}
@@ -934,23 +966,9 @@ const ConciergeAreaRevenue = () => {
 
  return (
   <Layout className="contentStyle">
-   <DashboardHeader />
-   <Content className="container" style={{ padding: '24px' }}>
-    <div style={{ marginBottom: '24px' }}>
-     <Space>
-      <Title level={2}>Revenue Management</Title>
-      <Button
-       type="primary"
-       icon={<PlusOutlined />}
-       onClick={() => handleAction('create')}
-      >
-       Add Revenue
-      </Button>
-     </Space>
-     <Text type="secondary">
-      Track and analyze property revenue performance
-     </Text>
-    </div>
+   <DashboardHeader onUserData={handleUserData} />
+   <Content className="container">
+    <Title level={2}>{t('revenue.allPropertiesTitle')}</Title>
 
     {/* Revenue Stats */}
     <div style={{ marginBottom: '24px' }}>
@@ -962,6 +980,7 @@ const ConciergeAreaRevenue = () => {
      <RevenueFilters
       onFilter={handleFilter}
       onDateRangeChange={handleDateRangeChange}
+      properties={properties}
      />
     </div>
 
@@ -1010,7 +1029,7 @@ const ConciergeAreaRevenue = () => {
                 style={{ backgroundColor: '#52c41a' }}
                />
               }
-              title={`€${revenue.amount.toLocaleString()}`}
+              title={`${revenue.amount.toLocaleString()} Dh`}
               description={
                <Space direction="vertical" size="small">
                 <Text type="secondary">{revenue.property.name}</Text>
