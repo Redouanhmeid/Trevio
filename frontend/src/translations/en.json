@@ -213,7 +213,20 @@
         "frontPhoto": "Photo of the front of the residence or house.",
         "videoInstructions": "Video link for check-in instructions",
         "hostVideo": "Host your videos on Vimeo or Youtube before",
-        "editTitle": "Edit arrival information"
+        "editTitle": "Edit arrival information",
+        "policy": {
+            "notFlexible": "Unfortunately, check-in time is not flexible.",
+            "adjustTime": "Occasionally, it's possible to adjust your check-in time if you contact us.",
+            "alternateTime": "When possible, we can arrange an alternative check-in time that suits you better. Contact us in advance if you would like to modify your check-in time.",
+            "storeBags": "You can store your bags during the day."
+        },
+        "access": {
+            "keyInBox": "The house key is in the key box",
+            "welcomeContact": "We'll be there to welcome you, if not, contact me when you arrive.",
+            "codesByEmail": "We will send you your access codes by email before your arrival.",
+            "checkEmail": "Check your email for arrival instructions.",
+            "numberLock": "We have a number lock."
+        }
     },
     "checkOut": {
         "title": "Departure",
@@ -239,7 +252,29 @@
         "tasksKeyInHouse": "Leave the key in the house.",
         "tasksKeyInBox": "Leave the key in the key box.",
         "additionalInfo": "Additional check-out information:",
-        "editTitle": "Edit Departure Information"
+        "editTitle": "Edit Departure Information",
+        "policy": {
+            "notFlexible": "Unfortunately, check-out time is not flexible.",
+            "alternateTime": "When the schedule allows, we're happy to accommodate an alternative check-out time. Contact us in advance if you would like to make arrangements for this.",
+            "contactUs": "Contact us if you would like to check out later.",
+            "lateOption": "Show late check-out option (if it is not checked we will not mention it)"
+        },
+        "tasks": {
+            "finalDishes": "Put last-minute dishes in the dishwasher.",
+            "turnOffAppliances": "Please make sure you have turned off the stove, lights, and other electrical appliances.",
+            "doorLocked": "Make sure the doors are locked.",
+            "storeBags": "You can leave your bags in the property after check-out time.",
+            "guestBook": "Please sign our guest book before leaving.",
+            "unmadeBeds": "Leave used beds unmade.",
+            "cleanDishes": "Please wash and put away used dishes and plates.",
+            "replaceFurniture": "Return furniture to its original location.",
+            "garbage": "Please put garbage and waste in appropriate containers.",
+            "towelsInBath": "Put used towels in the bathtub.",
+            "towelsOnFloor": "Leave used towels on the floor.",
+            "doorUnlocked": "Leave the door unlocked.",
+            "keyInHouse": "Leave the key in the house.",
+            "keyInBox": "Leave the key in the key box."
+        }
     },
     "rules": {
         "title": "House Rules",
@@ -393,7 +428,8 @@
         "more": "more",
         "stay": "Stay",
         "leave": "Leave",
-        "navigation": "Navigation"
+        "navigation": "Navigation",
+        "nonTranslatableNote": "This content was written by the property owner and is not automatically translated"
     },
     "timePicker": {
         "defaultCheckIn": "Default time: 11:00",
@@ -616,6 +652,7 @@
         "addButton": "Add a nearby place",
         "verify": "Verify",
         "verifySuccess": "Nearby place has been verified!",
+        "noNearbyPlaceRecorded": "No nearby places are recorded",
         "noPlacesSelected": "No nearby places selected for verification.",
         "bulkVerifySuccess": "{count} Nearby places verified!",
         "verifySelected": "Verify selected nearby places",
@@ -936,7 +973,7 @@
             },
             "departure": {
                 "title": "Check-Out",
-                "checkOutTime": "Check-out time is anytime before {time}",
+                "checkOutTime": "Check-out time is anytime before ",
                 "beforeLeaving": "Before Leaving"
             },
             "places": {
@@ -1047,7 +1084,8 @@
         "properties": {
             "available": "Available properties",
             "assigned": "Properties assigned",
-            "assignedTo": "Property assigned to"
+            "assignedTo": "Property assigned to",
+            "totalProperties": "total properties"
         },
         "messages": {
             "statusUpdateSuccess": "Assignment status has been updated successfully",
@@ -1631,5 +1669,15 @@
             "button": "Contact Support",
             "email": "support@trevio.ma"
         }
+    },
+    "elements": {
+        "cameras": "Outdoor surveillance cameras",
+        "sonometers": "Sound meters"
+    },
+    "safetyFeatures": {
+        "smokeDetector": "Smoke detector",
+        "firstAidKit": "First aid kit",
+        "fireExtinguisher": "Fire extinguisher",
+        "carbonMonoxideDetector": "Carbon monoxide detector"
     }
 }

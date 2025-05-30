@@ -24,7 +24,6 @@ export const useConcierge = () => {
 
  // Add a new concierge assignment
  const assignConcierge = async (clientId, conciergeId, propertyId) => {
-  console.log(clientId, conciergeId, propertyId);
   setIsLoading(true);
   setError(null);
   try {

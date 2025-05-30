@@ -81,7 +81,7 @@ const MapNearbyPlaces = React.memo(({ latitude, longitude, type }) => {
  if (filteredPlaces.length === 0) {
   return (
    <div style={{ textAlign: 'center', padding: '50px' }}>
-    <Alert description="Aucun lieu à proximité n'est enregistré" />
+    <Alert description={t('nearbyPlace.noNearbyPlaceRecorded')} />
    </div>
   );
  }

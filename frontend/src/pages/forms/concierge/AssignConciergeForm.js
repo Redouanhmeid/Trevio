@@ -49,6 +49,7 @@ const AssignConciergeForm = () => {
  const [selectedProperties, setSelectedProperties] = useState([]);
  const [availableProperties, setAvailableProperties] = useState([]);
  const [allProperties, setAllProperties] = useState([]);
+ const [transferLoading, setTransferLoading] = useState(false);
  const [form] = Form.useForm();
 
  // This will be added to the document head only on mobile
@@ -135,8 +136,10 @@ const AssignConciergeForm = () => {
  useEffect(() => {
   if (!selectedConcierge) {
    setSelectedProperties([]);
+   setTransferLoading(false);
    return;
   }
+  setTransferLoading(true);
 
   const selectedConciergeData = concierges.find(
    (c) => c.id === selectedConcierge
@@ -147,6 +150,9 @@ const AssignConciergeForm = () => {
     .map((p) => p.id);
    setSelectedProperties(assignedPropertyIds);
   }
+  setTimeout(() => {
+   setTransferLoading(false);
+  }, 500);
  }, [selectedConcierge, concierges]);
 
  // Memoize transfer data source
@@ -196,6 +202,9 @@ const AssignConciergeForm = () => {
   }
 
   try {
+   // Show loading state during assignment
+   setTransferLoading(true);
+
    const conciergeData = concierges.find((c) => c.id === selectedConcierge);
    const currentAssignedIds = conciergeData?.properties?.map((p) => p.id) || [];
 
@@ -206,14 +215,44 @@ const AssignConciergeForm = () => {
     (id) => !selectedProperties.includes(id)
    );
 
-   // Process assignments
-   for (const propertyId of propsToAdd) {
-    await assignConcierge(clientId, selectedConcierge, propertyId);
+   // Use Promise.all to process assignments in parallel for better performance
+   if (propsToAdd.length > 0) {
+    const addPromises = propsToAdd.map((propertyId) =>
+     assignConcierge(clientId, selectedConcierge, propertyId).catch((err) => {
+      console.error(`Failed to assign property ${propertyId}:`, err);
+      return { error: true, propertyId };
+     })
+    );
+
+    const addResults = await Promise.all(addPromises);
+    const addErrors = addResults.filter((result) => result?.error);
+
+    if (addErrors.length > 0) {
+     console.warn(
+      `Failed to assign ${addErrors.length} properties:`,
+      addErrors
+     );
+    }
    }
 
-   // Process removals
-   for (const propertyId of propsToRemove) {
-    await removeConcierge(clientId, selectedConcierge, propertyId);
+   // Handle removals similarly
+   if (propsToRemove.length > 0) {
+    const removePromises = propsToRemove.map((propertyId) =>
+     removeConcierge(clientId, selectedConcierge, propertyId).catch((err) => {
+      console.error(`Failed to remove property ${propertyId}:`, err);
+      return { error: true, propertyId };
+     })
+    );
+
+    const removeResults = await Promise.all(removePromises);
+    const removeErrors = removeResults.filter((result) => result?.error);
+
+    if (removeErrors.length > 0) {
+     console.warn(
+      `Failed to remove ${removeErrors.length} properties:`,
+      removeErrors
+     );
+    }
    }
 
    message.success(t('managers.assignSuccess'));
@@ -240,93 +279,97 @@ const AssignConciergeForm = () => {
    <Content className="container">
     <Title level={3}>{t('managers.assignProperties')}</Title>
 
-    <Spin spinning={isLoading}>
-     {!isLoading && allProperties.length > 0 && (
-      <div style={{ marginBottom: 16 }}>
-       <Text>
-        {availableProperties.length === 0
-         ? t('managers.noAvailableProperties')
-         : `${availableProperties.length} available properties out of ${allProperties.length} total properties`}
-       </Text>
-      </div>
-     )}
-     <Form
-      form={form}
-      layout="vertical"
-      className="hide-required-mark"
-      onFinish={handleAssign}
+    {!isLoading && allProperties.length > 0 && (
+     <div style={{ marginBottom: 16 }}>
+      <Text>
+       {availableProperties.length === 0
+        ? t('managers.noAvailableProperties')
+        : `${availableProperties.length} ${t('managers.availableProperties')} ${
+           allProperties.length
+          } ${t('managers.properties.totalProperties')}`}
+      </Text>
+     </div>
+    )}
+    <Form
+     form={form}
+     layout="vertical"
+     className="hide-required-mark"
+     onFinish={handleAssign}
+    >
+     {/* Concierge Selection */}
+     <Form.Item
+      label={t('managers.selectManager')}
+      required
+      name="concierge"
+      rules={[{ required: true, message: t('managers.selectManagerFirst') }]}
      >
-      {/* Concierge Selection */}
-      <Form.Item
-       label={t('managers.selectManager')}
-       required
-       name="concierge"
-       rules={[{ required: true, message: t('managers.selectManagerFirst') }]}
+      <Select
+       placeholder={t('managers.selectManagerPlaceholder')}
+       onChange={setSelectedConcierge}
+       value={selectedConcierge}
+       style={{ width: '100%', marginBottom: 12 }}
       >
-       <Select
-        placeholder={t('managers.selectManagerPlaceholder')}
-        onChange={setSelectedConcierge}
-        value={selectedConcierge}
-        style={{ width: '100%', marginBottom: 12 }}
-       >
-        {concierges.map((concierge) => (
-         <Option key={concierge.id} value={concierge.id}>
-          {`${concierge.firstname} ${concierge.lastname} (${concierge.email})`}
-         </Option>
-        ))}
-       </Select>
-      </Form.Item>
+       {concierges.map((concierge) => (
+        <Option key={concierge.id} value={concierge.id}>
+         {`${concierge.firstname} ${concierge.lastname} (${concierge.email})`}
+        </Option>
+       ))}
+      </Select>
+     </Form.Item>
 
-      {/* Property Transfer */}
+     {/* Property Transfer */}
+     {selectedConcierge && (
       <Form.Item
        label={t('managers.selectProperties')}
        required
        name="properties"
       >
-       <Transfer
-        dataSource={transferDataSource}
-        titles={[
-         t('managers.properties.available'),
-         t('managers.properties.assigned'),
-        ]}
-        targetKeys={selectedProperties.map((id) => id.toString())}
-        onChange={(keys) => {
-         const numericKeys = keys.map((key) => parseInt(key, 10));
-         setSelectedProperties(numericKeys);
-        }}
-        render={(item) => (
-         <div>
-          <Text>
-           {item.title}
-           {item.disabled && (
-            <Text secondary>({t('managers.propertyAlreadyAssigned')})</Text>
-           )}
-          </Text>
-         </div>
-        )}
-        oneWay={false} // Make it one-way on mobile for simplicity
-        pagination={{
-         // Add pagination for better mobile experience
-         simple: screens.xs,
-         pageSize: screens.xs ? 5 : 10,
-        }}
-        {...transferStyle}
-       />
+       <Spin spinning={transferLoading}>
+        <Transfer
+         dataSource={transferDataSource}
+         titles={[
+          t('managers.properties.available'),
+          t('managers.properties.assigned'),
+         ]}
+         targetKeys={selectedProperties.map((id) => id.toString())}
+         onChange={(keys) => {
+          const numericKeys = keys.map((key) => parseInt(key, 10));
+          setSelectedProperties(numericKeys);
+         }}
+         render={(item) => (
+          <div>
+           <Text>
+            {item.title}
+            {item.disabled && (
+             <Text secondary>({t('managers.propertyAlreadyAssigned')})</Text>
+            )}
+           </Text>
+          </div>
+         )}
+         oneWay={false} // Make it one-way on mobile for simplicity
+         pagination={{
+          // Add pagination for better mobile experience
+          simple: screens.xs,
+          pageSize: screens.xs ? 5 : 10,
+         }}
+         {...transferStyle}
+        />
+       </Spin>
       </Form.Item>
+     )}
 
-      {/* Action Buttons */}
-      <Form.Item>
-       <Flex justify="flex-end" gap={16}>
-        <Button onClick={() => navigate('/concierges')}>
-         {t('common.cancel')}
-        </Button>
-        <Button type="primary" htmlType="submit">
-         {t('managers.assignButton')}
-        </Button>
-       </Flex>
-      </Form.Item>
-     </Form>
-    </Spin>
+     {/* Action Buttons */}
+     <Form.Item>
+      <Flex justify="flex-end" gap={16}>
+       <Button onClick={() => navigate('/concierges')}>
+        {t('common.cancel')}
+       </Button>
+       <Button type="primary" htmlType="submit" disabled={!selectedConcierge}>
+        {t('button.save')}
+       </Button>
+      </Flex>
+     </Form.Item>
+    </Form>
    </Content>
    {!screens.xs && <Foot />}
   </Layout>

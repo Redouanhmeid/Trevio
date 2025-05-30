@@ -2,27 +2,27 @@ export const getHouseRuleDetails = (rule) => {
  const icons = {
   noNoise: {
    icon: <i className="icon-style-dg fa-light fa-volume-slash"></i>,
-   title: 'Pas de bruit après 23h',
+   title: 'rules.noNoise',
   },
   noFoodDrinks: {
    icon: <i className="icon-style-dg fa-light fa-utensils-slash"></i>,
-   title: 'Pas de nourriture ni de boissons dans les chambres à coucher',
+   title: 'rules.noFoodDrinks',
   },
   noParties: {
    icon: <i className="icon-style-dg fa-light fa-champagne-glasses"></i>,
-   title: "Pas de fêtes ni d'événements",
+   title: 'rules.noParties',
   },
   noSmoking: {
    icon: <i className="icon-style-dg fa-light fa-ban-smoking"></i>,
-   title: 'Défense de fumer',
+   title: 'rules.noSmoking',
   },
   noPets: {
    icon: <i className="icon-style-dg fa-light fa-paw-simple"></i>,
-   title: 'Animaux de compagnie autorisés',
+   title: 'rules.noPets',
   },
   additionalRules: {
    icon: <i className="icon-style-dg fa-light fa-circle-info"></i>,
-   title: 'Règles supplémentaires',
+   title: 'rules.additionalRules',
   },
  };
  return icons[rule] || { icon: null, title: '' };
@@ -32,11 +32,11 @@ export const getElementsDetails = (element) => {
  const elements = {
   cameras: {
    icon: <i className="icon-style-dg fa-light fa-camera-cctv"></i>,
-   title: 'Caméras de surveillance extérieures',
+   title: 'elements.cameras',
   },
   sonometers: {
    icon: <i className="icon-style-dg fa-light fa-gauge-low"></i>,
-   title: 'Sonomètres',
+   title: 'elements.sonometers',
   },
  };
  return elements[element] || { icon: null, title: '' };
@@ -46,19 +46,19 @@ export const getSafetyFeaturesDetails = (feature) => {
  const features = {
   smokeDetector: {
    icon: <i className="icon-style-dg fa-light fa-sensor-cloud"></i>,
-   title: 'Détecteur de fumée',
+   title: 'safetyFeatures.smokeDetector',
   },
   firstAidKit: {
    icon: <i className="icon-style-dg fa-light fa-suitcase-medical"></i>,
-   title: 'Kit de premiers secours',
+   title: 'safetyFeatures.firstAidKit',
   },
   fireExtinguisher: {
    icon: <i className="icon-style-dg fa-light fa-fire-extinguisher"></i>,
-   title: 'Extincteur',
+   title: 'safetyFeatures.fireExtinguisher',
   },
   carbonMonoxideDetector: {
    icon: <i className="icon-style-dg fa-light fa-sensor"></i>,
-   title: 'Détecteur de monoxyde de carbone',
+   title: 'safetyFeatures.carbonMonoxideDetector',
   },
  };
  return features[feature] || { icon: null, title: '' };
@@ -67,13 +67,13 @@ export const getSafetyFeaturesDetails = (feature) => {
 export const getEarlyCheckInDetails = (earlyCheckIn) => {
  switch (earlyCheckIn) {
   case 'heureNonFlexible':
-   return "Malheureusement l'heure d'arrivée n'est pas flexible.";
+   return 'checkIn.policy.notFlexible';
   case 'ajustementHeure':
-   return "À l'occasion il est possible d'ajuster votre heure d'arrivée si vous nous contactez.";
+   return 'checkIn.policy.adjustTime';
   case 'autreHeureArrivee':
-   return 'Lorsque que cela est possible, nous pouvons vous arranger en vous proposant une autre heure d’arrivée qui vous conviendrait mieux. Contactez nous à l’avance si vous souhaitez modifier votre heure d’arrivée.';
+   return 'checkIn.policy.alternateTime';
   case 'laissezBagages':
-   return 'Vous pouvez laissez vos bagages pendant la journée.';
+   return 'checkIn.policy.storeBags';
   default:
    return '';
  }
@@ -82,15 +82,15 @@ export const getEarlyCheckInDetails = (earlyCheckIn) => {
 export const getAccessToPropertyDetails = (accessToProperty) => {
  switch (accessToProperty) {
   case 'cleDansBoite':
-   return 'La clé de la maison se trouve dans la boîte à clé';
+   return 'checkIn.access.keyInBox';
   case 'acceuilContactezMoi':
-   return 'On sera là pour vous accueillir, sinon, contactez moi quand vous arrivez.';
+   return 'checkIn.access.welcomeContact';
   case 'codesAccesCourriel':
-   return 'Nous vous enverrons vos codes d’accès par courriel avant votre arrivée.';
+   return 'checkIn.access.codesByEmail';
   case 'verifiezCourriel':
-   return 'Vérifiez votre courriel pour les instructions relatives à votre arrivée.';
+   return 'checkIn.access.checkEmail';
   case 'serrureNumero':
-   return 'Nous avons une serrure à numéro.';
+   return 'checkIn.access.numberLock';
   default:
    return '';
  }
@@ -99,13 +99,13 @@ export const getAccessToPropertyDetails = (accessToProperty) => {
 export const getLateCheckOutPolicyDetails = (lateCheckOutPolicy) => {
  switch (lateCheckOutPolicy) {
   case 'heureNonFlexible':
-   return 'Malheureusement l’heure de départ n’est pas flexible.';
+   return 'checkOut.policy.notFlexible';
   case 'heureDepartAlternative':
-   return 'Lorsque l’horaire le permet, il nous fait plaisir d’accommoder une heure de départ alternative. Contactez-nous à l’avance si vous souhaitez prendre un arrangement à cet effet.';
+   return 'checkOut.policy.alternateTime';
   case 'contactezNous':
-   return 'Communiquez avec nous si vous aimeriez quitter plus tard.';
+   return 'checkOut.policy.contactUs';
   case 'optionDepartTardif':
-   return 'Montrer l’option du départ tardif (si ce n’est pas coché on ne va pas le mentionner)';
+   return 'checkOut.policy.lateOption';
   default:
    return '';
  }
@@ -114,33 +114,33 @@ export const getLateCheckOutPolicyDetails = (lateCheckOutPolicy) => {
 export const getBeforeCheckOutDetails = (beforeCheckOut) => {
  switch (beforeCheckOut) {
   case 'vaisselleLaveVaisselle':
-   return 'Mettez la vaisselle de dernière minute dans le lave-vaisselle.';
+   return 'checkOut.tasks.finalDishes';
   case 'eteindreAppareilsElectriques':
-   return 'Merci de vous assurer que vous avez bien éteint la cuisinière, lumières et autres appareils électriques.';
+   return 'checkOut.tasks.turnOffAppliances';
   case 'porteNonVerrouillee':
-   return 'Assurez-vous que les portes sont verrouillées.';
+   return 'checkOut.tasks.doorLocked';
   case 'laissezBagages':
-   return 'Vous pouvez laissez vos bagages dans la propriété après l’heure du départ.';
+   return 'checkOut.tasks.storeBags';
   case 'signezLivreOr':
-   return 'S’il vous plait, signez notre livre d’or avant de partir.';
+   return 'checkOut.tasks.guestBook';
   case 'litsNonFaits':
-   return 'Laissez les lits que vous avez utilisés défaits.';
+   return 'checkOut.tasks.unmadeBeds';
   case 'laverVaisselle':
-   return 'Merci de laver et ranger vaisselle et plats utilisés.';
+   return 'checkOut.tasks.cleanDishes';
   case 'replacezMeubles':
-   return 'Replacez les meubles à leur endroit original.';
+   return 'checkOut.tasks.replaceFurniture';
   case 'deposePoubelles':
-   return 'Merci de déposer poubelles et déchets dans les containers appropriés.';
+   return 'checkOut.tasks.garbage';
   case 'serviettesDansBaignoire':
-   return 'Mettez vos serviettes utilisées dans la baignoire.';
+   return 'checkOut.tasks.towelsInBath';
   case 'serviettesParTerre':
-   return 'Laissez les serviettes utilisées par terre.';
+   return 'checkOut.tasks.towelsOnFloor';
   case 'portesVerrouillees':
-   return 'Laissez la porte déverrouillée.';
+   return 'checkOut.tasks.doorUnlocked';
   case 'laissezCleMaison':
-   return ' Laissez la clé dans la maison.';
+   return 'checkOut.tasks.keyInHouse';
   case 'laissezCleBoiteCle':
-   return 'Laissez la clé dans la boîte à clef.';
+   return 'checkOut.tasks.keyInBox';
   default:
    return '';
  }

@@ -65,6 +65,8 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
     '/propertiesdashboard',
     '/addproperty',
     '/property-management',
+    '/digitalguidebook',
+    '/createnearbyplace',
    ],
   },
   {

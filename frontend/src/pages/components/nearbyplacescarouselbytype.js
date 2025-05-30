@@ -65,10 +65,6 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
   );
  }
 
- if (error) {
-  return <div>Error: {error.message}</div>;
- }
-
  const getSlidesToShow = () => {
   if (!Array.isArray(filteredPlaces) || filteredPlaces.length === 0) {
    return 1;
@@ -82,7 +78,7 @@ const NearbyPlacesCarouselByType = ({ latitude, longitude, type }) => {
   return (
    <div style={{ textAlign: 'center', padding: '50px' }}>
     <Button type="primary" onClick={() => navigate('/createnearbyplace')}>
-     Enregistrer un lieu à proximité
+     {t('nearbyPlace.add')}
     </Button>
    </div>
   );

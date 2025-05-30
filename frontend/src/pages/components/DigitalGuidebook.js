@@ -10,6 +10,7 @@ import {
  Divider,
  Image,
  Flex,
+ Space,
  Button,
  Card,
  Modal,
@@ -26,11 +27,8 @@ import MapMarker from './MapMarker';
 import ReactPlayer from 'react-player';
 import NearbyPlacesCarouselByType from './nearbyplacescarouselbytype';
 import MapNearbyPlaces from './MapNearbyPlaces';
-import { formatTimeFromDatetime, getAdditionalRules } from '../../utils/utils';
+import { formatTimeFromDatetime } from '../../utils/utils';
 import {
- getHouseRuleDetails,
- getElementsDetails,
- getSafetyFeaturesDetails,
  getEarlyCheckInDetails,
  getAccessToPropertyDetails,
  getLateCheckOutPolicyDetails,
@@ -43,6 +41,7 @@ import ShareModal from '../../components/common/ShareModal';
 import HouseManual from './HouseManual';
 import ServiceWorkerGuest from './ServiceWorkerGuest';
 import MobileTabsComponent from './MobileTabsComponent';
+import NonTranslatableContent from '../../utils/NonTranslatableContent';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -84,7 +83,8 @@ const generateTabs = (
  paidparkingEquipement,
  lateCheckOutPolicyParagraphs,
  beforeCheckOutParagraphs,
- t
+ t,
+ screens
 ) => [
  {
   key: '1',
@@ -152,12 +152,23 @@ const generateTabs = (
      </div>
     )}
     {property.guestAccessInfo && (
-     <Paragraph>
+     <Space
+      direction={screens.xs ? 'vertical' : 'horizontal'}
+      align={screens.xs ? 'start' : 'baseline'}
+      style={{ width: '100%' }}
+      size={screens.xs ? 'small' : 'middle'}
+     >
       <Text strong className="PrimaryColor">
-       {t('guidebook.note')}{' '}
+       {t('guidebook.note')}
       </Text>
-      {property.guestAccessInfo}
-     </Paragraph>
+      <NonTranslatableContent
+       content={property.guestAccessInfo}
+       style={{
+        marginBottom: screens.xs ? 8 : 16,
+        width: screens.xs ? '100%' : 'auto',
+       }}
+      />
+     </Space>
     )}
 
     {validLatitude && validLongitude ? (
@@ -304,10 +315,23 @@ const generateTabs = (
     )}
 
     {property.additionalCheckOutInfo && (
-     <Paragraph>
-      <Text strong>{t('guidebook.note')} </Text>
-      {property.additionalCheckOutInfo}
-     </Paragraph>
+     <Space
+      direction={screens.xs ? 'vertical' : 'horizontal'}
+      align={screens.xs ? 'start' : 'baseline'}
+      style={{ width: '100%' }}
+      size={screens.xs ? 'small' : 'middle'}
+     >
+      <Text strong className="PrimaryColor">
+       {t('guidebook.note')}
+      </Text>
+      <NonTranslatableContent
+       content={property.additionalCheckOutInfo}
+       style={{
+        marginBottom: screens.xs ? 8 : 16,
+        width: screens.xs ? '100%' : 'auto',
+       }}
+      />
+     </Space>
     )}
    </div>
   ),
@@ -482,21 +506,32 @@ const DigitalGuidebook = () => {
   [parsedEquipements]
  );
  const earlyCheckInParagraphs = useMemo(
-  () => ensureArray(property?.earlyCheckIn).map(getEarlyCheckInDetails),
-  [property?.earlyCheckIn]
+  () =>
+   ensureArray(property?.earlyCheckIn).map((key) =>
+    t(getEarlyCheckInDetails(key))
+   ),
+  [property?.earlyCheckIn, t]
  );
  const accessToPropertyParagraphs = useMemo(
-  () => ensureArray(property?.accessToProperty).map(getAccessToPropertyDetails),
-  [property?.accessToProperty]
+  () =>
+   ensureArray(property?.accessToProperty).map((key) =>
+    t(getAccessToPropertyDetails(key))
+   ),
+  [property?.accessToProperty, t]
  );
  const lateCheckOutPolicyParagraphs = useMemo(
   () =>
-   ensureArray(property?.lateCheckOutPolicy).map(getLateCheckOutPolicyDetails),
-  [property?.lateCheckOutPolicy]
+   ensureArray(property?.lateCheckOutPolicy).map((key) =>
+    t(getLateCheckOutPolicyDetails(key))
+   ),
+  [property?.lateCheckOutPolicy, t]
  );
  const beforeCheckOutParagraphs = useMemo(
-  () => ensureArray(property?.beforeCheckOut).map(getBeforeCheckOutDetails),
-  [property?.beforeCheckOut]
+  () =>
+   ensureArray(property?.beforeCheckOut).map((key) =>
+    t(getBeforeCheckOutDetails(key))
+   ),
+  [property?.beforeCheckOut, t]
  );
 
  const validLatitude = isValidCoordinate(property?.latitude);
@@ -542,7 +577,8 @@ const DigitalGuidebook = () => {
     paidparkingEquipement,
     lateCheckOutPolicyParagraphs,
     beforeCheckOutParagraphs,
-    t
+    t,
+    screens
    ),
   [
    isOwner,
@@ -559,6 +595,8 @@ const DigitalGuidebook = () => {
    paidparkingEquipement,
    lateCheckOutPolicyParagraphs,
    beforeCheckOutParagraphs,
+   t,
+   screens,
   ]
  );
 

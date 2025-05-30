@@ -17,7 +17,7 @@ import {
  Select,
 } from 'antd';
 import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
-import Head from '../../components/common/header';
+import DashboardHeader from '../../components/common/DashboardHeader';
 import Foot from '../../components/common/footer';
 import MapPicker from './propertypost/MapPicker';
 import { useNavigate } from 'react-router-dom';
@@ -143,20 +143,15 @@ const CreateNearbyPlace = () => {
   }
  }, [placeExists]);
 
- const goBack = () => {
-  navigate(-1);
- };
-
  return (
   <Layout className="contentStyle">
-   <Head />
+   <DashboardHeader />
    <Layout>
     <Content className="container">
      <Button
-      type="default"
-      shape="round"
+      type="link"
       icon={<ArrowLeftOutlined />}
-      onClick={goBack}
+      onClick={() => navigate(-1)}
      >
       {t('button.back')}
      </Button>

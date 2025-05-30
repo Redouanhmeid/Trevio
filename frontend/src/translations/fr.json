@@ -213,7 +213,20 @@
         "frontPhoto": "Photo de la façade de la résidence ou de la maison.",
         "videoInstructions": "Lien vidéo pour les instructions d'enregistrement",
         "hostVideo": "Hébergez vos vidéos sur Vimeo ou Youtube avant",
-        "editTitle": "Modifier les informations d'arrivée"
+        "editTitle": "Modifier les informations d'arrivée",
+        "policy": {
+            "notFlexible": "Malheureusement l'heure d'arrivée n'est pas flexible.",
+            "adjustTime": "À l'occasion il est possible d'ajuster votre heure d'arrivée si vous nous contactez.",
+            "alternateTime": "Lorsque que cela est possible, nous pouvons vous arranger en vous proposant une autre heure d'arrivée qui vous conviendrait mieux. Contactez nous à l'avance si vous souhaitez modifier votre heure d'arrivée.",
+            "storeBags": "Vous pouvez laissez vos bagages pendant la journée."
+        },
+        "access": {
+            "keyInBox": "La clé de la maison se trouve dans la boîte à clé",
+            "welcomeContact": "On sera là pour vous accueillir, sinon, contactez moi quand vous arrivez.",
+            "codesByEmail": "Nous vous enverrons vos codes d'accès par courriel avant votre arrivée.",
+            "checkEmail": "Vérifiez votre courriel pour les instructions relatives à votre arrivée.",
+            "numberLock": "Nous avons une serrure à numéro."
+        }
     },
     "checkOut": {
         "title": "Départ",
@@ -239,7 +252,29 @@
         "tasksKeyInHouse": "Laissez la clé dans la maison.",
         "tasksKeyInBox": "Laissez la clé dans la boîte à clef.",
         "additionalInfo": "Informations supplémentaires sur le départ :",
-        "editTitle": "Modifier les informations de départ"
+        "editTitle": "Modifier les informations de départ",
+        "policy": {
+            "notFlexible": "Malheureusement l'heure de départ n'est pas flexible.",
+            "alternateTime": "Lorsque l'horaire le permet, il nous fait plaisir d'accommoder une heure de départ alternative. Contactez-nous à l'avance si vous souhaitez prendre un arrangement à cet effet.",
+            "contactUs": "Communiquez avec nous si vous aimeriez quitter plus tard.",
+            "lateOption": "Montrer l'option du départ tardif (si ce n'est pas coché on ne va pas le mentionner)"
+        },
+        "tasks": {
+            "finalDishes": "Mettez la vaisselle de dernière minute dans le lave-vaisselle.",
+            "turnOffAppliances": "Merci de vous assurer que vous avez bien éteint la cuisinière, lumières et autres appareils électriques.",
+            "doorLocked": "Assurez-vous que les portes sont verrouillées.",
+            "storeBags": "Vous pouvez laissez vos bagages dans la propriété après l'heure du départ.",
+            "guestBook": "S'il vous plait, signez notre livre d'or avant de partir.",
+            "unmadeBeds": "Laissez les lits que vous avez utilisés défaits.",
+            "cleanDishes": "Merci de laver et ranger vaisselle et plats utilisés.",
+            "replaceFurniture": "Replacez les meubles à leur endroit original.",
+            "garbage": "Merci de déposer poubelles et déchets dans les containers appropriés.",
+            "towelsInBath": "Mettez vos serviettes utilisées dans la baignoire.",
+            "towelsOnFloor": "Laissez les serviettes utilisées par terre.",
+            "doorUnlocked": "Laissez la porte déverrouillée.",
+            "keyInHouse": "Laissez la clé dans la maison.",
+            "keyInBox": "Laissez la clé dans la boîte à clef."
+        }
     },
     "rules": {
         "title": "Règles de la maison",
@@ -393,7 +428,8 @@
         "more": "plus",
         "stay": "Rester",
         "leave": "Quitter",
-        "navigation": "Navigation"
+        "navigation": "Navigation",
+        "nonTranslatableNote": "Ce contenu a été rédigé par le propriétaire et n'est pas traduit automatiquement"
     },
     "timePicker": {
         "defaultCheckIn": "Heure par défaut: 11:00",
@@ -616,6 +652,7 @@
         "addButton": "Ajouter un lieu à proximité",
         "verify": "Vérifier",
         "verifySuccess": "Le lieu à proximité a été vérifié!",
+        "noNearbyPlaceRecorded": "Aucun lieu à proximité n'est enregistré",
         "noPlacesSelected": "Aucun lieu à proximité sélectionné pour vérification.",
         "bulkVerifySuccess": " Lieux à proximité vérifiés!",
         "verifySelected": "Vérifier les lieux à proximité sélectionnés",
@@ -1044,10 +1081,12 @@
         "assignError": "Échec de l'attribution des propriétés",
         "propertyAlreadyAssigned": "Déjà affecté à un autre concierge",
         "noPendingInvitations": "Aucune invitation en attente trouvée",
+        "availableProperties": "propriétés disponibles sur",
         "properties": {
             "available": "Propriétés disponibles",
             "assigned": "Propriétés affectées",
-            "assignedTo": "Propriété attribuée à"
+            "assignedTo": "Propriété attribuée à",
+            "totalProperties": "propriétés totales"
         },
         "messages": {
             "statusUpdateSuccess": "Le statut de l'affectation a été mis à jour avec succès",
@@ -1631,5 +1670,15 @@
             "button": "Contacter le Support",
             "email": "support@trevio.ma"
         }
+    },
+    "elements": {
+        "cameras": "Caméras de surveillance extérieures",
+        "sonometers": "Sonomètres"
+    },
+    "safetyFeatures": {
+        "smokeDetector": "Détecteur de fumée",
+        "firstAidKit": "Kit de premiers secours",
+        "fireExtinguisher": "Extincteur",
+        "carbonMonoxideDetector": "Détecteur de monoxyde de carbone"
     }
 }
