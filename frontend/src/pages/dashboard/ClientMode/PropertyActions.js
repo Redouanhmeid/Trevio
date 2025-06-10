@@ -17,11 +17,11 @@ import {
  List,
 } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
-import useProperty from '../../hooks/useProperty';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import MobileNavigationBar from '../../components/common/MobileNavigationBar';
-import fallback from '../../assets/fallback.png';
+import { useTranslation } from '../../../context/TranslationContext';
+import useProperty from '../../../hooks/useProperty';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import MobileNavigationBar from '../../../components/common/MobileNavigationBar';
+import fallback from '../../../assets/fallback.png';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;

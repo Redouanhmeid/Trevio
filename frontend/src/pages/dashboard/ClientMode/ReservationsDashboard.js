@@ -19,16 +19,16 @@ import {
  Drawer,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
-import useICal from '../../hooks/useICal';
-import { useReservation } from '../../hooks/useReservation';
-import useProperty from '../../hooks/useProperty';
-import { useConcierge } from '../../hooks/useConcierge';
+import { useTranslation } from '../../../context/TranslationContext';
+import useICal from '../../../hooks/useICal';
+import { useReservation } from '../../../hooks/useReservation';
+import useProperty from '../../../hooks/useProperty';
+import { useConcierge } from '../../../hooks/useConcierge';
 import dayjs from 'dayjs';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import Foot from '../../components/common/footer';
-import ShareModal from '../../components/common/ShareModal';
-import { parseICalLinks } from '../../utils/utils';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import Foot from '../../../components/common/footer';
+import ShareModal from '../../../components/common/ShareModal';
+import { parseICalLinks } from '../../../utils/utils';
 import axios from 'axios';
 
 const { Content } = Layout;
@@ -36,7 +36,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const ReservationsList = () => {
+const ReservationsDashboard = () => {
  const { t } = useTranslation();
  const navigate = useNavigate();
  const { useBreakpoint } = Grid;
@@ -771,4 +771,4 @@ const ReservationsList = () => {
  );
 };
 
-export default ReservationsList;
+export default ReservationsDashboard;

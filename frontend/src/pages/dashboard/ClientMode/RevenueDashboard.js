@@ -25,8 +25,8 @@ import {
  BarChartOutlined,
  PieChartOutlined,
 } from '@ant-design/icons';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import Foot from '../../components/common/footer';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import Foot from '../../../components/common/footer';
 import {
  LineChart,
  Line,
@@ -43,11 +43,11 @@ import {
  Cell,
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
-import useRevenue from '../../hooks/useRevenue';
-import useProperty from '../../hooks/useProperty';
-import { useConcierge } from '../../hooks/useConcierge';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useTranslation } from '../../context/TranslationContext';
+import useRevenue from '../../../hooks/useRevenue';
+import useProperty from '../../../hooks/useProperty';
+import { useConcierge } from '../../../hooks/useConcierge';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useTranslation } from '../../../context/TranslationContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;

@@ -114,10 +114,14 @@ const useNotification = () => {
   return await createNotification({
    userId,
    propertyId,
+   titleKey: 'notification.messages.createTitle',
+   messageKey: 'notification.messages.propertyVerified',
+   messageParams: { propertyName },
+   // Store the full translated message with values for display
    title: t('notification.messages.createTitle'),
-   message: `${t('notification.messages.createMessage1')}${propertyName}${t(
-    'notification.messages.createMessage2'
-   )}`,
+   message: `${t(
+    'notification.messages.propertyVerified.part1'
+   )} '${propertyName}' ${t('notification.messages.propertyVerified.part2')}`,
    type: 'property_update',
    channel: 'email',
   });
@@ -147,13 +151,19 @@ const useNotification = () => {
   month,
   year
  ) => {
+  const dateString = `${month}/${year}`;
+
   return await createNotification({
    userId,
    propertyId,
+   titleKey: 'notification.messages.revenueTitle',
+   messageKey: 'notification.messages.revenueAdded',
+   messageParams: { amount, month, year },
+   // Store the full translated message with values for display
    title: t('notification.messages.revenueTitle'),
-   message: `${t('notification.messages.revenueMessage1')}${amount}${t(
-    'notification.messages.revenueMessage2'
-   )}${month}/${year}.`,
+   message: `${t('notification.messages.revenueAdded.part1')} ${amount} ${t(
+    'notification.messages.revenueAdded.part2'
+   )} ${dateString}`,
    type: 'revenue_update',
    channel: 'email',
   });
@@ -168,8 +178,14 @@ const useNotification = () => {
   return await createNotification({
    userId,
    propertyId,
-   title: 'Nouvelle tâche',
-   message: `Une nouvelle tâche "${taskTitle}" (Priorité: ${priority}) a été créée.`,
+   titleKey: 'notification.messages.taskTitle',
+   messageKey: 'notification.messages.taskCreated',
+   messageParams: { taskTitle, priority },
+   // Store the full translated message with values for display
+   title: t('notification.messages.taskTitle'),
+   message: `${t('notification.messages.taskCreated.part1')} '${taskTitle}' ${t(
+    'notification.messages.taskCreated.part2'
+   )} ${priority} ${t('notification.messages.taskCreated.part3')}`,
    type: 'task_update',
    channel: 'email',
   });

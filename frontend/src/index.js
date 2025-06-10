@@ -11,6 +11,7 @@ import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ConfigProvider } from 'antd';
+import Layout from './components/Layout';
 import NotFoundPage from './pages/notfoundpage';
 import AdminPanel from './pages/admin/adminpanel';
 import Users from './pages/admin/users';
@@ -43,40 +44,42 @@ import Profile from './pages/components/Profile';
 import ContractsList from './pages/components/ContractsList';
 import RevTasksDashboard from './pages/RevTasksDashboard';
 import PropertyRevenueDashboard from './pages/admin/PropertyRevenueDashboard';
-import PropertyTaskDashboard from './pages/dashboard/PropertyTaskDashboard';
+import PropertyTaskDashboard from './pages/dashboard/ClientMode/PropertyTaskDashboard';
 import AddConciergeForm from './pages/forms/concierge/AddConciergeForm';
-import ConciergeProperties from './pages/dashboard/ConciergeProperties';
+import ConciergeProperties from './pages/dashboard/ClientMode/ConciergeProperties';
 import AssignConciergeForm from './pages/forms/concierge/AssignConciergeForm';
 import ManagerVerification from './pages/forms/concierge/ManagerVerification';
 import GuestContractView from './pages/guest/GuestContractView';
 import EmailVerificationMessage from './pages/forms/sign/EmailVerificationMessage';
 import CreateReservationForm from './pages/forms/reservation/CreateReservationForm';
-import ReservationsList from './pages/dashboard/ReservationsList';
+import ReservationsDashboard from './pages/dashboard/ClientMode/ReservationsDashboard';
 import GenerateContract from './pages/forms/reservation/GenerateContract';
 import GuestReservationView from './pages/guest/GuestReservationView';
 import ManageServiceWorkers from './pages/components/ManageServiceWorkers';
-import RevenueDashboard from './pages/dashboard/RevenueDashboard';
-import PropertiesDashboard from './pages/dashboard/PropertiesDashboard';
-import ConciergesDashboard from './pages/dashboard/ConciergesDashboard';
+import RevenueDashboard from './pages/dashboard/ClientMode/RevenueDashboard';
+import PropertiesDashboard from './pages/dashboard/ClientMode/PropertiesDashboard';
+import ConciergesDashboard from './pages/dashboard/ClientMode/ConciergesDashboard';
 import PropertyManagement from './pages/forms/propertyedit/PropertyManagement';
 import Home from './pages/home';
-import PropertyActions from './pages/dashboard/PropertyActions';
+import PropertyActions from './pages/dashboard/ClientMode/PropertyActions';
 import ProtectedAddProperty from './pages/forms/propertypost/ProtectedAddProperty';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import FAQPage from './pages/FAQPage';
-import ConciergeArea from './pages/dashboard/concierge/ConciergeArea';
-import ConciergeAreaProperties from './pages/dashboard/concierge/ConciergeAreaProperties';
-import ConciergeAreaReservations from './pages/dashboard/concierge/ConciergeAreaReservations';
-import ConciergeAreaTasks from './pages/dashboard/concierge/ConciergeAreaTasks';
-import ConciergeAreaRevenue from './pages/dashboard/concierge/ConciergeAreaRevenue';
+import ConciergeArea from './pages/dashboard/ConciergeMode/ConciergeArea';
+import ConciergeAreaProperties from './pages/dashboard/ConciergeMode/ConciergeAreaProperties';
+import ConciergeAreaReservations from './pages/dashboard/ConciergeMode/ConciergeAreaReservations';
+import ConciergeAreaTasks from './pages/dashboard/ConciergeMode/ConciergeAreaTasks';
+import ConciergeAreaRevenue from './pages/dashboard/ConciergeMode/ConciergeAreaRevenue';
 
 const router = createBrowserRouter([
  {
   path: '/',
   element: (
-   <ProtectedRoute>
-    <ReservationsList />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ReservationsDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
   errorElement: <NotFoundPage />,
  },
@@ -87,85 +90,121 @@ const router = createBrowserRouter([
  {
   path: '/dashboard',
   element: (
-   <ProtectedRoute>
-    <ReservationsList />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ReservationsDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/revtaskdashboard',
-  element: <RevTasksDashboard />,
+  element: (
+   <Layout>
+    <ProtectedRoute>
+     <RevTasksDashboard />
+    </ProtectedRoute>
+   </Layout>
+  ),
  },
  {
   path: '/propertyrevenuedashboard',
-  element: <PropertyRevenueDashboard />,
+  element: (
+   <Layout>
+    <ProtectedRoute>
+     <PropertyRevenueDashboard />
+    </ProtectedRoute>
+   </Layout>
+  ),
  },
  {
   path: '/propertytaskdashboard',
-  element: <PropertyTaskDashboard />,
+  element: (
+   <Layout>
+    <ProtectedRoute>
+     <PropertyTaskDashboard />
+    </ProtectedRoute>
+   </Layout>
+  ),
  },
  {
   path: '/revenues',
   element: (
-   <ProtectedRoute>
-    <RevenueDashboard />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <RevenueDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/propertiesdashboard',
   element: (
-   <ProtectedRoute>
-    <PropertiesDashboard />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <PropertiesDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/propertyactions',
   element: (
-   <ProtectedRoute>
-    <PropertyActions />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <PropertyActions />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/property-management',
   element: (
-   <ProtectedRoute>
-    <PropertyManagement />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <PropertyManagement />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierges',
   element: (
-   <ProtectedRoute>
-    <ConciergesDashboard />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergesDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/add-concierge',
   element: (
-   <ProtectedRoute>
-    <AddConciergeForm />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <AddConciergeForm />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/assign-concierge',
   element: (
-   <ProtectedRoute>
-    <AssignConciergeForm />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <AssignConciergeForm />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierges/:managerId/properties',
   element: (
-   <ProtectedRoute>
-    <ConciergeProperties />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeProperties />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
@@ -176,65 +215,81 @@ const router = createBrowserRouter([
  {
   path: '/adminpanel',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <AdminPanel />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <AdminPanel />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/clients',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <Users />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <Users />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/client',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <User />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <User />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/properties',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <Properties />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <Properties />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/nearbyplaces',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <NearbyPlaces />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <NearbyPlaces />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/nearbyplace',
   element: (
-   <ProtectedRoute requiredRole="admin">
-    <NearbyPlace />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <NearbyPlace />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/pendingproperties',
   element: (
-   <ProtectedRoute>
-    <Pendingproperties />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <Pendingproperties />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/pendingnearbyplaces',
   element: (
-   <ProtectedRoute>
-    <PendingNearbyPlaces />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <PendingNearbyPlaces />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  { path: '/login', element: <Login /> },
@@ -246,17 +301,21 @@ const router = createBrowserRouter([
  {
   path: '/account',
   element: (
-   <ProtectedRoute>
-    <Account />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <Account />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/profile',
   element: (
-   <ProtectedRoute>
-    <Profile />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <Profile />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  { path: '/reset-password-request', element: <ResetPasswordRequest /> },
@@ -269,9 +328,11 @@ const router = createBrowserRouter([
  {
   path: '/addproperty',
   element: (
-   <ProtectedRoute>
-    <ProtectedAddProperty />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ProtectedAddProperty />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  { path: '/mappicker', element: <MapPicker /> },
@@ -279,171 +340,239 @@ const router = createBrowserRouter([
  {
   path: '/createnearbyplace',
   element: (
-   <ProtectedRoute>
-    <CreateNearbyPlace />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <CreateNearbyPlace />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editproperty',
   element: (
-   <ProtectedRoute>
-    <EditProperty />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditProperty />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editbasicinfo',
   element: (
-   <ProtectedRoute>
-    <EditBasicInfo />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditBasicInfo />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editequipements',
   element: (
-   <ProtectedRoute>
-    <EditEquipement />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditEquipement />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editphotos',
   element: (
-   <ProtectedRoute>
-    <EditPhotos />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditPhotos />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/edithouserules',
   element: (
-   <ProtectedRoute>
-    <EditHouseRules />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditHouseRules />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editcheckin',
   element: (
-   <ProtectedRoute>
-    <EditCheckIn />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditCheckIn />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editcheckout',
   element: (
-   <ProtectedRoute>
-    <EditCheckOut />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditCheckOut />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/addequipement',
   element: (
-   <ProtectedRoute>
-    <AddEquipement />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <AddEquipement />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/editequipement',
   element: (
-   <ProtectedRoute>
-    <EditEquipement />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <EditEquipement />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
- { path: '/digitalguidebook', element: <DigitalGuidebook /> },
+ {
+  path: '/digitalguidebook',
+  element: (
+   <Layout>
+    <DigitalGuidebook />
+   </Layout>
+  ),
+ },
  {
   path: '/contractslist',
-  element: <ContractsList />,
+  element: (
+   <Layout>
+    <ContractsList />
+   </Layout>
+  ),
  },
- { path: '/guest/contract/:hashId', element: <GuestContractView /> },
+ {
+  path: '/guest/contract/:hashId',
+  element: (
+   <Layout>
+    <GuestContractView />{' '}
+   </Layout>
+  ),
+ },
  {
   path: '/reservations',
   element: (
-   <ProtectedRoute>
-    <ReservationsList />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ReservationsDashboard />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/create-reservation',
   element: (
-   <ProtectedRoute>
-    <CreateReservationForm />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <CreateReservationForm />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/generate-contract/:id',
   element: (
-   <ProtectedRoute>
-    <GenerateContract />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <GenerateContract />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/guest/reservation/:hashId',
-  element: <GuestReservationView />,
+  element: (
+   <Layout>
+    <GuestReservationView />
+   </Layout>
+  ),
  },
  {
   path: '/service-workers',
   element: (
-   <ProtectedRoute>
-    <ManageServiceWorkers />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ManageServiceWorkers />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/privacy-policy',
-  element: <PrivacyPolicyPage />,
+  element: (
+   <Layout>
+    <PrivacyPolicyPage />
+   </Layout>
+  ),
  },
  {
   path: '/faqs',
-  element: <FAQPage />,
+  element: (
+   <Layout>
+    <FAQPage />
+   </Layout>
+  ),
  },
  {
   path: '/concierge/dashboard',
   element: (
-   <ProtectedRoute>
-    <ConciergeArea />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeArea />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierge/properties',
   element: (
-   <ProtectedRoute>
-    <ConciergeAreaProperties />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeAreaProperties />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierge/reservations',
   element: (
-   <ProtectedRoute>
-    <ConciergeAreaReservations />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeAreaReservations />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierge/tasks',
   element: (
-   <ProtectedRoute>
-    <ConciergeAreaTasks />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeAreaTasks />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
  {
   path: '/concierge/revenue',
   element: (
-   <ProtectedRoute>
-    <ConciergeAreaRevenue />
-   </ProtectedRoute>
+   <Layout>
+    <ProtectedRoute>
+     <ConciergeAreaRevenue />
+    </ProtectedRoute>
+   </Layout>
   ),
  },
 ]);

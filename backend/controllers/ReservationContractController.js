@@ -1,4 +1,4 @@
-const { ReservationContract, Reservation } = require('../models');
+const { ReservationContract, Reservation, Property } = require('../models');
 
 // Create a new contract
 const createContract = async (req, res) => {
@@ -257,6 +257,148 @@ const checkAvailability = async (req, res) => {
  }
 };
 
+const getContractDetails = async (req, res) => {
+ try {
+  const { contractId } = req.params;
+
+  const contract = await ReservationContract.findByPk(contractId, {
+   include: [
+    {
+     model: Property,
+     as: 'property',
+     attributes: [
+      'name',
+      'placeName',
+      'checkInTime',
+      'checkOutTime',
+      'capacity',
+     ],
+    },
+    {
+     model: Reservation,
+     as: 'reservation',
+     attributes: [
+      'id',
+      'startDate',
+      'endDate',
+      'bookingSource',
+      'status',
+      'totalPrice',
+     ],
+    },
+   ],
+  });
+
+  if (!contract) {
+   return res.status(404).json({ error: 'Contract not found' });
+  }
+
+  // Format the response
+  const contractDetails = {
+   propertyName: contract.property?.name || null,
+   propertyPlaceName: contract.property?.placeName || null,
+   checkInDate: contract.reservation?.startDate || null,
+   checkInTime: contract.property?.checkInTime || null,
+   checkOutDate: contract.reservation?.endDate || null,
+   checkOutTime: contract.property?.checkOutTime || null,
+   capacity: contract.property?.capacity || null,
+   guestFirstname: contract.firstname || null,
+   guestLastname: contract.lastname || null,
+   guestEmail: contract.email || null,
+   guestPhone: contract.phone || null,
+   bookingSource: contract.reservation?.bookingSource || null,
+   reservationStatus: contract.reservation?.status || null,
+   contractGenerationLink: contract.reservation?.id
+    ? `${process.env.FRONTEND_URL || ''}/generate-contract/${
+       contract.reservation.id
+      }`
+    : null,
+   totalPrice: contract.reservation?.totalPrice || null,
+  };
+
+  res.status(200).json(contractDetails);
+ } catch (error) {
+  console.error('Error fetching contract details:', error);
+  res.status(500).json({
+   error: 'Failed to fetch contract details',
+   details: error.message,
+  });
+ }
+};
+
+// Alternative: Get contract details by reservation ID
+const getContractDetailsByReservationId = async (req, res) => {
+ try {
+  const { reservationId } = req.params;
+
+  const contract = await ReservationContract.findOne({
+   where: { reservationId },
+   include: [
+    {
+     model: Property,
+     as: 'property',
+     attributes: [
+      'name',
+      'placeName',
+      'checkInTime',
+      'checkOutTime',
+      'capacity',
+     ],
+    },
+    {
+     model: Reservation,
+     as: 'reservation',
+     attributes: [
+      'id',
+      'startDate',
+      'endDate',
+      'bookingSource',
+      'status',
+      'totalPrice',
+     ],
+    },
+   ],
+  });
+
+  if (!contract) {
+   return res
+    .status(404)
+    .json({ error: 'Contract not found for this reservation' });
+  }
+
+  // Format the response
+  const contractDetails = {
+   propertyName: contract.property?.name || null,
+   propertyPlaceName: contract.property?.placeName || null,
+   checkInDate: contract.reservation?.startDate || null,
+   checkInTime: contract.property?.checkInTime || null,
+   checkOutDate: contract.reservation?.endDate || null,
+   checkOutTime: contract.property?.checkOutTime || null,
+   capacity: contract.property?.capacity || null,
+   guestFirstname: contract.firstname || null,
+   guestLastname: contract.lastname || null,
+   guestEmail: contract.email || null,
+   guestPhone: contract.phone || null,
+   bookingSource: contract.reservation?.bookingSource || null,
+   reservationStatus: contract.reservation?.status || null,
+   contractGenerationLink: contract.reservation?.id
+    ? `${process.env.FRONTEND_URL || ''}/generate-contract/${
+       contract.reservation.id
+      }`
+    : null,
+   totalPrice: contract.reservation?.totalPrice || null,
+  };
+
+  res.status(200).json(contractDetails);
+ } catch (error) {
+  console.error('Error fetching contract details by reservation:', error);
+  res.status(500).json({
+   error: 'Failed to fetch contract details',
+   details: error.message,
+  });
+ }
+};
+
 module.exports = {
  createContract,
  updateContract,
@@ -267,4 +409,6 @@ module.exports = {
  getContractByHash,
  updateContractStatus,
  checkAvailability,
+ getContractDetails,
+ getContractDetailsByReservationId,
 };

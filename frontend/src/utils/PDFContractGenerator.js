@@ -35,10 +35,14 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
    const canvas = await html2canvas(container, {
     scale: 2,
     useCORS: true,
-    logging: true,
+    logging: false,
     backgroundColor: '#ffffff',
     width: A4_WIDTH_PX,
+    height: A4_HEIGHT_MM * MM_TO_PX,
     windowWidth: A4_WIDTH_PX,
+    windowHeight: A4_HEIGHT_MM * MM_TO_PX,
+    scrollY: 0,
+    scrollX: 0,
     onclone: function (clonedDoc) {
      const clonedElement = clonedDoc.querySelector('#pdf-content');
      if (clonedElement) {
@@ -88,7 +92,13 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
    const reference = Math.random().toString(36).substr(2, 9).toUpperCase();
 
    const firstPageContent = `
-        <div style="font-family: Arial, sans-serif; color: #333;">
+        <div style="font-family: Arial, sans-serif;
+  color: #333;
+  width: 100%;
+  word-wrap: break-word;
+  text-align: justify;
+  font-size: 12px;
+  line-height: 1.6;">
           <!-- Header -->
           
           <div style="margin-bottom: 20px">
@@ -210,7 +220,13 @@ const PDFContractGenerator = ({ formData, signature, t }) => {
 
    const secondPageContent = `
     
- <div style="font-family: Arial, sans-serif; color: #181D27;">
+ <div style="font-family: Arial, sans-serif;
+  color: #333;
+  width: 100%;
+  word-wrap: break-word;
+  text-align: justify;
+  font-size: 12px;
+  line-height: 1.6;">
     <!-- Logo -->
     <div style="margin-top: 10px, margin-bottom: 30px">
        <img src="${Logo}" style="width: 160px">

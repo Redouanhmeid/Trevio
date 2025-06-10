@@ -18,11 +18,11 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
-import Foot from '../../components/common/footer';
-import { useConcierge } from '../../hooks/useConcierge';
-import fallback from '../../assets/fallback.png';
-import DashboardHeader from '../../components/common/DashboardHeader';
+import { useTranslation } from '../../../context/TranslationContext';
+import Foot from '../../../components/common/footer';
+import { useConcierge } from '../../../hooks/useConcierge';
+import fallback from '../../../assets/fallback.png';
+import DashboardHeader from '../../../components/common/DashboardHeader';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;

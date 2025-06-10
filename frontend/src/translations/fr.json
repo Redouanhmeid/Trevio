@@ -1018,18 +1018,28 @@
         }
     },
     "notification": {
+        "timeAgo": "il y a",
         "noNotification": "Aucune notification",
         "messages": {
-            "createTitle": "Propriété vérifiée",
-            "createMessage1": "Votre propriété : \"",
-            "createMessage2": " \" a été vérifiée et est maintenant active.",
-            "revenueTitle": "Mise à jour des revenus",
-            "revenueMessage1": "Un nouveau revenu de ",
-            "revenueMessage2": " DHs a été enregistré pour ",
-            "taskTitle": "Nouvelle tâche",
-            "taskMessage1": "Une nouvelle tâche ",
-            "taskMessage2": " (Priorité: ",
-            "taskMessage3": ") a été créée."
+            "createTitle": "Propriété Vérifiée",
+            "propertyVerified": {
+                "part1": "Votre propriété",
+                "part2": "a été vérifiée et est maintenant en ligne !"
+            },
+            "propertyUpdateTitle": "Mise à jour de la propriété",
+            "propertyUpdateMessage": "Votre propriété a été mise à jour",
+            "revenueTitle": "Revenus Ajoutés",
+            "revenueAdded": {
+                "part1": "Un revenu de",
+                "part2": "DHS a été ajouté pour"
+            },
+            "taskTitle": "Nouvelle Tâche",
+            "taskCreated": {
+                "part1": "Une nouvelle tâche",
+                "part2": "avec priorité",
+                "part3": "a été assignée"
+            },
+            "revenueGeneric": "Les revenus de la propriété ont été mis à jour"
         }
     },
     "footer": {
@@ -1680,5 +1690,17 @@
         "firstAidKit": "Kit de premiers secours",
         "fireExtinguisher": "Extincteur",
         "carbonMonoxideDetector": "Détecteur de monoxyde de carbone"
+    },
+    "chatbot": {
+        "title": "Trevio Chatbot",
+        "subtitle": "Votre Assistant IA pour la Gestion Immobilière",
+        "welcomeMessage": "Bienvenue sur Trevio Chatbot ! Vous pouvez discuter avec moi dans n'importe quelle langue. Notez que je ne peux parler qu'en anglais par voix.",
+        "connectionError": "Désolé, j'ai des difficultés de connexion. Veuillez réessayer.",
+        "inputPlaceholder": "Tapez votre message...",
+        "send": "Envoyer",
+        "sendMessage": "Envoyer le Message",
+        "minimize": "Réduire",
+        "listenToMessage": "Écouter le message",
+        "typing": "Frappe en cours..."
     }
 }

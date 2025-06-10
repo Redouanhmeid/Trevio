@@ -10,6 +10,8 @@ const {
  getContractByHash,
  updateContractStatus,
  checkAvailability,
+ getContractDetails,
+ getContractDetailsByReservationId,
 } = require('../controllers/ReservationContractController');
 
 // Basic CRUD routes
@@ -25,5 +27,13 @@ router.delete('/contracts/:id', deleteContract);
 // Special routes
 router.patch('/contracts/:id/status', updateContractStatus);
 router.get('/properties/:propertyId/availability', checkAvailability);
+
+// Get detailed contract information by contract ID
+router.get('/contract/:contractId/details', getContractDetails);
+// Get detailed contract information by reservation ID
+router.get(
+ '/reservation/:reservationId/details',
+ getContractDetailsByReservationId
+);
 
 module.exports = router;

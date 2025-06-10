@@ -1018,18 +1018,28 @@
         }
     },
     "notification": {
-        "noNotification": "Aucune notification",
+        "timeAgo": "ago",
+        "noNotification": "No notifications",
         "messages": {
-            "createTitle": "Verified Property",
-            "createMessage1": "Your property : \"",
-            "createMessage2": " \" has been verified and is now active.",
-            "revenueTitle": "Income update",
-            "revenueMessage1": "A new income of ",
-            "revenueMessage2": " DHs was recorded for ",
-            "taskTitle": "A new task",
-            "taskMessage1": "A new task \"",
-            "taskMessage2": "\" (Priority: ",
-            "taskMessage3": ") has been created."
+            "createTitle": "Property Verified",
+            "propertyVerified": {
+                "part1": "Your property",
+                "part2": "has been verified and is now live!"
+            },
+            "propertyUpdateTitle": "Property Update",
+            "propertyUpdateMessage": "Your property has been updated",
+            "revenueTitle": "Revenue Added",
+            "revenueAdded": {
+                "part1": "Revenue of",
+                "part2": "DHS has been added for"
+            },
+            "taskTitle": "New Task",
+            "taskCreated": {
+                "part1": "A new task",
+                "part2": "with priority",
+                "part3": "has been assigned"
+            },
+            "revenueGeneric": "Property revenue has been updated"
         }
     },
     "footer": {
@@ -1081,6 +1091,7 @@
         "assignError": "Failed to assign properties",
         "propertyAlreadyAssigned": "Already assigned to another concierge",
         "noPendingInvitations": "No pending invitations found",
+        "availableProperties": "available properties on",
         "properties": {
             "available": "Available properties",
             "assigned": "Properties assigned",
@@ -1679,5 +1690,17 @@
         "firstAidKit": "First aid kit",
         "fireExtinguisher": "Fire extinguisher",
         "carbonMonoxideDetector": "Carbon monoxide detector"
+    },
+    "chatbot": {
+        "title": "Trevio Chatbot",
+        "subtitle": "Your AI Assistant for Property Management",
+        "welcomeMessage": "Welcome to Trevio Chatbot! You can chat with me in any language. Just note that I can only speak in English through voice.",
+        "connectionError": "Sorry, I'm having trouble connecting. Please try again.",
+        "inputPlaceholder": "Type your message...",
+        "send": "Send",
+        "sendMessage": "Send Message",
+        "minimize": "Minimize",
+        "listenToMessage": "Listen to message",
+        "typing": "Typing..."
     }
 }

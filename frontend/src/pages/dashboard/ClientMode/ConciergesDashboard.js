@@ -18,13 +18,13 @@ import {
  Tabs,
  message,
 } from 'antd';
-import { useTranslation } from '../../context/TranslationContext';
+import { useTranslation } from '../../../context/TranslationContext';
 import { useNavigate } from 'react-router-dom';
-import { useConcierge } from '../../hooks/useConcierge';
-import { useUserData } from '../../hooks/useUserData';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import Foot from '../../components/common/footer';
-import MobileNavigationBar from '../../components/common/MobileNavigationBar';
+import { useConcierge } from '../../../hooks/useConcierge';
+import { useUserData } from '../../../hooks/useUserData';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import Foot from '../../../components/common/footer';
+import MobileNavigationBar from '../../../components/common/MobileNavigationBar';
 
 const { Content } = Layout;
 const { Text, Title } = Typography;

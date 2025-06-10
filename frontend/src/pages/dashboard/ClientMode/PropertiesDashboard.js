@@ -20,16 +20,16 @@ import {
  Empty,
  Tooltip,
 } from 'antd';
-import useProperty from '../../hooks/useProperty';
-import { useConcierge } from '../../hooks/useConcierge';
-import { useTranslation } from '../../context/TranslationContext';
-import { useUserData } from '../../hooks/useUserData';
+import useProperty from '../../../hooks/useProperty';
+import { useConcierge } from '../../../hooks/useConcierge';
+import { useTranslation } from '../../../context/TranslationContext';
+import { useUserData } from '../../../hooks/useUserData';
 import { useNavigate } from 'react-router-dom';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import Foot from '../../components/common/footer';
-import fallback from '../../assets/fallback.png';
-import PasswordConfirmationModal from '../forms/PasswordConfirmationModal';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import Foot from '../../../components/common/footer';
+import fallback from '../../../assets/fallback.png';
+import PasswordConfirmationModal from '../../forms/PasswordConfirmationModal';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;

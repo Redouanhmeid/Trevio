@@ -28,15 +28,15 @@ import {
  SyncOutlined,
  ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import DashboardHeader from '../../components/common/DashboardHeader';
-import Foot from '../../components/common/footer';
-import useTask from '../../hooks/useTask';
-import useNotification from '../../hooks/useNotification';
+import DashboardHeader from '../../../components/common/DashboardHeader';
+import Foot from '../../../components/common/footer';
+import useTask from '../../../hooks/useTask';
+import useNotification from '../../../hooks/useNotification';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from '../../context/TranslationContext';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import useProperty from '../../hooks/useProperty';
-import { useConcierge } from '../../hooks/useConcierge';
+import { useTranslation } from '../../../context/TranslationContext';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import useProperty from '../../../hooks/useProperty';
+import { useConcierge } from '../../../hooks/useConcierge';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
