@@ -70,6 +70,7 @@ import ConciergeAreaProperties from './pages/dashboard/ConciergeMode/ConciergeAr
 import ConciergeAreaReservations from './pages/dashboard/ConciergeMode/ConciergeAreaReservations';
 import ConciergeAreaTasks from './pages/dashboard/ConciergeMode/ConciergeAreaTasks';
 import ConciergeAreaRevenue from './pages/dashboard/ConciergeMode/ConciergeAreaRevenue';
+import ChatbotAdminDashboard from './pages/admin/ChatbotAdminDashboard';
 
 const router = createBrowserRouter([
  {
@@ -223,6 +224,16 @@ const router = createBrowserRouter([
   ),
  },
  {
+  path: '/chatbot/admin',
+  element: (
+   <Layout>
+    <ProtectedRoute requiredRole="admin">
+     <ChatbotAdminDashboard />
+    </ProtectedRoute>
+   </Layout>
+  ),
+ },
+ {
   path: '/clients',
   element: (
    <Layout>
@@ -323,7 +334,11 @@ const router = createBrowserRouter([
  { path: '/new-password', element: <NewPassword /> },
  {
   path: '/guestform',
-  element: <Guestform />,
+  element: (
+   <Layout>
+    <Guestform />
+   </Layout>
+  ),
  },
  {
   path: '/addproperty',

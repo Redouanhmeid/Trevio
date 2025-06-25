@@ -1,78 +1,106 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Button, Form, Input } from 'antd';
 import { useTranslation } from '../../context/TranslationContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useLocation } from 'react-router-dom';
+import { useUserData } from '../../hooks/useUserData';
+import useReservationContract from '../../hooks/useReservationContract';
 
 const ChatbotWidget = () => {
- const { t } = useTranslation();
+ const { t, currentLanguage } = useTranslation();
+ const { user } = useAuthContext();
+ const location = useLocation();
+ const User = user || JSON.parse(localStorage.getItem('user'));
+ const { userData, getUserData } = useUserData();
+ const { getContractByHash } = useReservationContract();
+
  const [isOpen, setIsOpen] = useState(false);
  const [messages, setMessages] = useState([
   {
    id: 1,
-   text: '', // Will be set after translation loads
+   text: t('chatbot.welcomeMessage'),
    isUser: false,
    timestamp: '12:00 PM',
   },
  ]);
  const [inputValue, setInputValue] = useState('');
  const [isLoading, setIsLoading] = useState(false);
+ const [hashId, setHashId] = useState(null);
+ const [contractData, setContractData] = useState(null);
 
  const messagesEndRef = useRef(null);
  const inputRef = useRef(null);
 
- // Set localStorage helper (like in your index.html)
+ // --- Set localStorage helper ---
  useEffect(() => {
   localStorage.setItem('helper', 10);
  }, []);
 
- // Update welcome message when translation loads
  useEffect(() => {
   setMessages([
    {
     id: 1,
     text: t('chatbot.welcomeMessage'),
     isUser: false,
-    timestamp: '12:00 PM',
+    timestamp: getCurrentTime(),
    },
   ]);
  }, [t]);
 
+ // --- Detect hashId from URL ---
  useEffect(() => {
-  // Check if it's mobile screen
-  const isMobile = window.innerWidth <= 576;
+  const pathnameParts = location.pathname.split('/');
+  const lastPathSegment = pathnameParts[pathnameParts.length - 1];
 
-  if (isOpen && isMobile) {
-   // Add class to body when chatbot is open on mobile
-   document.body.classList.add('chatbot-open');
-   // Prevent background scrolling on mobile
-   document.body.style.overflow = 'hidden';
-  } else {
-   // Remove class when chatbot is closed or on desktop
-   document.body.classList.remove('chatbot-open');
-   // Restore scrolling
-   document.body.style.overflow = 'unset';
+  if (lastPathSegment.length >= 12 && lastPathSegment.length <= 20) {
+   setHashId(lastPathSegment);
+   return;
   }
 
-  // Cleanup function to ensure styles are removed when component unmounts
-  return () => {
-   document.body.classList.remove('chatbot-open');
-   document.body.style.overflow = 'unset';
-  };
- }, [isOpen]);
+  const urlParams = new URLSearchParams(location.search);
+  const hashParam = urlParams.get('hash');
 
+  if (hashParam) {
+   setHashId(hashParam);
+   return;
+  }
+
+  setHashId(null);
+ }, [location]);
+
+ // --- Load contract when hashId changes ---
  useEffect(() => {
-  const handleResize = () => {
-   const isMobile = window.innerWidth <= 576;
-   if (!isMobile) {
-    document.body.classList.remove('chatbot-open');
-    document.body.style.overflow = 'unset';
+  if (!hashId) return;
+
+  const fetchContract = async () => {
+   try {
+    const contract = await getContractByHash(hashId);
+    setContractData(contract);
+   } catch (error) {
+    console.error('Failed to load contract:', error);
+    setContractData(null);
    }
   };
 
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
- }, []);
+  fetchContract();
+ }, [hashId]);
 
- const isMobile = () => window.innerWidth <= 576;
+ // --- User data ---
+ const fetchUserData = useCallback(() => {
+  if (
+   User?.email &&
+   User?.status !== 'EN ATTENTE' &&
+   (!userData || Object.keys(userData).length === 0)
+  ) {
+   getUserData(User.email);
+  }
+ }, [User, userData, getUserData]);
 
+ useEffect(() => {
+  fetchUserData();
+ }, [fetchUserData]);
+
+ // --- UI effects ---
  const scrollToBottom = () => {
   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
  };
@@ -87,15 +115,25 @@ const ChatbotWidget = () => {
   }
  }, [isOpen]);
 
- // Format current time (exactly like your index.html)
+ useEffect(() => {
+  const handleResize = () => {
+   if (window.innerWidth > 576) {
+    document.body.classList.remove('chatbot-open');
+    document.body.style.overflow = 'unset';
+   }
+  };
+
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+ }, []);
+
+ // --- Voice ---
  const getCurrentTime = () => {
   const now = new Date();
   return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
  };
 
- // Speak function (exactly like your index.html)
  const speak = (text) => {
-  // Cancel any ongoing speech
   if (window.speechSynthesis.speaking) {
    window.speechSynthesis.cancel();
   }
@@ -108,11 +146,10 @@ const ChatbotWidget = () => {
   window.speechSynthesis.speak(utterance);
  };
 
- // Send message function (exactly like your index.html)
+ // --- Chat send ---
  const sendMessage = async (message) => {
   if (!message.trim()) return;
 
-  // Add user message
   const userMessage = {
    id: Date.now(),
    text: message,
@@ -123,18 +160,20 @@ const ChatbotWidget = () => {
   setMessages((prev) => [...prev, userMessage]);
   setInputValue('');
   setIsLoading(true);
-
+  console.log('userId: ', userData?.id);
+  console.log('lang: ', currentLanguage);
+  console.log('contract :', contractData?.id);
   try {
-   // EXACT same API call as your working index.html
    const response = await fetch('https://chatbot.trevio.ma/chat', {
     method: 'POST',
     headers: {
      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-     userid: 10,
+     userid: userData?.id,
      query: message,
-     language: 'en',
+     language: currentLanguage,
+     contractId: contractData?.id,
     }),
    });
 
@@ -178,7 +217,7 @@ const ChatbotWidget = () => {
   }
  };
 
- // Local storage functions (exactly like your index.html)
+ // --- Local storage ---
  const getLocalStorageData = () => {
   const data = {};
   for (let i = 0; i < localStorage.length; i++) {
@@ -207,27 +246,18 @@ const ChatbotWidget = () => {
    }
 
    const result = await response.json();
-   console.log('[+] Successfully sent localStorage to backend:', result);
   } catch (error) {
    console.error('[-] Failed to send localStorage:', error.message);
   }
  };
 
- // Send localStorage on component mount (like your index.html)
  useEffect(() => {
-  console.log('[*] Component loaded. Sending localStorage...');
   sendLocalStorageToBackend();
  }, []);
 
+ // --- UI ---
  return (
   <div className="trevio-chatbot-widget">
-   {/* Chat Trigger Button */}
-   {isMobile() && (
-    <div
-     className={`chatbot-overlay ${isOpen ? 'visible' : 'hidden'}`}
-     onClick={() => setIsOpen(false)} // Close chatbot when clicking overlay
-    />
-   )}
    <div
     className={`chatbot-trigger ${isOpen ? 'chatbot-open' : 'chatbot-closed'}`}
     onClick={() => setIsOpen(!isOpen)}
@@ -240,26 +270,29 @@ const ChatbotWidget = () => {
     </div>
    </div>
 
-   {/* Chat Window */}
    <div className={`chatbot-window ${isOpen ? 'visible' : 'hidden'}`}>
-    {/* Header */}
     <div className="chatbot-header">
      <div className="header-content">
       <div className="header-text">
        <h3>{t('chatbot.title')}</h3>
        <p>{t('chatbot.subtitle')}</p>
+       {contractData && (
+        <p style={{ fontSize: '0.8rem', marginTop: '8px' }}>
+         Contract:{' '}
+         {contractData?.reservationCode || contractData?.contractNumber}
+        </p>
+       )}
       </div>
      </div>
-     <button
+     <Button
       className="minimize-btn"
       onClick={() => setIsOpen(false)}
       title={t('chatbot.minimize')}
      >
       −
-     </button>
+     </Button>
     </div>
 
-    {/* Messages */}
     <div className="chatbot-messages">
      {messages.map((message) => (
       <div
@@ -277,20 +310,19 @@ const ChatbotWidget = () => {
           <span className="timestamp">{message.timestamp}</span>
          </div>
          {!message.isUser && (
-          <button
+          <Button
            className="speak-btn"
            onClick={() => speak(message.text)}
            title={t('chatbot.listenToMessage')}
           >
            <i className="PrimaryColor fa-regular fa-volume"></i>
-          </button>
+          </Button>
          )}
         </>
        )}
       </div>
      ))}
 
-     {/* Typing indicator */}
      {isLoading && (
       <div className="message bot">
        <div className="typing-indicator">
@@ -306,10 +338,9 @@ const ChatbotWidget = () => {
      <div ref={messagesEndRef} />
     </div>
 
-    {/* Input Area */}
     <div className="chat-input-container">
-     <form onSubmit={handleSubmit} className="chat-input-form">
-      <input
+     <Form onSubmit={handleSubmit} className="chat-input-form">
+      <Input
        ref={inputRef}
        type="text"
        value={inputValue}
@@ -320,15 +351,15 @@ const ChatbotWidget = () => {
        className="chat-input"
        autoComplete="off"
       />
-      <button
+      <Button
        type="submit"
        disabled={isLoading || !inputValue.trim()}
        className="send-button"
        title={t('chatbot.sendMessage')}
       >
        {t('chatbot.send')}
-      </button>
-     </form>
+      </Button>
+     </Form>
     </div>
    </div>
   </div>

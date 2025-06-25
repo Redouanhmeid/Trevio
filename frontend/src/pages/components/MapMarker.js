@@ -7,7 +7,7 @@ import {
  AdvancedMarker,
  InfoWindow,
 } from '@vis.gl/react-google-maps';
-import pinIcon from '../../assets/pin.gif';
+import pinIcon from '../../assets/pin-0.png';
 import { useGoogleMapsLoader } from '../../services/GoogleMapService';
 import { useTranslation } from '../../context/TranslationContext';
 
@@ -55,8 +55,8 @@ const MapMarker = React.memo(({ latitude, longitude }) => {
      <AdvancedMarker position={center} onClick={handleMarkerClick}>
       <div
        style={{
-        width: '50px',
-        height: '50px',
+        width: '30px',
+        height: '46px',
         backgroundImage: `url(${pinIcon})`,
         backgroundSize: 'cover',
         zIndex: 1000,

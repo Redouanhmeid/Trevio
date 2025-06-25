@@ -6,9 +6,7 @@ const Layout = ({ children }) => {
  const location = useLocation();
 
  // Don't show chatbot on login/signup pages
- const hideChatbot = ['/login', '/signup', '/reset-password-request'].includes(
-  location.pathname
- );
+ const hideChatbot = ['/reset-password-request'].includes(location.pathname);
 
  return (
   <>

@@ -35,6 +35,7 @@ import { useReservation } from '../../hooks/useReservation';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import useUploadPhotos from '../../hooks/useUploadPhotos';
 import { useTranslation } from '../../context/TranslationContext';
+import dayjs from 'dayjs';
 
 const { Title, Paragraph, Link } = Typography;
 const { Option } = Select;
@@ -53,7 +54,7 @@ const Guestform = () => {
  const { fetchReservation, updateReservationStatus } = useReservation();
  const { uploadSignature } = useUploadPhotos();
  const [countryCode, setCountryCode] = useState(
-  countries.find((country) => country.name === 'Maroc').dialCode
+  countries.find((country) => country.name === 'Morocco').dialCode
  ); // Default to first country
  const navigate = useNavigate();
 
@@ -266,7 +267,14 @@ const Guestform = () => {
       },
      ]}
     >
-     <DatePicker style={{ width: '100%' }} />
+     <DatePicker
+      style={{ width: '100%' }}
+      disabledDate={(current) => {
+       // Disable past dates - document must be valid (not expired)
+       return current && current.isBefore(dayjs().startOf('day'));
+      }}
+      placeholder="Select valid document issue date"
+     />
     </Form.Item>
    </Col>
   </>
@@ -366,7 +374,24 @@ const Guestform = () => {
               },
              ]}
             >
-             <DatePicker style={{ width: '100%' }} />
+             <DatePicker
+              style={{ width: '100%' }}
+              disabledDate={(current) => {
+               // Disable dates that are less than 18 years ago
+               const eighteenYearsAgo = new Date();
+               eighteenYearsAgo.setFullYear(
+                eighteenYearsAgo.getFullYear() - 18
+               );
+               return current && current.isAfter(eighteenYearsAgo);
+              }}
+              defaultPickerValue={(() => {
+               // Set default picker to show 25 years ago
+               const defaultDate = new Date();
+               defaultDate.setFullYear(defaultDate.getFullYear() - 25);
+               return dayjs(defaultDate);
+              })()}
+              placeholder={t('guestForm.validation.birthDatePlaceholder')}
+             />
             </Form.Item>
            </Col>
 
@@ -526,7 +551,7 @@ const Guestform = () => {
               addonBefore={
                <Select
                 value={countryCode}
-                style={{ width: 140 }}
+                style={{ width: 160 }}
                 onChange={handleCountryChange}
                >
                 {countries.map((country) => (

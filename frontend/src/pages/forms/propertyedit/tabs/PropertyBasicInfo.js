@@ -144,142 +144,140 @@ const PropertyBasicInfo = ({ property, propertyId, onPropertyUpdated }) => {
    layout="vertical"
    onFinish={handleSubmit}
    initialValues={property}
+   size="large"
   >
-   <Card
-    bordered={false}
-    title={
-     <Title level={4} style={{ margin: 0 }}>
-      <i className="fa-light fa-circle-info" style={{ marginRight: 8 }} />
-      {t('property.basic.title')}
-     </Title>
-    }
-   >
-    <Row gutter={[24, 16]}>
-     <Col xs={24} md={24}>
-      <Form.Item
-       label={t('property.basic.type')}
-       name="type"
-       rules={[
-        {
-         required: true,
-         message: t('validation.selectType'),
+   <Title level={4} style={{ margin: 0 }}>
+    <i
+     className="fa-light fa-circle-info"
+     style={{ marginRight: 8, padding: 0 }}
+    />
+    {t('property.basic.title')}
+   </Title>
+   <Row gutter={[24, 16]}>
+    <Col xs={24} md={24}>
+     <Form.Item
+      label={t('property.basic.type')}
+      name="type"
+      rules={[
+       {
+        required: true,
+        message: t('validation.selectType'),
+       },
+      ]}
+     >
+      <Radio.Group value={checkedType} onChange={handleRadioChange}>
+       <div className="customRadioGroup">
+        {propertyTypes.map((PropertyType) => (
+         <div className="customRadioContainer" key={PropertyType.value}>
+          <Radio value={PropertyType.value}>
+           <div
+            className={
+             checkedType === PropertyType.value
+              ? 'customRadioButton customRadioChecked'
+              : 'customRadioButton'
+            }
+           >
+            {PropertyType.icon}
+            <div>{PropertyType.label}</div>
+           </div>
+          </Radio>
+         </div>
+        ))}
+       </div>
+      </Radio.Group>
+     </Form.Item>
+    </Col>
+
+    <Col xs={24} md={12}>
+     <Form.Item
+      name="name"
+      label={t('property.basic.name')}
+      rules={[{ required: true, message: t('validation.enterName') }]}
+     >
+      <Input />
+     </Form.Item>
+    </Col>
+
+    <Col xs={24} md={12}>
+     <Form.Item label={t('property.basic.price')} name="price">
+      <InputNumber min={0} addonAfter="Dhs" style={{ width: '100%' }} />
+     </Form.Item>
+    </Col>
+
+    <Col xs={24}>
+     <Form.Item
+      name="description"
+      label={t('property.basic.description')}
+      rules={[{ required: true, message: t('validation.enterDescription') }]}
+     >
+      <TextArea showCount maxLength={500} rows={4} />
+     </Form.Item>
+    </Col>
+
+    <Col xs={12} md={4}>
+     <Form.Item label={t('property.basic.capacity')} name="capacity">
+      <InputNumber min={0} style={{ width: '100%' }} />
+     </Form.Item>
+    </Col>
+
+    <Col xs={6} md={4}>
+     <Form.Item label={t('property.basic.rooms')} name="rooms">
+      <InputNumber min={0} style={{ width: '100%' }} />
+     </Form.Item>
+    </Col>
+
+    <Col xs={6} md={4}>
+     <Form.Item label={t('property.basic.beds')} name="beds">
+      <InputNumber min={0} style={{ width: '100%' }} />
+     </Form.Item>
+    </Col>
+
+    <Col xs={24} md={12}>
+     <Form.Item name="airbnbUrl" label={t('property.basic.airbnbUrl')}>
+      <Input />
+     </Form.Item>
+    </Col>
+
+    <Col xs={24} md={12}>
+     <Form.Item name="bookingUrl" label={t('property.basic.bookingUrl')}>
+      <Input />
+     </Form.Item>
+    </Col>
+
+    <Col xs={24}>
+     <Divider />
+     <Title level={5}>{t('property.basic.location')}</Title>
+
+     <Form.Item
+      label={t('property.basic.selectLocation')}
+      required
+      className="hide-required-mark"
+      rules={[
+       {
+        validator: (_, value) => {
+         if (
+          !mapValues.latitude ||
+          !mapValues.longitude ||
+          !mapValues.placeName
+         ) {
+          return Promise.reject(t('property.basic.selectLocation'));
+         }
+         return Promise.resolve();
         },
-       ]}
-      >
-       <Radio.Group value={checkedType} onChange={handleRadioChange}>
-        <div className="customRadioGroup">
-         {propertyTypes.map((PropertyType) => (
-          <div className="customRadioContainer" key={PropertyType.value}>
-           <Radio value={PropertyType.value}>
-            <div
-             className={
-              checkedType === PropertyType.value
-               ? 'customRadioButton customRadioChecked'
-               : 'customRadioButton'
-             }
-            >
-             {PropertyType.icon}
-             <div>{PropertyType.label}</div>
-            </div>
-           </Radio>
-          </div>
-         ))}
-        </div>
-       </Radio.Group>
-      </Form.Item>
-     </Col>
-
-     <Col xs={24} md={12}>
-      <Form.Item
-       name="name"
-       label={t('property.basic.name')}
-       rules={[{ required: true, message: t('validation.enterName') }]}
-      >
-       <Input />
-      </Form.Item>
-     </Col>
-
-     <Col xs={24} md={12}>
-      <Form.Item label={t('property.basic.price')} name="price">
-       <InputNumber min={0} addonAfter="Dhs" style={{ width: '100%' }} />
-      </Form.Item>
-     </Col>
-
-     <Col xs={24}>
-      <Form.Item
-       name="description"
-       label={t('property.basic.description')}
-       rules={[{ required: true, message: t('validation.enterDescription') }]}
-      >
-       <TextArea showCount maxLength={500} rows={4} />
-      </Form.Item>
-     </Col>
-
-     <Col xs={8} md={4}>
-      <Form.Item label={t('property.basic.capacity')} name="capacity">
-       <InputNumber min={0} style={{ width: '100%' }} />
-      </Form.Item>
-     </Col>
-
-     <Col xs={8} md={4}>
-      <Form.Item label={t('property.basic.rooms')} name="rooms">
-       <InputNumber min={0} style={{ width: '100%' }} />
-      </Form.Item>
-     </Col>
-
-     <Col xs={8} md={4}>
-      <Form.Item label={t('property.basic.beds')} name="beds">
-       <InputNumber min={0} style={{ width: '100%' }} />
-      </Form.Item>
-     </Col>
-
-     <Col xs={24} md={12}>
-      <Form.Item name="airbnbUrl" label={t('property.basic.airbnbUrl')}>
-       <Input />
-      </Form.Item>
-     </Col>
-
-     <Col xs={24} md={12}>
-      <Form.Item name="bookingUrl" label={t('property.basic.bookingUrl')}>
-       <Input />
-      </Form.Item>
-     </Col>
-
-     <Col xs={24}>
-      <Divider />
-      <Title level={5}>{t('property.basic.location')}</Title>
-
-      <Form.Item
-       label={t('property.basic.selectLocation')}
-       required
-       className="hide-required-mark"
-       rules={[
-        {
-         validator: (_, value) => {
-          if (
-           !mapValues.latitude ||
-           !mapValues.longitude ||
-           !mapValues.placeName
-          ) {
-           return Promise.reject(t('property.basic.selectLocation'));
-          }
-          return Promise.resolve();
-         },
-        },
-       ]}
-      >
-       <MapPicker
-        onPlaceSelected={handlePlaceSelected}
-        initialPosition={{
-         lat: property.latitude,
-         lng: property.longitude,
-        }}
-        initialPlaceName={property.placeName}
-       />
-      </Form.Item>
-     </Col>
-    </Row>
-   </Card>
+       },
+      ]}
+     >
+      <MapPicker
+       onPlaceSelected={handlePlaceSelected}
+       initialPosition={{
+        lat: property.latitude,
+        lng: property.longitude,
+       }}
+       initialPlaceName={property.placeName}
+      />
+     </Form.Item>
+    </Col>
+   </Row>
 
    {/* Submit button */}
    <Form.Item>

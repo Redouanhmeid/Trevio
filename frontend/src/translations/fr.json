@@ -49,7 +49,7 @@
             "selectLocation": "Sélectionnez un emplacement sur la carte",
             "Capacity": "Capacité Personne",
             "priceNight": "Par Nuit",
-            "manualCoordinates": "Souhaitez-vous être plus précis ?",
+            "manualCoordinates": "Souhaitez-vous être plus précis?",
             "enterCoordinates": "Entrez les coordonnées précises de latitude et longitude",
             "latitude": "Latitude",
             "longitude": "Longitude",
@@ -760,7 +760,8 @@
             "datesNotAvailable": "Les dates sélectionnées ne sont pas disponibles",
             "stayDates": "Veuillez sélectionner vos dates de séjour",
             "datesNoLongerAvailable": "Ces dates ne sont plus disponibles. Veuillez sélectionner des dates différentes.",
-            "conflictingBookings": "La propriété est déjà réservée à ces dates"
+            "conflictingBookings": "La propriété est déjà réservée à ces dates",
+            "birthDatePlaceholder": "Sélectionnez la date de naissance (18 ans et plus)"
         },
         "contractTerms": {
             "title": "Conditions du contrat",
@@ -1701,6 +1702,66 @@
         "sendMessage": "Envoyer le Message",
         "minimize": "Réduire",
         "listenToMessage": "Écouter le message",
-        "typing": "Frappe en cours..."
+        "typing": "Frappe en cours...",
+        "admin": {
+            "title": "Trevio Chatbot Admin",
+            "dashboard": "Tableau de bord",
+            "conversations": "Conversations",
+            "users": "Utilisateurs",
+            "configuration": "Configuration",
+            "totalConversations": "Total Conversations",
+            "uniqueUsers": "Utilisateurs Uniques",
+            "avgResponseTime": "Temps de Réponse Moyen",
+            "cacheHitRate": "Taux de Cache",
+            "userTypeDistribution": "Distribution des Types d'Utilisateurs",
+            "languageUsage": "Langues Utilisées",
+            "mostActiveUsers": "Utilisateurs les Plus Actifs",
+            "conversationsCount": "conversations",
+            "userId": "Utilisateur",
+            "userType": "Type",
+            "message": "Message",
+            "response": "Réponse",
+            "source": "Source",
+            "language": "Langue",
+            "processingTime": "Temps (ms)",
+            "date": "Date",
+            "refresh": "Actualiser",
+            "userIdPlaceholder": "ID Utilisateur",
+            "totalCount": "Total: {count} conversations",
+            "userStats": "Statistiques Utilisateurs",
+            "totalUsers": "Total Utilisateurs Uniques",
+            "avgPerUser": "Moyenne par Utilisateur",
+            "distributionByType": "Distribution par Type",
+            "usersCount": "utilisateurs",
+            "promptConfig": "Configuration des Prompts",
+            "edit": "Modifier",
+            "basePrompt": "Prompt de base:",
+            "contextInstructions": "Instructions contextuelles:",
+            "responseGuidelines": "Directives de réponse:",
+            "editPrompts": "Modifier les Prompts",
+            "cancel": "Annuler",
+            "update": "Mettre à jour",
+            "basePlaceholder": "Prompt de base...",
+            "contextPlaceholder": "Instructions contextuelles...",
+            "responsePlaceholder": "Directives de réponse..."
+        }
+    },
+    "tutorials": {
+        "title": "Tutoriels Vidéo",
+        "welcome": {
+            "title": "Bienvenue dans Trevio!",
+            "subtitle": "Commencez rapidement avec ces tutoriels vidéo utiles:"
+        },
+        "filters": {
+            "all": "Tous",
+            "gettingStarted": "Premiers pas",
+            "onlineCheckin": "Enregistrement en ligne",
+            "legalCompliance": "Conformité légale",
+            "identityVerification": "Vérification d'identité",
+            "remoteAccess": "Accès à distance",
+            "touristTaxes": "Taxes touristiques",
+            "propertyProtection": "Protection des biens",
+            "upselling": "Vente incitative"
+        }
     }
 }

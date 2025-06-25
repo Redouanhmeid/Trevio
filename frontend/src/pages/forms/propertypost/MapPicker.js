@@ -459,7 +459,7 @@ const MapPicker = React.memo(
        onDragEnd={({ latLng }) => handleMarkerDragEnd({ latLng })}
       >
        <Pin
-        background={'#aa7e42'}
+        background={'#6d5ffa'}
         borderColor={'#2b2c32'}
         glyphColor={'#fbfbfb'}
        />

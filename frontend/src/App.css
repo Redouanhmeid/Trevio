@@ -6,6 +6,7 @@ body {
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+  padding-top: 80px;
 }
 
 .App {
@@ -55,7 +56,7 @@ body {
   justify-content: center;
 }
 .contentStyle {
-  min-height: 100vh;
+  min-height: calc(100vh - 20px);
   overflow: auto;
 }
 .container-fluid {
@@ -187,7 +188,7 @@ body {
 
 .pin img {
   position: relative;
-  border: 4px solid #aa7e42;
+  border: 4px solid #6D5FFA;
   border-radius: 50%;
   top: -16px;
   width: 100%;
@@ -206,7 +207,7 @@ body {
   height: 0;
   border-left: 23px solid transparent;
   border-right: 23px solid transparent;
-  border-top: 26px solid #aa7e42;
+  border-top: 26px solid #6D5FFA;
   z-index: 999;
 }
 
@@ -913,15 +914,22 @@ body {
   }
   .dash-card .ant-list-item {
     padding: 12px !important;
-}
+  }
+  .dash-card .ant-list-item-meta-content {
+    min-width: 200px; /* Set a minimum width to prevent compression */
+    flex: 1;
+  }
+  .dash-card .ant-list-item-meta-title {
+    max-width: none !important;
+    width: 100% !important;
+  }
 }
 
 .dash-card {
   border-radius: 16px;
   background-color: #F8F7FE;
   border: 0;
-}
-
+ }
 .dash-card .ant-card-head {
   padding-top: 24px;
   color: #303342;
@@ -929,21 +937,39 @@ body {
   font-weight: 800;
   border: 0;
 }
-
 .dash-card .ant-card-head .ant-divider {
   width: 20%;
   min-width: 0;
   border-block-start: 2px solid #6D5FFA;
   margin: 12px 0 0 0;
 }
-
 .dash-card .ant-list-item {
   background: #fff;
   border-radius: 16px;
   padding: 16px 24px;
   margin-bottom: 12px;
 }
-
+.dash-card .ant-list-item-meta-content {
+  width: auto !important;
+  min-width: 0;
+  flex: 1;
+}
+.dash-card .ant-list-item-meta-title {
+  width: 100% !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+.dash-card .ant-list-item-meta {
+  display: flex !important;
+  align-items: flex-start;
+  width: 100%;
+}
+.dash-card .ant-list-item-meta-avatar {
+  flex-shrink: 0;
+  margin-right: 16px;
+}
 
 .custom-stat-card {
   border-radius: 16px;
@@ -994,10 +1020,6 @@ body {
   display: flex;
   top: 0;
   right: 0;
-}
-
-.gm-style-iw.gm-style-iw-c {
-  padding-top: 14px !important;
 }
 
 .equipement-checkbox-group .ant-checkbox-wrapper {
@@ -1568,6 +1590,10 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   width: 100%;
   z-index: 1000;
+  position: fixed; /* Add fixed positioning */
+  top: 0; /* Stick to top */
+  left: 0; /* Align to left edge */
+  right: 0; /* Extend to right edge */
 }
 
 .dashboard-header .logo-container {
@@ -1776,6 +1802,8 @@ body {
 @media (max-width: 576px) {
   .dashboard-header {
     padding: 0 12px;
+    background-color: #fff !important; /* Mobile header styling */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   }
   
   .dashboard-header .logo {
@@ -2969,12 +2997,6 @@ body {
 
 /* Mobile Responsive */
 @media (max-width: 576px) {
-  .chatbot-window {
-    width: calc(100vw - 20px); /* Reduce side margins */
-    height: 60vh; /* Reduce height */
-    bottom: 65px; /* Adjust positioning */
-    border-radius: 16px; /* Slightly smaller border radius */
-  }
   .trevio-chatbot-widget {
     bottom: 90px; /* Position above mobile navigation */
     right: 15px; /* Reduce right margin */
@@ -3068,8 +3090,75 @@ body {
     font-size: 12px; /* Smaller font */
     max-width: 95%;
   }
+  .chatbot-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent grey overlay */
+    z-index: 9998; /* Just below the chatbot widget */
+    backdrop-filter: blur(2px); /* Optional: adds a nice blur effect */
+    transition: all 0.3s ease;
+  }
 
+  .chatbot-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .chatbot-overlay.visible {
+    opacity: 0;
+    pointer-events: auto;
+  }
+
+  /* Alternative: Make body background grey when chatbot is open on mobile */
+  body.chatbot-open {
+    overflow: hidden;
+  }
+
+  body.chatbot-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.6); /* Grey overlay */
+    z-index: 9998;
+    backdrop-filter: blur(1px);
+  }
+
+  .chatbot-window {
+    width: calc(100vw - 20px);
+    border-radius: 16px;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    position: fixed !important;
+    bottom: 65px !important;
+    height: 80vh !important;
+    max-height: 80vh !important;
+  }
+  
+  .chat-input-container {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid #eee;
+  }
+  
+  .chatbot-messages {
+    height: calc(60vh - 120px) !important;
+    overflow-y: auto;
+  }
+  
+  body.chatbot-open {
+    position: fixed !important;
+    width: 100% !important;
+  }
 }
+
 @media (max-width: 375px) {
   .chatbot-window {
     width: calc(100vw - 16px); /* Even smaller margins */
@@ -3120,47 +3209,6 @@ body {
   background: #a8a8a8;
 }
 
-@media (max-width: 576px) {
-  .chatbot-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent grey overlay */
-    z-index: 9998; /* Just below the chatbot widget */
-    backdrop-filter: blur(2px); /* Optional: adds a nice blur effect */
-    transition: all 0.3s ease;
-  }
-
-  .chatbot-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .chatbot-overlay.visible {
-    opacity: 0;
-    pointer-events: auto;
-  }
-
-  /* Alternative: Make body background grey when chatbot is open on mobile */
-  body.chatbot-open {
-    overflow: hidden;
-  }
-
-  body.chatbot-open::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(128, 128, 128, 0.6); /* Grey overlay */
-    z-index: 9998;
-    backdrop-filter: blur(1px);
-  }
-}
-
 /* Desktop: Hide overlay completely */
 @media (min-width: 577px) {
   .chatbot-overlay {
@@ -3170,5 +3218,293 @@ body {
   /* Don't add body overlay on desktop */
   body.chatbot-open::before {
     display: none !important;
+  }
+}
+
+/* Hide the extra dates and disable clicks on them */
+.ant-picker-date-panel .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
+  display: none;
+}
+.ant-picker-date-panel .ant-picker-cell:not(.ant-picker-cell-in-view) {
+  pointer-events: none;
+}
+
+/* Tutorials Alert Styles */
+
+/* Main alert container */
+.tutorials-alert-container {
+  position: fixed;
+  top: 90px; /* 80px header height + 10px spacing */
+  left: 24px;
+  right: 24px;
+  z-index: 999; /* Just below header but above content */
+  transition: all 0.3s ease;
+}
+
+/* Alert styling */
+.tutorials-alert {
+  border-radius: 16px !important;
+  border: 1px solid #6D5FFA !important;
+  background-color: #fafafa !important;
+  box-shadow: 0 4px 20px rgba(109, 95, 250, 0.15) !important;
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Slide down animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tutorial card hover effects */
+.tutorials-alert .tutorial-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tutorials-alert .tutorial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tutorials-alert .tutorial-card:hover .tutorial-play-button {
+  transform: scale(1.1);
+  background-color: rgba(109, 95, 250, 0.9) !important;
+}
+
+/* Filter buttons */
+.tutorials-alert .tutorial-filter-button {
+  transition: all 0.3s ease;
+}
+
+.tutorials-alert .tutorial-filter-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(109, 95, 250, 0.3);
+}
+
+/* Scrollbar styling for tutorial content */
+.tutorials-alert .tutorials-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tutorials-alert .tutorials-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.tutorials-alert .tutorials-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.tutorials-alert .tutorials-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 576px) {
+  .tutorials-alert-container {
+    top: 90px; /* Adjust for mobile header */
+    left: 16px;
+    right: 16px;
+  }
+  
+  .tutorials-alert .ant-alert-description {
+    padding: 12px 0;
+  }
+  
+  .tutorials-alert .tutorial-card .ant-card-body {
+    padding: 12px;
+  }
+  
+  .tutorials-alert .tutorial-card .ant-typography {
+    font-size: 13px;
+  }
+  
+  .tutorials-alert .tutorial-filter-button {
+    font-size: 11px;
+    height: 28px;
+    padding: 0 12px;
+  }
+  
+  /* Reduce max height on mobile for better UX */
+  .tutorials-alert .tutorials-content {
+    max-height: 50vh !important;
+  }
+}
+
+/* Ensure proper spacing from header on different screen sizes */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tutorials-alert-container {
+    left: 20px;
+    right: 20px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .tutorials-alert-container {
+    left: 32px;
+    right: 32px;
+  }
+}
+
+/* Close button styling */
+.tutorials-alert .ant-alert-close-icon {
+  color: #6D5FFA !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease;
+}
+
+.tutorials-alert .ant-alert-close-icon:hover {
+  color: #413894 !important;
+  transform: scale(1.1);
+}
+
+/* Header icon and title styling */
+.tutorials-alert .tutorials-header-icon {
+  color: #6D5FFA;
+  margin-right: 8px;
+}
+
+.tutorials-alert .tutorials-header-title {
+  color: #6D5FFA;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Play button animation */
+.tutorials-alert .tutorial-play-button {
+  transition: all 0.3s ease;
+}
+
+/* Duration badge styling */
+.tutorials-alert .tutorial-duration-badge {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure alert doesn't interfere with page content */
+body.tutorials-alert-open {
+  padding-top: 120px; /* Add padding when alert is open */
+  transition: padding-top 0.3s ease;
+}
+
+/* Filter buttons container */
+.tutorials-alert .filter-buttons-container {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.tutorials-alert .filter-buttons-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tutorials-alert .filter-buttons-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.tutorials-alert .filter-buttons-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+/* Ensure content doesn't overlap with fixed alert */
+.content-with-tutorials-alert {
+  margin-top: 120px; /* Adjust based on alert height */
+  transition: margin-top 0.3s ease;
+}
+
+/* Additional positioning fixes */
+.tutorials-alert-container {
+  max-width: calc(100vw - 48px); /* Prevent horizontal overflow */
+  box-sizing: border-box;
+}
+
+/* Handle edge cases for very small screens */
+@media (max-width: 375px) {
+  .tutorials-alert-container {
+    left: 12px;
+    right: 12px;
+    top: 85px; /* Slightly closer to header on very small screens */
+  }
+  
+  .tutorials-alert .tutorials-content {
+    max-height: 40vh !important;
+  }
+}
+
+/* Handle landscape mobile orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .tutorials-alert .tutorials-content {
+    max-height: 35vh !important;
+  }
+  
+  .tutorials-alert-container {
+    top: 70px; /* Reduce top spacing in landscape */
+  }
+}
+
+/* Ensure alert is hidden when printing */
+@media print {
+  .tutorials-alert-container {
+    display: none !important;
+  }
+}
+
+/* Dark mode support (if you have dark theme) */
+@media (prefers-color-scheme: dark) {
+  .tutorials-alert {
+    background-color: #1f1f1f !important;
+    border-color: #6D5FFA !important;
+  }
+  
+  .tutorials-alert .ant-alert-message,
+  .tutorials-alert .ant-alert-description {
+    color: #ffffff !important;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .tutorials-alert-container,
+  .tutorials-alert .tutorial-card,
+  .tutorials-alert .tutorial-filter-button,
+  .tutorials-alert .tutorial-play-button {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Focus management for accessibility */
+.tutorials-alert:focus-within {
+  outline: 2px solid #6D5FFA;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tutorials-alert {
+    border-width: 2px !important;
+    box-shadow: 0 0 0 1px #000000 !important;
   }
 }

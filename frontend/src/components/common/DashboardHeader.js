@@ -19,6 +19,8 @@ import { useLogout } from '../../hooks/useLogout';
 import { useUserData } from '../../hooks/useUserData';
 import { LanguageSelector } from '../../utils/LanguageSelector';
 import NotificationBell from './NotificationBell';
+import TutorialsButton from './TutorialsButton';
+import TutorialsAlert from './TutorialsAlert';
 import Logo from '../../assets/Trevio-11.png';
 import MobileLogo from '../../assets/MobileLogo.png';
 import { Helmet } from 'react-helmet';
@@ -35,6 +37,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  const User = user || JSON.parse(localStorage.getItem('user'));
  const { userData, getUserData, isLoading } = useUserData();
  const [open, setOpen] = useState(false);
+ const [tutorialsOpen, setTutorialsOpen] = useState(false);
  const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
 
  // Handle window resize for mobile detection
@@ -118,6 +121,9 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
  const onClick = () => {
   onClose();
  };
+
+ const showTutorialsDrawer = () => setTutorialsOpen(true);
+ const onTutorialsClose = () => setTutorialsOpen(false);
 
  const handleReferFriend = async (t) => {
   const referralLink = `${window.location.origin}/signup?referralCode=${userData.id}`;
@@ -303,6 +309,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
 
       {/* Right side - Language and Notifications */}
       <div className="mobile-actions">
+       <TutorialsButton onClick={showTutorialsDrawer} />
        <LanguageSelector />
        <NotificationBell userId={userData?.id} />
       </div>
@@ -334,6 +341,7 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
       />
 
       <div className="right-section">
+       <TutorialsButton onClick={showTutorialsDrawer} />
        <LanguageSelector />
        <NotificationBell userId={userData?.id} />
        <div className="avatar-container">
@@ -359,6 +367,9 @@ const DashboardHeader = ({ onUserData = () => {} }) => {
 
    {/* Mobile Navigation Bar - Only show on mobile */}
    {isMobile && <MobileNavigationBar />}
+
+   {/* Tutorials Drawer */}
+   <TutorialsAlert open={tutorialsOpen} onClose={onTutorialsClose} />
 
    {/* Avatar Drawer */}
    <Drawer

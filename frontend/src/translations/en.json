@@ -760,7 +760,8 @@
             "datesNotAvailable": "Selected dates are not available",
             "stayDates": "Please select your stay dates",
             "datesNoLongerAvailable": "These dates are no longer available. Please select different dates.",
-            "conflictingBookings": "Property is already booked during these dates"
+            "conflictingBookings": "Property is already booked during these dates",
+            "birthDatePlaceholder": "Select birth date (18+ years old)"
         },
         "contractTerms": {
             "title": "Contract Terms",
@@ -1701,6 +1702,66 @@
         "sendMessage": "Send Message",
         "minimize": "Minimize",
         "listenToMessage": "Listen to message",
-        "typing": "Typing..."
+        "typing": "Typing...",
+        "admin": {
+            "title": "Trevio Chatbot Admin",
+            "dashboard": "Dashboard",
+            "conversations": "Conversations",
+            "users": "Users",
+            "configuration": "Configuration",
+            "totalConversations": "Total Conversations",
+            "uniqueUsers": "Unique Users",
+            "avgResponseTime": "Average Response Time",
+            "cacheHitRate": "Cache Hit Rate",
+            "userTypeDistribution": "User Type Distribution",
+            "languageUsage": "Language Usage",
+            "mostActiveUsers": "Most Active Users",
+            "conversationsCount": "conversations",
+            "userId": "User ID",
+            "userType": "Type",
+            "message": "Message",
+            "response": "Response",
+            "source": "Source",
+            "language": "Language",
+            "processingTime": "Time (ms)",
+            "date": "Date",
+            "refresh": "Refresh",
+            "userIdPlaceholder": "User ID",
+            "totalCount": "Total: {count} conversations",
+            "userStats": "User Statistics",
+            "totalUsers": "Total Unique Users",
+            "avgPerUser": "Average per User",
+            "distributionByType": "Distribution by Type",
+            "usersCount": "users",
+            "promptConfig": "Prompt Configuration",
+            "edit": "Edit",
+            "basePrompt": "Base prompt:",
+            "contextInstructions": "Context instructions:",
+            "responseGuidelines": "Response guidelines:",
+            "editPrompts": "Edit Prompts",
+            "cancel": "Cancel",
+            "update": "Update",
+            "basePlaceholder": "Base prompt...",
+            "contextPlaceholder": "Context instructions...",
+            "responsePlaceholder": "Response guidelines..."
+        }
+    },
+    "tutorials": {
+        "title": "Video Tutorials",
+        "welcome": {
+            "title": "Welcome to Trevio!",
+            "subtitle": "Get started quickly with these helpful video tutorials:"
+        },
+        "filters": {
+            "all": "All",
+            "gettingStarted": "Getting started",
+            "onlineCheckin": "Online Check-in",
+            "legalCompliance": "Legal Compliance",
+            "identityVerification": "Identity Verification",
+            "remoteAccess": "Remote access",
+            "touristTaxes": "Tourist taxes",
+            "propertyProtection": "Property Protection",
+            "upselling": "Upselling"
+        }
     }
 }

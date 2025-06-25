@@ -153,12 +153,12 @@ const generateTabs = (
     )}
     {property.guestAccessInfo && (
      <Space
-      direction={screens.xs ? 'vertical' : 'horizontal'}
+      direction="vertical"
       align={screens.xs ? 'start' : 'baseline'}
       style={{ width: '100%' }}
       size={screens.xs ? 'small' : 'middle'}
      >
-      <Text strong className="PrimaryColor">
+      <Text strong className="PrimaryColor" width={20}>
        {t('guidebook.note')}
       </Text>
       <NonTranslatableContent

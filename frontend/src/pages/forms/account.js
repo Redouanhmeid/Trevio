@@ -97,7 +97,7 @@ const Account = () => {
  const [fileList, setFileList] = useState([]);
  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
  const [countryCode, setCountryCode] = useState(
-  countries.find((country) => country.name === 'Maroc').dialCode
+  countries.find((country) => country.name === 'Morocco').dialCode
  ); // Default to first country
 
  const pageUrl = window.location.href;

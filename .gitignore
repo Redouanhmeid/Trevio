@@ -29,3 +29,4 @@ backend/0.env
 .env
 frontend/public/
 frontend/src/assets/
+frontend/src/assets/fallback.png

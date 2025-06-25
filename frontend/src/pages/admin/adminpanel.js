@@ -21,7 +21,7 @@ import {
  Grid,
  message,
 } from 'antd';
-import { UserOutlined, PlusOutlined } from '@ant-design/icons';
+import { UserOutlined, PlusOutlined, RobotOutlined } from '@ant-design/icons';
 import { useTranslation } from '../../context/TranslationContext';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '../../components/common/DashboardHeader';
@@ -161,6 +161,19 @@ const Dashboard = () => {
   <Layout className="contentStyle">
    <DashboardHeader />
    <Content className="container">
+    <Row gutter={[16, 16]} align="center" justify="end">
+     <Col xs={24} md={24} className="stat-col">
+      <Button
+       type="primary"
+       icon={<RobotOutlined />}
+       size="large"
+       block
+       onClick={() => navigate('/chatbot/admin')}
+      >
+       {t('chatbot.admin.title')}
+      </Button>
+     </Col>
+    </Row>
     <Row gutter={[16, 16]} align="bottom" justify="center">
      <Col xs={24} md={8}>
       <Title level={2}>{t('messages.reviewAndApprove')} :</Title>

@@ -171,7 +171,7 @@ const identityUpload = multer({
 
 // Check file type
 function checkFileType(file, cb) {
- const filetypes = /jpeg|jpg|png|gif|webp/;
+ const filetypes = /jpeg|jpg|png|gif|webp|heic|heif/;
  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
  const mimetype = filetypes.test(file.mimetype);
 
