@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verified</title>
+    <!-- Import Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background-color: #F8F7FE;
+        }
+
+        .verification-container {
+            display: flex;
+            flex-direction: column;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            align-items: center;
+            padding: 30px 20px;
+            align-self: center;
+            border-radius: 12px;
+            background-color: #6D5FFA;
+            box-shadow: 0 4px 20px rgba(109, 95, 250, 0.2);
+        }
+
+        .animated {
+            background-repeat: no-repeat;
+            background-position: left top;
+            -webkit-animation-duration: 10s;
+            animation-duration: 10s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
+
+        h2 {
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 0;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+
+        h3 {
+            font-weight: 500;
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-weight: 400;
+            margin-top: 25px;
+            opacity: 0.9;
+        }
+
+        .login-button {
+            background-color: #ffffff;
+            color: #6D5FFA;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-button:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            width: clamp(60px, 15vw, 85px);
+            height: clamp(60px, 15vw, 85px);
+        }
+
+        @keyframes swing {
+            20% {
+                transform: rotate(15deg);
+            }
+            40% {
+                transform: rotate(-10deg);
+            }
+            60% {
+                transform: rotate(5deg);
+            }
+            80% {
+                transform: rotate(-5deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .swing {
+            -webkit-transform-origin: top center;
+            transform-origin: top center;
+            -webkit-animation-name: swing;
+            animation-name: swing;
+        }
+
+        /* Media queries for better responsiveness */
+        @media (max-width: 600px) {
+            .verification-container {
+                width: 92%;
+                padding: 25px 15px;
+                margin: 10px auto;
+            }
+
+            .login-button {
+                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .verification-container {
+                width: 95%;
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<script>
+    const frontendUrl = "https://app.trevio.ma";
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const error = urlParams.get("error");
+    const message = urlParams.get("message");
+
+    const bodyContent = !error
+        ? `<div class="verification-container">
+            <h2>L'email a été vérifié</h2>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon animated swing"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+            >
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+                />
+            </svg>
+            <h3>Vous pouvez désormais vous connecter</h3>
+            <a href="${frontendUrl}/login" class="login-button">
+                Se connecter
+            </a>
+            <p>Trevio</p>
+        </div>`
+        : `<div class="verification-container">
+            <h2>L'email n'a pas été vérifié</h2>
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                class="icon animated swing"
+                fill="currentColor" 
+                viewBox="0 0 16 16"
+            >
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+            </svg>
+            <h3>Veuillez réessayer!</h3>
+            <a href="${frontendUrl}" class="login-button">
+                Retour à l'accueil
+            </a>
+            <p>Trevio</p>
+        </div>`;
+
+    document.body.style.backgroundColor = error ? "#f5f5f5" : "#F8F7FE";
+    document.body.innerHTML = bodyContent;
+</script>
+</body>
+</html>

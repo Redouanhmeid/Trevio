@@ -1,0 +1,15 @@
+backend/.env
+backend/avatars/
+backend/equipments/
+backend/uploads/
+backend/frontphotos/
+backend/identities/
+backend/node_modules/
+backend/places/
+backend/signatures/
+frontend/node_modules/
+frontend/src/assets
+frontend/src/services/firebaseConfig.js
+frontend/src/mapconfig.js
+frontend/src/.env
+frontend/src/ClientConfig.js
